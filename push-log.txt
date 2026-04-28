@@ -1,0 +1,31 @@
+=== 28/04/2026  1:16:06,09 === 
+=== safe.directory === 
+ 
+=== git status antes === 
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   index.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	app-treino-jonathan.html
+	apple-touch-icon.png
+	favicon-32.png
+	icon-192.png
+	icon-512.png
+	manifest.webmanifest
+	push-log.txt
+	push.bat
+
+no changes added to commit (use "git add" and/or "git commit -a")
+ 
+=== git add -A === 
+warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app-treino-jonathan.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'manifest.webmanifest', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'push-log.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'push.bat', LF will be replaced by CRLF the next time Git touches it
