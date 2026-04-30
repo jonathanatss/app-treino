@@ -1,4 +1,4 @@
-=== 29/04/2026 17:52:37,67 === 
+=== 30/04/2026 12:40:45,59 === 
 === safe.directory === 
  
 === git status === 
@@ -10,11 +10,9 @@ Changes not staged for commit:
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   index.html
 	modified:   push-log.txt
-	modified:   push.bat
 
 no changes added to commit (use "git add" and/or "git commit -a")
  
 === git add === 
 warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'push-log.txt', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'push.bat', LF will be replaced by CRLF the next time Git touches it

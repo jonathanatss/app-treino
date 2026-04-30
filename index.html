@@ -850,17 +850,17 @@
         initials: "S",
         accent: "var(--rose)",
         title: "Gym App",
-        subtitle: "Full Body 3x/sem + Treino D opcional • Foco glúteo + corpo todo • RIR 1–2",
+        subtitle: "Corpo todo 3x/sem + Treino D opcional • Foco glúteo + corpo todo • RIR 1–2",
         defaultTab: "fullA",
         tabs: [
-          { key: "fullA", label: "A • Quad + Push + Pull", color: "var(--green)" },
-          { key: "fullB", label: "B • Glúteo + Pull", color: "var(--rose)" },
-          { key: "fullC", label: "C • Posterior + Push", color: "var(--violet)" },
-          { key: "fullD", label: "D • Glute pump (opcional)", color: "var(--blue)" }
+          { key: "fullA", label: "A • Quadríceps + Empurrar + Puxar", color: "var(--green)" },
+          { key: "fullB", label: "B • Glúteo + Puxar", color: "var(--rose)" },
+          { key: "fullC", label: "C • Posterior + Empurrar", color: "var(--violet)" },
+          { key: "fullD", label: "D • Glúteo finalização (opcional)", color: "var(--blue)" }
         ],
         workouts: {
           fullA: {
-            title: "Treino A • Quad + Push + Pull",
+            title: "Treino A • Quadríceps + Empurrar + Puxar",
             warmup: "Aquecimento: 5 min cardio + ativação glúteo banda 2x15",
             total: "13 séries • ~50 min",
             exercises: [
@@ -872,24 +872,24 @@
             ]
           },
           fullB: {
-            title: "Treino B • Glúteo dominante + Pull",
+            title: "Treino B • Glúteo dominante + Puxar",
             warmup: "Aquecimento: 5 min cardio + ativação glúteo banda 2x15",
             total: "17 séries • ~55 min",
             exercises: [
               { id: "sara-b-hipthrust", name: "Hip thrust barra", note: "Glúteo principal, pausa 1s no topo", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-b-stiff", name: "Stiff com halteres", note: "Posterior, sentir alongamento", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-b-pulldown", name: "Pulldown neutro ou pegada média", note: "Costas vertical", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-b-pulldown", name: "Puxada alta neutra ou pegada média", note: "Costas vertical", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-b-legpress", name: "Leg press 45 pés altos", note: "Glúteo + posterior, amplitude completa", sets: "3", reps: "12–15", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-b-rear", name: "Crucifixo invertido máquina", note: "Delt posterior", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
               { id: "sara-b-abductor", name: "Abdutor máquina", note: "Glúteo médio, pausa 1s no topo", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 }
             ]
           },
           fullC: {
-            title: "Treino C • Posterior + Push variação",
+            title: "Treino C • Posterior + Empurrar (variação)",
             warmup: "Aquecimento: 5 min cardio + mobilidade quadril 5 min",
             total: "16 séries • ~55 min",
             exercises: [
-              { id: "sara-c-rdl", name: "Terra romeno barra ou halteres", note: "Posterior pesado, hinge", sets: "3", reps: "8–10", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "sara-c-rdl", name: "Terra romeno barra ou halteres", note: "Posterior pesado, dobra de quadril", sets: "3", reps: "8–10", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
               { id: "sara-c-bulgarian", name: "Búlgaro halteres", note: "Unilateral, glúteo + quadríceps", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-c-incline", name: "Supino inclinado halter", note: "Peito ângulo superior", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-c-row-hor", name: "Remada curvada barra ou apoiada", note: "Costas horizontal", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
@@ -898,16 +898,16 @@
             ]
           },
           fullD: {
-            title: "Treino D • Glute pump + Core (opcional)",
+            title: "Treino D • Finalização de glúteo + Abdômen (opcional)",
             warmup: "Aquecimento: 5 min cardio + ativação glúteo banda 2x15",
             total: "16 séries • ~45 min",
             exercises: [
               { id: "sara-d-uni-thrust", name: "Hip thrust unilateral ou Smith", note: "Glúteo unilateral", sets: "3", reps: "10–15", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-d-kickback", name: "Coice na polia", note: "Glúteo máximo isolado", sets: "3", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
               { id: "sara-d-abductor", name: "Cadeira abdutora", note: "Glúteo médio, pausa 1s no topo", sets: "3", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-d-bridge", name: "Glute bridge banda elástica", note: "Finalização, foco em ardência", sets: "2", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-d-plank", name: "Prancha", note: "Core estabilidade", sets: "3", reps: "30–45 s", rir: "0", restLabel: "30 s", restSeconds: 30 },
-              { id: "sara-d-abs", name: "Abdominal máquina ou ab wheel", note: "Core dinâmico", sets: "2", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
+              { id: "sara-d-bridge", name: "Ponte de glúteo com banda elástica", note: "Finalização, foco em ardência", sets: "2", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-d-plank", name: "Prancha", note: "Abdômen e estabilidade", sets: "3", reps: "30–45 s", rir: "0", restLabel: "30 s", restSeconds: 30 },
+              { id: "sara-d-abs", name: "Abdominal máquina ou roda abdominal", note: "Abdômen dinâmico", sets: "2", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
             ]
           }
         }
