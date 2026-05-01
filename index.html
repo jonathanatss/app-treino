@@ -850,64 +850,69 @@
         initials: "S",
         accent: "var(--rose)",
         title: "Gym App",
-        subtitle: "Corpo todo 3x/sem + Treino D opcional • Foco glúteo + corpo todo • RIR 1–2",
-        defaultTab: "fullA",
+        subtitle: "Upper/Lower 4 dias/sem • Foco pernas/glúteo • Volume direto p/ todos os grupos • RIR 1–2",
+        defaultTab: "lowerA",
         tabs: [
-          { key: "fullA", label: "A • Quadríceps + Empurrar + Puxar", color: "var(--green)" },
-          { key: "fullB", label: "B • Glúteo + Puxar", color: "var(--rose)" },
-          { key: "fullC", label: "C • Posterior + Empurrar", color: "var(--violet)" },
-          { key: "fullD", label: "D • Glúteo finalização (opcional)", color: "var(--blue)" }
+          { key: "lowerA", label: "Lower A • Quad + Glúteo", color: "var(--green)" },
+          { key: "upperA", label: "Upper A • Push + Pull", color: "var(--violet)" },
+          { key: "lowerB", label: "Lower B • Posterior + Glúteo", color: "var(--rose)" },
+          { key: "upperB", label: "Upper B • Variação", color: "var(--blue)" }
         ],
         workouts: {
-          fullA: {
-            title: "Treino A • Quadríceps + Empurrar + Puxar",
+          lowerA: {
+            title: "Lower A • Quadríceps + Glúteo + Panturrilha",
             warmup: "Aquecimento: 5 min cardio + ativação glúteo banda 2x15",
-            total: "13 séries • ~50 min",
-            exercises: [
-              { id: "sara-a-squat", name: "Agachamento livre ou hack squat", note: "Pernas pesado, técnica acima de tudo", sets: "3", reps: "6–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
-              { id: "sara-a-bench", name: "Supino reto máquina ou barra", note: "Peito principal", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-a-row", name: "Remada baixa cabo", note: "Costas espessura", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-a-ext", name: "Cadeira extensora", note: "Quadríceps isolado, controle excêntrico", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-a-shoulder", name: "Desenvolvimento halter", note: "Ombro composto", sets: "2", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 }
-            ]
-          },
-          fullB: {
-            title: "Treino B • Glúteo dominante + Puxar",
-            warmup: "Aquecimento: 5 min cardio + ativação glúteo banda 2x15",
-            total: "17 séries • ~55 min",
-            exercises: [
-              { id: "sara-b-hipthrust", name: "Hip thrust barra", note: "Glúteo principal, pausa 1s no topo", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-b-stiff", name: "Stiff com halteres", note: "Posterior, sentir alongamento", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-b-pulldown", name: "Puxada alta neutra ou pegada média", note: "Costas vertical", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-b-legpress", name: "Leg press 45 pés altos", note: "Glúteo + posterior, amplitude completa", sets: "3", reps: "12–15", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-b-rear", name: "Crucifixo invertido máquina", note: "Delt posterior", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-b-abductor", name: "Abdutor máquina", note: "Glúteo médio, pausa 1s no topo", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 }
-            ]
-          },
-          fullC: {
-            title: "Treino C • Posterior + Empurrar (variação)",
-            warmup: "Aquecimento: 5 min cardio + mobilidade quadril 5 min",
             total: "16 séries • ~55 min",
             exercises: [
-              { id: "sara-c-rdl", name: "Terra romeno barra ou halteres", note: "Posterior pesado, dobra de quadril", sets: "3", reps: "8–10", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
-              { id: "sara-c-bulgarian", name: "Búlgaro halteres", note: "Unilateral, glúteo + quadríceps", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-c-incline", name: "Supino inclinado halter", note: "Peito ângulo superior", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-c-row-hor", name: "Remada curvada barra ou apoiada", note: "Costas horizontal", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-c-flexora", name: "Mesa flexora", note: "Posterior isolado", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-c-lateral", name: "Elevação lateral halter", note: "Ombro lateral", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
+              { id: "sara-la-squat", name: "Agachamento livre ou hack squat", note: "Quadríceps principal, técnica acima de tudo", sets: "3", reps: "6–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "sara-la-hipthrust", name: "Hip thrust barra", note: "Glúteo principal, pausa 1s no topo", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-la-legpress", name: "Leg press 45", note: "Quadríceps complemento, pés médios", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-la-ext", name: "Cadeira extensora", note: "Quadríceps isolado, controle excêntrico", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-la-flexora", name: "Mesa flexora", note: "Posterior leve", sets: "2", reps: "10–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-la-calf", name: "Panturrilha em pé", note: "Gastrocnêmio, amplitude completa", sets: "4", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
             ]
           },
-          fullD: {
-            title: "Treino D • Finalização de glúteo + Abdômen (opcional)",
-            warmup: "Aquecimento: 5 min cardio + ativação glúteo banda 2x15",
-            total: "16 séries • ~45 min",
+          upperA: {
+            title: "Upper A • Push + Pull + Lateral + Core",
+            warmup: "Aquecimento: 5 min cardio + rotação externa elástico 2x15",
+            total: "20 séries • ~60 min",
             exercises: [
-              { id: "sara-d-uni-thrust", name: "Hip thrust unilateral ou Smith", note: "Glúteo unilateral", sets: "3", reps: "10–15", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
-              { id: "sara-d-kickback", name: "Coice na polia", note: "Glúteo máximo isolado", sets: "3", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-d-abductor", name: "Cadeira abdutora", note: "Glúteo médio, pausa 1s no topo", sets: "3", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-d-bridge", name: "Ponte de glúteo com banda elástica", note: "Finalização, foco em ardência", sets: "2", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-d-plank", name: "Prancha", note: "Abdômen e estabilidade", sets: "3", reps: "30–45 s", rir: "0", restLabel: "30 s", restSeconds: 30 },
-              { id: "sara-d-abs", name: "Abdominal máquina ou roda abdominal", note: "Abdômen dinâmico", sets: "2", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
+              { id: "sara-ua-bench", name: "Supino reto barra ou máquina", note: "Peito principal", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ua-pulldown", name: "Puxada alta neutra ou pegada média", note: "Costas vertical (lats)", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ua-row", name: "Remada baixa cabo", note: "Costas horizontal (espessura)", sets: "2", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ua-lateral", name: "Elevação lateral halter", note: "Ombro lateral", sets: "3", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ua-facepull", name: "Face pull corda", note: "Ombro posterior + escapular", sets: "2", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ua-curl", name: "Rosca direta", note: "Bíceps base", sets: "2", reps: "10–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ua-tricep", name: "Tríceps corda", note: "Tríceps base", sets: "2", reps: "10–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ua-plank", name: "Prancha", note: "Abdômen e estabilidade", sets: "3", reps: "30–45 s", rir: "0", restLabel: "30 s", restSeconds: 30 }
+            ]
+          },
+          lowerB: {
+            title: "Lower B • Posterior + Glúteo médio + Panturrilha",
+            warmup: "Aquecimento: 5 min cardio + mobilidade quadril 5 min",
+            total: "17 séries • ~55 min",
+            exercises: [
+              { id: "sara-lb-rdl", name: "Terra romeno (RDL) barra ou halteres", note: "Posterior pesado, dobra de quadril", sets: "3", reps: "8–10", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "sara-lb-bulgarian", name: "Búlgaro halteres", note: "Unilateral, glúteo + quadríceps", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-lb-stiff", name: "Stiff com halteres", note: "Posterior complemento", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-lb-abductor", name: "Cadeira abdutora", note: "Glúteo médio, pausa 1s no topo", sets: "3", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-lb-uni-thrust", name: "Hip thrust unilateral ou coice na polia", note: "Glúteo finalização", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-lb-calf-seated", name: "Panturrilha sentada", note: "Sóleo, tempo sob tensão", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          upperB: {
+            title: "Upper B • Variação + Ombro posterior + Core",
+            warmup: "Aquecimento: 5 min cardio + rotação externa elástico 2x15",
+            total: "20 séries • ~60 min",
+            exercises: [
+              { id: "sara-ub-incline", name: "Supino inclinado halter", note: "Peito ângulo superior", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ub-row-curva", name: "Remada curvada barra ou serrote", note: "Costas espessura", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ub-pulldown-wide", name: "Puxada alta pegada larga", note: "Lats — pega diferente", sets: "2", reps: "10–12", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ub-rear", name: "Crucifixo invertido máquina", note: "Ombro posterior direto", sets: "3", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ub-lateral-cabo", name: "Elevação lateral cabo", note: "Ombro lateral extra", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ub-hammer", name: "Rosca martelo", note: "Bíceps + braquial", sets: "2", reps: "10–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ub-tricep-testa", name: "Tríceps testa ou francês", note: "Tríceps composto", sets: "2", reps: "8–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ub-abs", name: "Abdominal infra ou roda abdominal", note: "Abdômen dinâmico", sets: "3", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
             ]
           }
         }
