@@ -480,6 +480,10 @@
         white-space: normal;
       }
 
+      .tab:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+      }
+
       .exercise {
         min-height: 166px;
         padding: 18px 14px 15px;
@@ -801,13 +805,14 @@
         initials: "J",
         accent: "var(--blue)",
         title: "Gym App",
-        subtitle: "Superior / Inferior v4 • Baixo Volume / Alta Intensidade • 4 dias ativos • ~52 séries/semana • RIR 0–1 • 27/04/2026",
+        subtitle: "Superior / Inferior v4 • Volume controlado / Alta intensidade • 5 dias ativos • ~66 séries/semana • RIR 0–1 • 02/05/2026",
         defaultTab: "upperA",
         tabs: [
           { key: "upperA", label: "Seg • Superior A", color: "var(--rose)" },
           { key: "lowerA", label: "Ter • Inferior A", color: "var(--green)" },
           { key: "upperB", label: "Qui • Superior B", color: "var(--violet)" },
-          { key: "lowerB", label: "Sex • Inferior B", color: "var(--blue)" }
+          { key: "lowerB", label: "Sex • Inferior B", color: "var(--blue)" },
+          { key: "upperC", label: "Sáb • Superior C", color: "var(--green)" }
         ],
         workouts: {
       upperA: {
@@ -859,6 +864,19 @@
           { id: "lower-b-stiff-db", name: "Stiff com halteres", note: "Cadeia posterior complemento", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
           { id: "lower-b-abductor", name: "Abdutora máquina ou cabo", note: "Glúteo médio", sets: "2", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
           { id: "lower-b-seated-calf", name: "Panturrilha sentada", note: "Sóleo, tempo sob tensão", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 }
+        ]
+      },
+      upperC: {
+        title: "Sábado • Superior C • Peito + Braços + Abdômen",
+        warmup: "Aquecimento: 5 min cardio + mobilidade de ombro 5 min",
+        total: "14 séries • ~45 min",
+        exercises: [
+          { id: "upper-c-pec-deck", name: "Crucifixo na máquina ou crossover", note: "Peito com foco em alongamento e controle", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+          { id: "upper-c-chest-machine", name: "Supino reto máquina ou convergente", note: "Peito sem sobrecarregar ombro", sets: "2", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+          { id: "upper-c-lateral", name: "Elevação lateral cabo ou halter", note: "Pump de deltoide lateral", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
+          { id: "upper-c-curl", name: "Rosca inclinada ou rosca no cabo", note: "Bíceps, amplitude e controle", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+          { id: "upper-c-triceps", name: "Tríceps corda ou unilateral no cabo", note: "Tríceps com contração completa", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+          { id: "upper-c-abs", name: "Abdominal na polia ou abdominal infra", note: "Core dinâmico", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
         ]
       }
         }
