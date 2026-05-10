@@ -116,15 +116,17 @@
     }
 
     .tabs-shell {
-      display: inline-flex;
-      max-width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      width: 100%;
       margin-bottom: 20px;
       padding: 4px;
       border: 1px solid #283a5d;
-      border-radius: 999px;
+      border-radius: 14px;
       background: rgba(8, 14, 30, .86);
       box-shadow: inset 0 0 0 1px rgba(82, 116, 164, .15);
-      overflow-x: auto;
+      gap: 4px;
+      overflow: visible;
       scrollbar-width: none;
     }
 
@@ -138,10 +140,10 @@
       justify-content: center;
       gap: 7px;
       min-height: 32px;
-      min-width: max-content;
+      min-width: 0;
       padding: 0 18px;
       border: 1px solid transparent;
-      border-radius: 999px;
+      border-radius: 10px;
       background: transparent;
       color: #93a7c8;
       font-size: 13px;
@@ -205,9 +207,9 @@
 
     .exercise {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) minmax(180px, 220px) auto;
       gap: 18px;
-      min-height: 170px;
+      min-height: 232px;
       padding: 20px 16px 16px;
       border: 1px solid rgba(62, 85, 126, .78);
       border-radius: 12px;
@@ -239,6 +241,42 @@
       color: #9fc4e8;
       font-size: 12px;
       line-height: 1.45;
+    }
+
+    .exercise-visual {
+      align-self: start;
+      width: 220px;
+      min-width: 180px;
+      aspect-ratio: 1;
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid rgba(180, 191, 207, .55);
+      border-radius: 12px;
+      background: #f4f5f6;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+    }
+
+    .movement-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #f4f5f6;
+    }
+
+    .exercise-visual.media-error {
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      background: rgba(10, 17, 35, .9);
+      color: #9fc4e8;
+      font-size: 12px;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .exercise-visual.media-error::before {
+      content: "Imagem indisponível";
     }
 
     .metrics {
@@ -460,12 +498,7 @@
       }
 
       .tabs-shell {
-        display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        width: 100%;
-        gap: 4px;
-        border-radius: 14px;
-        overflow: visible;
       }
 
       .tab {
@@ -485,9 +518,24 @@
       }
 
       .exercise {
+        grid-template-columns: minmax(0, 1fr) auto;
         min-height: 166px;
         padding: 18px 14px 15px;
         border-radius: 11px;
+      }
+
+      .exercise-visual {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        max-height: 260px;
+        order: 2;
+      }
+
+      .done-button {
+        grid-column: 2;
+        grid-row: 1;
       }
 
       .metrics {
@@ -805,14 +853,15 @@
         initials: "J",
         accent: "var(--blue)",
         title: "Gym App",
-        subtitle: "Superior / Inferior v5 • Ênfase braços/quadríceps • 5 dias ativos • ~71 séries/semana • RIR 0–1 • 06/05/2026",
+        subtitle: "Superior / Inferior v5 • Ênfase braços/quadríceps/glúteos • 6 dias ativos • ~77 séries/semana + postural • 09/05/2026",
         defaultTab: "upperA",
         tabs: [
           { key: "upperA", label: "Seg • Superior A", color: "var(--rose)" },
           { key: "lowerA", label: "Ter • Inferior A", color: "var(--green)" },
           { key: "upperB", label: "Qui • Superior B", color: "var(--violet)" },
           { key: "lowerB", label: "Sex • Inferior B", color: "var(--blue)" },
-          { key: "upperC", label: "Sáb • Superior C", color: "var(--green)" }
+          { key: "upperC", label: "Sáb • Superior C", color: "var(--green)" },
+          { key: "postural", label: "Dom • Postural", color: "var(--violet)" }
         ],
         workouts: {
       upperA: {
@@ -830,12 +879,13 @@
       },
       lowerA: {
         title: "Terça • Inferior A • Quadríceps dominante",
-        total: "14 séries • ~55 min",
+        total: "17 séries • ~60 min",
         exercises: [
           { id: "lower-a-squat", name: "Agachamento livre ou hack squat", note: "Pesado da semana", sets: "3", reps: "5–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
           { id: "lower-a-leg-press", name: "Leg press 45°", note: "Quadríceps complementar, pés médios", sets: "3", reps: "8–12", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
           { id: "lower-a-ext", name: "Cadeira extensora", note: "Isolado, controle excêntrico", sets: "3", reps: "10–15", rir: "0", restLabel: "90 s", restSeconds: 90 },
           { id: "lower-a-curl", name: "Mesa flexora", note: "Posterior isolado", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
+          { id: "lower-a-single-glute-bridge", name: "Ponte glútea unilateral", note: "Glúteo unilateral, controle pélvico", sets: "3", reps: "12 cada lado", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "lower-a-calf", name: "Panturrilha em pé", note: "Gastrocnêmio, amplitude completa", sets: "3", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
         ]
       },
@@ -854,13 +904,13 @@
       },
       lowerB: {
         title: "Sexta • Inferior B • Cadeia posterior + Glúteo",
-        total: "14 séries • ~55 min",
+        total: "17 séries • ~60 min",
         exercises: [
           { id: "lower-b-rdl", name: "Levantamento terra romeno barra", note: "Cadeia posterior pesada, dobra de quadril", sets: "2", reps: "6–8", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
-          { id: "lower-b-hip-thrust", name: "Elevação pélvica barra ou Smith", note: "Glúteo direto, pausa 1s no topo", sets: "2", reps: "8–10", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
+          { id: "lower-b-hip-thrust", name: "Elevação pélvica barra ou Smith", note: "Glúteo direto, pausa 1s no topo", sets: "4", reps: "10", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
           { id: "lower-b-front-squat", name: "Agachamento frontal ou leg press unilateral", note: "Quadríceps complemento", sets: "3", reps: "8–10", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
           { id: "lower-b-stiff-db", name: "Stiff com halteres", note: "Cadeia posterior complemento", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
-          { id: "lower-b-abductor", name: "Abdutora máquina ou cabo", note: "Glúteo médio", sets: "2", reps: "15–20", rir: "0", restLabel: "60 s", restSeconds: 60 },
+          { id: "lower-b-abductor", name: "Abdutora máquina ou cabo", note: "Glúteo médio", sets: "3", reps: "15", rir: "0", restLabel: "60 s", restSeconds: 60 },
           { id: "lower-b-seated-calf", name: "Panturrilha sentada", note: "Sóleo, tempo sob tensão", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 }
         ]
       },
@@ -874,6 +924,21 @@
           { id: "upper-c-curl", name: "Rosca inclinada ou rosca no cabo", note: "Bíceps, amplitude e controle", sets: "4", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "upper-c-triceps", name: "Tríceps corda ou unilateral no cabo", note: "Tríceps com contração completa", sets: "4", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "upper-c-abs", name: "Abdominal na polia ou abdominal infra", note: "Core dinâmico", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
+        ]
+      },
+      postural: {
+        title: "Domingo • Sessão Postural em casa",
+        warmup: "Mobilidade 10 min + core 12 min",
+        total: "25 min • Casa",
+        exercises: [
+          { id: "postural-psoas", name: "Alongamento de psoas", note: "Mobilidade", sets: "2", reps: "30s cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-rectus-femoris", name: "Alongamento de reto femoral", note: "Mobilidade", sets: "2", reps: "30s cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-9090", name: "90/90 hip mobility", note: "Mobilidade", sets: "1", reps: "1 min cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-child-pose", name: "Postura da criança", note: "Mobilidade", sets: "2", reps: "30s", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-dead-bug", name: "Dead bug", note: "Core", sets: "3", reps: "10 cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-bird-dog", name: "Bird dog", note: "Core", sets: "3", reps: "10 cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-side-plank", name: "Prancha lateral", note: "Core", sets: "3", reps: "30s cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
+          { id: "postural-plank", name: "Prancha frontal", note: "Core", sets: "2", reps: "45s", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false }
         ]
       }
         }
@@ -910,7 +975,7 @@
             warmup: "Aquecimento: 5 min de aeróbico leve + rotação externa com elástico 2x15",
             total: "20 séries • ~60 min",
             exercises: [
-              { id: "sara-ua-bench", name: "Supino reto com barra ou na máquina", note: "Peito principal", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "sara-ua-bench", name: "Supino reto com halteres", note: "Peito principal", sets: "3", reps: "8–10", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-ua-pulldown", name: "Puxada alta neutra ou pegada média", note: "Costas vertical (dorsais)", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-ua-row", name: "Remada baixa no cabo", note: "Costas horizontal (espessura)", sets: "2", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-ua-lateral", name: "Elevação lateral com halteres", note: "Ombro lateral", sets: "3", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
@@ -942,10 +1007,10 @@
               { id: "sara-ub-row-curva", name: "Remada curvada com barra ou remada unilateral com halter", note: "Costas espessura", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-ub-pulldown-wide", name: "Puxada alta pegada larga", note: "Dorsais — pega diferente", sets: "2", reps: "10–12", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-ub-rear", name: "Crucifixo invertido na máquina", note: "Ombro posterior direto", sets: "3", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-ub-lateral-cabo", name: "Elevação lateral no cabo", note: "Ombro lateral extra", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+              { id: "sara-ub-lateral-cabo", name: "Elevação lateral com halteres", note: "Ombro lateral extra", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
               { id: "sara-ub-hammer", name: "Rosca martelo", note: "Bíceps + braquial", sets: "2", reps: "10–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
               { id: "sara-ub-tricep-testa", name: "Tríceps testa ou francês", note: "Tríceps composto", sets: "2", reps: "8–12", rir: "0", restLabel: "60 s", restSeconds: 60 },
-              { id: "sara-ub-abs", name: "Abdominal infra ou roda abdominal", note: "Abdômen dinâmico", sets: "3", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
+              { id: "sara-ub-abs", name: "Abdominal infra", note: "Abdômen dinâmico", sets: "3", reps: "10–15", rir: "0", restLabel: "60 s", restSeconds: 60 }
             ]
           }
         }
@@ -969,6 +1034,93 @@
         h = (((h << 5) + h) ^ pin.charCodeAt(i)) >>> 0;
       }
       return String(h);
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    const EXERCISE_MEDIA_BASE = "https://static.exercisedb.dev/media/";
+    const EXERCISE_MEDIA = {
+      "upper-a-incline-db": { id: "PG1kcIb", label: "Dumbbell incline hammer press" },
+      "upper-a-row": { id: "eZyBC3j", label: "Barbell bent over row" },
+      "upper-a-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
+      "upper-a-face-pull": { id: "ZfyAGhK", label: "Cable standing rear delt row with rope" },
+      "upper-a-triceps": { id: "h8LFzo9", label: "Barbell lying triceps extension skull crusher" },
+      "upper-a-curl": { id: "25GPyDY", label: "Barbell curl" },
+      "lower-a-squat": { id: "iYzB0Cz", label: "Barbell full squat side view" },
+      "lower-a-leg-press": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "lower-a-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "lower-a-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "lower-a-single-glute-bridge": { id: "rmEukuS", label: "Single leg bridge" },
+      "lower-a-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
+      "upper-b-low-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "upper-b-chest-machine": { id: "DOoWcnA", label: "Lever chest press" },
+      "upper-b-pulldown-wide": { id: "RVwzP10", label: "Cable pulldown" },
+      "upper-b-lateral": { id: "goJ6ezq", label: "Cable lateral raise" },
+      "upper-b-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
+      "upper-b-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "lower-b-rdl": { id: "wQ2c4XD", label: "Barbell romanian deadlift" },
+      "lower-b-hip-thrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "lower-b-front-squat": { id: "zG0zs85", label: "Barbell front squat" },
+      "lower-b-stiff-db": { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" },
+      "lower-b-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "lower-b-seated-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "upper-c-pec-deck": { id: "v3xmPAR", label: "Lever seated fly" },
+      "upper-c-chest-machine": { id: "DOoWcnA", label: "Lever chest press" },
+      "upper-c-curl": { id: "F3xgbjF", label: "Dumbbell incline biceps curl" },
+      "upper-c-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "upper-c-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "postural-psoas": { id: "tFGKm99", label: "Hip flexor and quad stretch" },
+      "postural-rectus-femoris": { id: "2Ryn564", label: "Assisted prone rectus femoris stretch" },
+      "postural-9090": { id: "QY39eBr", label: "Seated piriformis stretch" },
+      "postural-child-pose": { id: "QFmz6ch", label: "Seated lower back stretch" },
+      "postural-dead-bug": { id: "iny3m5y", label: "Dead bug" },
+      "postural-bird-dog": { id: "h1ezqSu", label: "Kneeling plank tap shoulder" },
+      "postural-side-plank": { id: "5VXmnV5", label: "Bodyweight incline side plank" },
+      "postural-plank": { id: "hCjGsRQ", label: "Power point plank" },
+      "sara-la-squat": { id: "Qa55kX1", label: "Sled hack squat" },
+      "sara-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "sara-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "sara-la-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "sara-la-flexora": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "sara-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
+      "sara-ua-bench": { id: "SpYC0Kp", label: "Dumbbell bench press" },
+      "sara-ua-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
+      "sara-ua-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "sara-ua-lateral": { id: "n5cWCsI", label: "Dumbbell one arm lateral raise" },
+      "sara-ua-facepull": { id: "ZfyAGhK", label: "Cable standing rear delt row with rope" },
+      "sara-ua-curl": { id: "25GPyDY", label: "Barbell curl" },
+      "sara-ua-tricep": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "sara-ua-plank": { id: "hCjGsRQ", label: "Power point plank" },
+      "sara-lb-rdl": { id: "wQ2c4XD", label: "Barbell romanian deadlift" },
+      "sara-lb-bulgarian": { id: "qx4fgX7", label: "Dumbbell single leg split squat" },
+      "sara-lb-stiff": { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" },
+      "sara-lb-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "sara-lb-uni-thrust": { id: "rmEukuS", label: "Single leg bridge" },
+      "sara-lb-calf-seated": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "sara-ub-incline": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "sara-ub-row-curva": { id: "eZyBC3j", label: "Barbell bent over row" },
+      "sara-ub-pulldown-wide": { id: "RVwzP10", label: "Cable pulldown" },
+      "sara-ub-rear": { id: "myfUsKf", label: "Lever seated reverse fly" },
+      "sara-ub-lateral-cabo": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "sara-ub-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
+      "sara-ub-tricep-testa": { id: "1cTf2Ux", label: "EZ bar standing french press" },
+      "sara-ub-abs": { id: "WhuFnR7", label: "Lying leg raise flat bench" }
+    };
+
+    function renderMovementMedia(exercise) {
+      const media = EXERCISE_MEDIA[exercise.id];
+      if (!media) return "";
+      const alt = `${exercise.name}: simulação visual do movimento`;
+      const src = `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
+      return `<img class="movement-image" src="${src}" alt="${escapeHtml(alt)}" title="${escapeHtml(media.label)}" loading="lazy" decoding="async" onerror="this.closest('.exercise-visual').classList.add('media-error'); this.remove();">`;
     }
 
     /* === State === */
@@ -1214,24 +1366,32 @@
                 <div class="metric-value">${exercise.restLabel}</div>
               </div>
             </div>
-            <div class="weight-row">
-              <label class="weight-label" for="weight-${exercise.id}">Carga (kg)</label>
-              <input class="weight-input" id="weight-${exercise.id}" inputmode="decimal" autocomplete="off" value="${state.weights[exercise.id] || ""}">
-            </div>
+            ${exercise.trackWeight === false ? "" : `
+              <div class="weight-row">
+                <label class="weight-label" for="weight-${exercise.id}">Carga (kg)</label>
+                <input class="weight-input" id="weight-${exercise.id}" inputmode="decimal" autocomplete="off" value="${state.weights[exercise.id] || ""}">
+              </div>
+            `}
           </div>
+          <figure class="exercise-visual">
+            ${renderMovementMedia(exercise)}
+          </figure>
           <button class="done-button" type="button" title="Concluir exercício" aria-label="Concluir ${exercise.name}">
             <span class="check-ring" aria-hidden="true"></span>
           </button>
         `;
-        article.querySelector(".weight-input").addEventListener("input", (event) => {
-          state.weights[exercise.id] = event.target.value.trim();
-          saveProfileState();
-        });
+        const weightInput = article.querySelector(".weight-input");
+        if (weightInput) {
+          weightInput.addEventListener("input", (event) => {
+            state.weights[exercise.id] = event.target.value.trim();
+            saveProfileState();
+          });
+        }
         article.querySelector(".done-button").addEventListener("click", () => {
           const nextValue = !state.done[exercise.id];
           state.done[exercise.id] = nextValue;
           article.classList.toggle("done", nextValue);
-          if (nextValue) startRest(exercise.restSeconds);
+          if (nextValue && exercise.restSeconds > 0) startRest(exercise.restSeconds);
           saveProfileState();
           updateProgress();
         });
