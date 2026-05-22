@@ -1020,6 +1020,85 @@
             ]
           }
         }
+      },
+      fernanda: {
+        name: "Fernanda",
+        initials: "F",
+        accent: "var(--green)",
+        title: "Treino Fernanda",
+        subtitle: "4 dias + sábado opcional • Recomp/lipedema • Glúteos/pernas/tríceps • 45 min",
+        defaultTab: "lowerA",
+        tabs: [
+          { key: "lowerA", label: "Seg • Inferior A", color: "var(--green)" },
+          { key: "upperA", label: "Ter • Superior A", color: "var(--rose)" },
+          { key: "lowerB", label: "Qui • Inferior B", color: "var(--blue)" },
+          { key: "upperB", label: "Sex • Superior B", color: "var(--violet)" },
+          { key: "optional", label: "Sáb • Opcional", color: "var(--green)" }
+        ],
+        workouts: {
+          lowerA: {
+            title: "Segunda • Inferior A • Glúteo + Quadríceps",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de quadril 3 min",
+            total: "14 séries • ~45 min",
+            exercises: [
+              { id: "fernanda-la-legpress", name: "Leg press 45°", note: "Quadríceps/glúteo, movimento principal", sets: "3", reps: "10–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernanda-la-hack", name: "Hack squat ou agachamento goblet", note: "Quadríceps com base estável", sets: "2", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernanda-la-ext", name: "Cadeira extensora", note: "Quadríceps isolado, controle na descida", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-la-hipthrust", name: "Elevação pélvica", note: "Glúteo principal, pausa 1s no topo", sets: "3", reps: "8–12", rir: "1", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernanda-la-abductor", name: "Cadeira abdutora", note: "Glúteo médio, amplitude confortável", sets: "2", reps: "15–20", rir: "0", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-la-calf", name: "Panturrilha em pé ou sentada", note: "Frequência fixa sem depender do sábado", sets: "2", reps: "12–20", rir: "0", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          upperA: {
+            title: "Terça • Superior A • Costas + Peito + Braços",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de ombro 3 min",
+            total: "13 séries • ~45 min",
+            exercises: [
+              { id: "fernanda-ua-pulldown", name: "Puxada alta", note: "Costas vertical, controle escapular", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernanda-ua-row", name: "Remada baixa", note: "Costas horizontal, tronco estável", sets: "2", reps: "10–12", rir: "1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernanda-ua-press", name: "Supino máquina ou halteres", note: "Peito moderado, sem roubar foco do treino", sets: "2", reps: "8–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernanda-ua-lateral", name: "Elevação lateral", note: "Deltoide medial para equilíbrio estético", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-ua-triceps", name: "Tríceps corda", note: "Foco no braço, cotovelos estáveis", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-ua-curl", name: "Rosca direta ou cabo", note: "Bíceps básico para equilíbrio do braço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          lowerB: {
+            title: "Quinta • Inferior B • Posterior + Glúteo",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de quadril 3 min",
+            total: "12 séries • ~45 min",
+            exercises: [
+              { id: "fernanda-lb-stiff", name: "Stiff com halteres", note: "Cadeia posterior, progressão com técnica limpa", sets: "3", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernanda-lb-curl", name: "Mesa flexora", note: "Posterior isolado, sem impulso", sets: "2", reps: "10–12", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-lb-hipthrust", name: "Elevação pélvica ou glute bridge", note: "Glúteo direto, contração forte no topo", sets: "3", reps: "10–12", rir: "1", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernanda-lb-bulgarian", name: "Agachamento búlgaro", note: "Unilateral controlado, amplitude confortável", sets: "2", reps: "8–10 cada perna", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernanda-lb-abductor", name: "Cadeira abdutora", note: "Glúteo médio, sem pressa na volta", sets: "2", reps: "15–20", rir: "0", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          upperB: {
+            title: "Sexta • Superior B • Costas + Braços + Postura",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de ombro 3 min",
+            total: "13 séries • ~45 min",
+            exercises: [
+              { id: "fernanda-ub-row", name: "Remada máquina ou cabo", note: "Costas principal, trajetória estável", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernanda-ub-pulldown", name: "Puxada neutra", note: "Dorsais, pegada confortável", sets: "2", reps: "10–12", rir: "1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernanda-ub-fly", name: "Crucifixo máquina ou supino leve", note: "Peito leve, volume de manutenção", sets: "2", reps: "12–15", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "fernanda-ub-facepull", name: "Face pull", note: "Postura, ombro posterior e escápulas", sets: "2", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-ub-triceps", name: "Tríceps testa/cabo", note: "Tríceps com amplitude controlada", sets: "2", reps: "10–12", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-ub-curl", name: "Rosca martelo ou rosca cabo", note: "Bíceps + braquial, complemento de braço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          optional: {
+            title: "Sábado • Opcional • Cardio leve + complementos",
+            warmup: "Opcional: faça só se estiver bem recuperada, sem peso excessivo ou inchaço nas pernas",
+            total: "30–45 min • Baixo impacto",
+            exercises: [
+              { id: "fernanda-opt-cardio", name: "Caminhada, bike ou elíptico", note: "Escolha 1 opção; GIF ilustra cardio baixo impacto", sets: "1", reps: "30–45 min", rir: "confortável", restLabel: "—", restSeconds: 0, trackWeight: false },
+              { id: "fernanda-opt-kickback", name: "Coice no cabo", note: "Glúteo finalização, se estiver recuperada", sets: "2", reps: "15 cada lado", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernanda-opt-plank", name: "Prancha", note: "Core sem impacto", sets: "3", reps: "30–45 s", rir: "0–1", restLabel: "30–45 s", restSeconds: 45 },
+              { id: "fernanda-opt-mobility", name: "Mobilidade leve", note: "Quadril, tornozelo e respiração", sets: "1", reps: "5–10 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          }
+        }
       }
     };
 
@@ -1122,7 +1201,34 @@
       "sara-ub-lateral-cabo": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
       "sara-ub-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
       "sara-ub-tricep-testa": { id: "1cTf2Ux", label: "EZ bar standing french press" },
-      "sara-ub-abs": { id: "WhuFnR7", label: "Lying leg raise flat bench" }
+      "sara-ub-abs": { id: "WhuFnR7", label: "Lying leg raise flat bench" },
+      "fernanda-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "fernanda-la-hack": { id: "Qa55kX1", label: "Sled hack squat" },
+      "fernanda-la-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "fernanda-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "fernanda-la-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "fernanda-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
+      "fernanda-ua-pulldown": { id: "RVwzP10", label: "Cable pulldown" },
+      "fernanda-ua-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "fernanda-ua-press": { id: "DOoWcnA", label: "Lever chest press" },
+      "fernanda-ua-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "fernanda-ua-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "fernanda-ua-curl": { id: "G08RZcQ", label: "Cable curl" },
+      "fernanda-lb-stiff": { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" },
+      "fernanda-lb-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "fernanda-lb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "fernanda-lb-bulgarian": { id: "qx4fgX7", label: "Dumbbell single leg split squat" },
+      "fernanda-lb-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "fernanda-ub-row": { id: "fUBheHs", label: "Cable seated row" },
+      "fernanda-ub-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
+      "fernanda-ub-fly": { id: "v3xmPAR", label: "Lever seated fly" },
+      "fernanda-ub-facepull": { id: "ZfyAGhK", label: "Cable standing rear delt row with rope" },
+      "fernanda-ub-triceps": { id: "1cTf2Ux", label: "EZ bar standing french press" },
+      "fernanda-ub-curl": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
+      "fernanda-opt-cardio": { id: "rjtuP6X", label: "Walk elliptical cross trainer" },
+      "fernanda-opt-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
+      "fernanda-opt-plank": { id: "hCjGsRQ", label: "Power point plank" },
+      "fernanda-opt-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" }
     };
 
     function renderMovementMedia(exercise) {
