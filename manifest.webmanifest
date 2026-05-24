@@ -1,13 +1,13 @@
 {
-  "name": "Gym App — Upper / Lower v4",
-  "short_name": "Gym App",
-  "description": "Treino Upper / Lower v4 — Low Volume / High Intensity",
+  "name": "FitPlan",
+  "short_name": "FitPlan",
+  "description": "Treinos personalizados com perfis, séries, descanso, cargas e imagens dos movimentos.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#070c1b",
-  "theme_color": "#070c1b",
+  "background_color": "#050505",
+  "theme_color": "#050505",
   "lang": "pt-BR",
   "icons": [
     {
