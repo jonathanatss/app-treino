@@ -1099,6 +1099,105 @@
             ]
           }
         }
+      },
+      eduarda: {
+        name: "Eduarda",
+        initials: "E",
+        accent: "var(--violet)",
+        title: "Treino Eduarda",
+        subtitle: "5 dias + sábado opcional • Emagrecimento/condicionamento • Glúteos/costas/abdômen • 1h",
+        defaultTab: "lowerA",
+        tabs: [
+          { key: "lowerA", label: "Seg • Inferior A", color: "var(--green)" },
+          { key: "backA", label: "Ter • Costas + Abd", color: "var(--blue)" },
+          { key: "upperA", label: "Qua • Superior", color: "var(--rose)" },
+          { key: "lowerB", label: "Qui • Inferior B", color: "var(--green)" },
+          { key: "backB", label: "Sex • Costas + Braços", color: "var(--violet)" },
+          { key: "optional", label: "Sáb • Opcional", color: "var(--blue)" }
+        ],
+        workouts: {
+          lowerA: {
+            title: "Segunda • Inferior A • Glúteos + Quadríceps",
+            warmup: "Aquecimento: 5 min bike leve + mobilidade de quadril 3 min",
+            total: "15 séries + bike • ~60 min",
+            exercises: [
+              { id: "eduarda-la-legpress", name: "Leg press 45°", note: "Quadríceps/glúteo, base estável", sets: "3", reps: "10–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "eduarda-la-smith-squat", name: "Agachamento no Smith", note: "Controle de amplitude, sem buscar carga máxima", sets: "3", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "eduarda-la-ext", name: "Cadeira extensora", note: "Quadríceps isolado, subida forte e descida controlada", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-la-hipthrust", name: "Elevação pélvica máquina", note: "Glúteo principal, pausa 1s no topo", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "eduarda-la-abductor", name: "Abdutora postura reta", note: "Glúteo médio, amplitude confortável", sets: "3", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-la-bike", name: "Bike leve/moderada", note: "Condicionamento sem impacto", sets: "1", reps: "10–15 min", rir: "confortável", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          backA: {
+            title: "Terça • Costas + Abdômen + Bike",
+            warmup: "Aquecimento: 5 min bike leve + ativação escapular 2 min",
+            total: "16 séries + bike • ~60 min",
+            exercises: [
+              { id: "eduarda-ba-pulldown-wide", name: "Puxada alta aberta", note: "Costas vertical, foco em dorsais", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-ba-row", name: "Remada baixa com triângulo", note: "Costas horizontal, peito alto", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-ba-pulldown", name: "Pulldown na polia", note: "Dorsais com braço quase estendido", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-ba-machine-row", name: "Remada máquina articulada ou unilateral", note: "Variação estável, sem roubar com lombar", sets: "2", reps: "10–12", rir: "1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-ba-abs", name: "Abdominal máquina ou polia", note: "Abdômen com carga progressiva", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-ba-plank", name: "Prancha", note: "Core anti-extensão, tronco firme", sets: "3", reps: "30–45 s", rir: "0–1", restLabel: "30–45 s", restSeconds: 45 },
+              { id: "eduarda-ba-bike", name: "Bike moderada", note: "Ritmo em que ainda dá para falar frases curtas", sets: "1", reps: "15–20 min", rir: "moderado", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          upperA: {
+            title: "Quarta • Peito + Ombro + Braços",
+            warmup: "Aquecimento: 5 min bike leve + mobilidade de ombro 3 min",
+            total: "18 séries • ~60 min",
+            exercises: [
+              { id: "eduarda-up-chest", name: "Supino reto máquina sentado", note: "Peito principal com estabilidade", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-up-incline", name: "Supino inclinado halteres", note: "Peito superior, carga moderada", sets: "2", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-up-fly", name: "Crucifixo sentado na máquina", note: "Peito isolado, controle de amplitude", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-up-shoulder-press", name: "Desenvolvimento máquina", note: "Ombros, sem travar cotovelos no topo", sets: "2", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-up-lateral", name: "Elevação lateral halteres", note: "Deltoide medial, controle total", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-up-scott", name: "Rosca Scott", note: "Exercício mantido por preferência", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-up-triceps", name: "Tríceps pulley corda ou barra W", note: "Tríceps base, cotovelos fixos", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          lowerB: {
+            title: "Quinta • Inferior B • Posterior + Glúteos + Abdômen",
+            warmup: "Aquecimento: 5 min bike leve + mobilidade de quadril 3 min",
+            total: "17 séries • ~60 min",
+            exercises: [
+              { id: "eduarda-lb-curl", name: "Cadeira flexora", note: "Posterior sem levantamento terra", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "eduarda-lb-hipthrust", name: "Elevação pélvica máquina", note: "Glúteo principal, progressão gradual", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "eduarda-lb-kickback", name: "Glúteo no cabo ou coice na polia", note: "Glúteo finalização, quadril estável", sets: "3", reps: "12–15 cada lado", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-lb-abductor", name: "Abdutora postura inclinada", note: "Glúteo médio, pausa curta na abertura", sets: "3", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-lb-legpress-high", name: "Leg press com pés mais altos", note: "Ênfase glúteo/posterior, amplitude segura", sets: "2", reps: "10–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "eduarda-lb-abs", name: "Abdominal infra ou elevação de pernas", note: "Abdômen inferior, sem impulso", sets: "3", reps: "10–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          backB: {
+            title: "Sexta • Costas + Braços + Abdômen",
+            warmup: "Aquecimento: 5 min bike leve + ativação escapular 2 min",
+            total: "17 séries • ~60 min",
+            exercises: [
+              { id: "eduarda-bb-pulldown", name: "Puxada alta neutra ou média", note: "Costas vertical, pegada confortável", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-bb-row", name: "Remada baixa máquina ou cabo", note: "Costas horizontal, controle escapular", sets: "2", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "eduarda-bb-reverse-fly", name: "Voador inverso máquina", note: "Costas alta e ombro posterior", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-bb-scott", name: "Rosca Scott", note: "Bíceps com base estável", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-bb-hammer", name: "Rosca martelo corda ou barra H", note: "Braquial e antebraço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-bb-triceps-french", name: "Tríceps francês unilateral na polia", note: "Cabeça longa do tríceps", sets: "2", reps: "12–15 cada lado", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-bb-triceps-rope", name: "Tríceps pulley com corda", note: "Tríceps complemento", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "eduarda-bb-abs", name: "Abdominal na polia", note: "Abdômen com carga e progressão", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          optional: {
+            title: "Sábado • Opcional • Bike + Glúteo/Abdômen leve",
+            warmup: "Faça apenas se estiver recuperada; sem corrida",
+            total: "30–45 min • Opcional",
+            exercises: [
+              { id: "eduarda-opt-bike", name: "Bike", note: "Baixo impacto para condicionamento", sets: "1", reps: "30–40 min", rir: "leve/moderado", restLabel: "—", restSeconds: 0, trackWeight: false },
+              { id: "eduarda-opt-abductor", name: "Abdutora", note: "Glúteo médio leve, sem moer recuperação", sets: "2", reps: "20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-opt-kickback", name: "Coice no cabo", note: "Glúteo leve, foco em contração", sets: "2", reps: "15 cada lado", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-opt-side-plank", name: "Prancha lateral", note: "Core lateral e estabilidade", sets: "2", reps: "30s cada lado", rir: "0–1", restLabel: "30–45 s", restSeconds: 45 },
+              { id: "eduarda-opt-mobility", name: "Mobilidade leve", note: "Quadril, tornozelo e respiração", sets: "1", reps: "5–10 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          }
+        }
       }
     };
 
@@ -1228,7 +1327,46 @@
       "fernanda-opt-cardio": { id: "rjtuP6X", label: "Walk elliptical cross trainer" },
       "fernanda-opt-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
       "fernanda-opt-plank": { id: "hCjGsRQ", label: "Power point plank" },
-      "fernanda-opt-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" }
+      "fernanda-opt-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" },
+      "eduarda-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "eduarda-la-smith-squat": { id: "jFtipLl", label: "Smith squat" },
+      "eduarda-la-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "eduarda-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "eduarda-la-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "eduarda-la-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "eduarda-ba-pulldown-wide": { id: "RVwzP10", label: "Cable pulldown" },
+      "eduarda-ba-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "eduarda-ba-pulldown": { id: "x69MAlq", label: "Cable straight arm pulldown" },
+      "eduarda-ba-machine-row": { id: "Fhdtwf3", label: "Lever one arm bent over row" },
+      "eduarda-ba-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "eduarda-ba-plank": { id: "hCjGsRQ", label: "Power point plank" },
+      "eduarda-ba-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "eduarda-up-chest": { id: "DOoWcnA", label: "Lever chest press" },
+      "eduarda-up-incline": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "eduarda-up-fly": { id: "v3xmPAR", label: "Lever seated fly" },
+      "eduarda-up-shoulder-press": { id: "vqsbmL0", label: "Lever shoulder press v. 2" },
+      "eduarda-up-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "eduarda-up-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
+      "eduarda-up-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "eduarda-lb-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "eduarda-lb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "eduarda-lb-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
+      "eduarda-lb-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "eduarda-lb-legpress-high": { id: "10Z2DXU", label: "Sled 45 degree leg press glutes" },
+      "eduarda-lb-abs": { id: "WhuFnR7", label: "Lying leg raise flat bench" },
+      "eduarda-bb-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
+      "eduarda-bb-row": { id: "fUBheHs", label: "Cable seated row" },
+      "eduarda-bb-reverse-fly": { id: "myfUsKf", label: "Lever seated reverse fly" },
+      "eduarda-bb-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
+      "eduarda-bb-hammer": { id: "HPlPoQA", label: "Cable hammer curl with rope" },
+      "eduarda-bb-triceps-french": { id: "i11JWU7", label: "Cable standing reverse grip one arm overhead triceps extension" },
+      "eduarda-bb-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "eduarda-bb-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "eduarda-opt-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "eduarda-opt-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "eduarda-opt-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
+      "eduarda-opt-side-plank": { id: "5VXmnV5", label: "Bodyweight incline side plank" },
+      "eduarda-opt-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" }
     };
 
     function renderMovementMedia(exercise) {
