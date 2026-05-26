@@ -1317,8 +1317,7 @@
           { key: "upperA", label: "Ter • Superior A", color: "var(--rose)" },
           { key: "lowerB", label: "Qui • Inferior B", color: "var(--blue)" },
           { key: "upperB", label: "Sex • Superior B", color: "var(--violet)" },
-          { key: "fullBody", label: "Sáb • Full Body", color: "var(--green)" },
-          { key: "postural", label: "Dom • Postural", color: "var(--violet)" }
+          { key: "fullBody", label: "Sáb • Full Body", color: "var(--green)" }
         ],
         workouts: {
       lowerA: {
@@ -1336,7 +1335,7 @@
       upperA: {
         title: "Terça • Superior A • Ênfase peito",
         warmup: "Aquecimento: 5 min cardio + rotação externa ombro elástico 2x15",
-        total: "16 séries • ~60 min",
+        total: "18 séries • ~60–65 min",
         exercises: [
           { id: "upper-a-incline-db", name: "Supino inclinado halteres pegada neutra", note: "Peito principal, ombro-friendly", sets: "3", reps: "6–8", rir: "0–1", restLabel: "2–3 min", restSeconds: 180 },
           { id: "upper-a-fly", name: "Crucifixo máquina ou crossover", note: "Peito com amplitude controlada", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
@@ -1344,7 +1343,8 @@
           { id: "upper-a-pulldown", name: "Puxada alta neutra bilateral com polia", note: "Dorsais, trajetória estável", sets: "2", reps: "8–10", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
           { id: "upper-a-lateral", name: "Elevação lateral", note: "Deltoide lateral, volume mínimo consciente", sets: "1", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
           { id: "upper-a-triceps", name: "Tríceps francês no cabo", note: "Tríceps composto, tensão constante", sets: "3", reps: "8–10", rir: "0", restLabel: "60–90 s", restSeconds: 90 },
-          { id: "upper-a-curl", name: "Rosca direta EZ", note: "Bíceps base, progressão de carga", sets: "3", reps: "8–10", rir: "0", restLabel: "60–90 s", restSeconds: 90 }
+          { id: "upper-a-curl", name: "Rosca direta EZ", note: "Bíceps base, progressão de carga", sets: "3", reps: "8–10", rir: "0", restLabel: "60–90 s", restSeconds: 90 },
+          { id: "upper-a-abs-machine", name: "Abdominal máquina", note: "Core com carga progressiva, execução simples", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
         ]
       },
       lowerB: {
@@ -1377,31 +1377,16 @@
       fullBody: {
         title: "Sábado • Full Body • 3º estímulo perna e peito",
         warmup: "Aquecimento: 5 min cardio + rotação externa ombro elástico 2x15 + mobilidade de ombro 5 min",
-        total: "17 séries • ~60 min",
+        total: "18 séries • ~60–70 min",
         exercises: [
           { id: "full-body-horizontal-leg-press", name: "Leg press horizontal", note: "3º estímulo de perna, foco controlado em quadríceps", sets: "3", reps: "10–12", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
           { id: "full-body-hamstring", name: "Cadeira flexora ou stiff com halteres", note: "Posterior complementar", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
           { id: "full-body-chest", name: "Supino máquina convergente ou crossover", note: "3º estímulo de peito, sem técnica avançada", sets: "2", reps: "10–15", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
           { id: "full-body-row", name: "Remada bilateral com polia", note: "Costas moderada, trajetória estável", sets: "2", reps: "10–12", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
-          { id: "full-body-lateral", name: "Elevação lateral", note: "Deltoide lateral, estímulo mínimo", sets: "1", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
+          { id: "full-body-shoulder-press", name: "Desenvolvimento máquina pegada neutra", note: "Ombro com trajetória guiada, sem travar cotovelos no topo", sets: "2", reps: "8–10", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
           { id: "full-body-cable-curl", name: "Rosca no cabo", note: "Bíceps, tensão constante", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "full-body-triceps", name: "Tríceps unilateral no cabo", note: "Tríceps e simetria lado a lado", sets: "3", reps: "12–15 cada lado", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
-          { id: "full-body-abs", name: "Abdominal na polia", note: "Core dinâmico", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
-        ]
-      },
-      postural: {
-        title: "Domingo • Sessão Postural em casa",
-        warmup: "Mobilidade 10 min + core 12 min",
-        total: "25 min • Casa",
-        exercises: [
-          { id: "postural-psoas", name: "Alongamento de psoas", note: "Mobilidade", sets: "2", reps: "30s cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-rectus-femoris", name: "Alongamento de reto femoral", note: "Mobilidade", sets: "2", reps: "30s cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-9090", name: "90/90 hip mobility", note: "Mobilidade", sets: "1", reps: "1 min cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-child-pose", name: "Postura da criança", note: "Mobilidade", sets: "2", reps: "30s", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-dead-bug", name: "Dead bug", note: "Core", sets: "3", reps: "10 cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-bird-dog", name: "Bird dog", note: "Core", sets: "3", reps: "10 cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-side-plank", name: "Prancha lateral", note: "Core", sets: "3", reps: "30s cada lado", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false },
-          { id: "postural-plank", name: "Prancha frontal", note: "Core", sets: "2", reps: "45s", rir: "—", restLabel: "—", restSeconds: 0, trackWeight: false }
+          { id: "full-body-abs", name: "Abdominal máquina", note: "Core com carga progressiva, execução simples", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
         ]
       }
         }
@@ -1595,7 +1580,7 @@
               { id: "eduarda-ba-row", name: "Remada baixa com triângulo", note: "Costas horizontal, peito alto", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
               { id: "eduarda-ba-pulldown", name: "Pulldown na polia", note: "Dorsais com braço quase estendido", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
               { id: "eduarda-ba-machine-row", name: "Remada máquina articulada ou unilateral", note: "Variação estável, sem roubar com lombar", sets: "2", reps: "10–12", rir: "1", restLabel: "75–90 s", restSeconds: 90 },
-              { id: "eduarda-ba-abs", name: "Abdominal máquina ou polia", note: "Abdômen com carga progressiva", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "eduarda-ba-abs", name: "Abdominal máquina", note: "Crunch na máquina, carga progressiva e execução simples", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
               { id: "eduarda-ba-plank", name: "Prancha", note: "Core anti-extensão, tronco firme", sets: "3", reps: "30–45 s", rir: "0–1", restLabel: "30–45 s", restSeconds: 45 },
               { id: "eduarda-ba-bike", name: "Bike moderada", note: "Ritmo em que ainda dá para falar frases curtas", sets: "1", reps: "15–20 min", rir: "moderado", restLabel: "—", restSeconds: 0, trackWeight: false }
             ]
@@ -1639,7 +1624,7 @@
               { id: "eduarda-bb-hammer", name: "Rosca martelo corda ou barra H", note: "Braquial e antebraço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
               { id: "eduarda-bb-triceps-french", name: "Tríceps francês unilateral na polia", note: "Cabeça longa do tríceps", sets: "2", reps: "12–15 cada lado", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
               { id: "eduarda-bb-triceps-rope", name: "Tríceps pulley com corda", note: "Tríceps complemento", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
-              { id: "eduarda-bb-abs", name: "Abdominal na polia", note: "Abdômen com carga e progressão", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+              { id: "eduarda-bb-abs", name: "Abdominal máquina", note: "Crunch na máquina, carga progressiva e execução simples", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
             ]
           },
           optional: {
@@ -1696,6 +1681,7 @@
       "upper-a-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
       "upper-a-triceps": { id: "2IxROQ1", label: "Cable overhead triceps extension" },
       "upper-a-curl": { id: "25GPyDY", label: "Barbell curl" },
+      "upper-a-abs-machine": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
       "lower-a-squat": { id: "iYzB0Cz", label: "Barbell full squat side view" },
       "lower-a-leg-press": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
       "lower-a-ext": { id: "my33uHU", label: "Lever leg extension" },
@@ -1718,18 +1704,10 @@
       "full-body-hamstring": { id: "17lJ1kr", label: "Lever lying leg curl" },
       "full-body-chest": { id: "DOoWcnA", label: "Lever chest press" },
       "full-body-row": { id: "fUBheHs", label: "Cable seated row" },
-      "full-body-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "full-body-shoulder-press": { id: "vqsbmL0", label: "Lever shoulder press v. 2" },
       "full-body-cable-curl": { id: "G08RZcQ", label: "Cable curl" },
       "full-body-triceps": { id: "qRZ5S1N", label: "Cable one arm tricep pushdown" },
-      "full-body-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
-      "postural-psoas": { id: "tFGKm99", label: "Hip flexor and quad stretch" },
-      "postural-rectus-femoris": { id: "2Ryn564", label: "Assisted prone rectus femoris stretch" },
-      "postural-9090": { id: "QY39eBr", label: "Seated piriformis stretch" },
-      "postural-child-pose": { id: "QFmz6ch", label: "Seated lower back stretch" },
-      "postural-dead-bug": { id: "iny3m5y", label: "Dead bug" },
-      "postural-bird-dog": { id: "h1ezqSu", label: "Kneeling plank tap shoulder" },
-      "postural-side-plank": { id: "5VXmnV5", label: "Bodyweight incline side plank" },
-      "postural-plank": { id: "hCjGsRQ", label: "Power point plank" },
+      "full-body-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
       "sara-la-squat": { id: "Qa55kX1", label: "Sled hack squat" },
       "sara-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "sara-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
@@ -1795,7 +1773,7 @@
       "eduarda-ba-row": { id: "hvV79Si", label: "Cable low seated row" },
       "eduarda-ba-pulldown": { id: "x69MAlq", label: "Cable straight arm pulldown" },
       "eduarda-ba-machine-row": { id: "Fhdtwf3", label: "Lever one arm bent over row" },
-      "eduarda-ba-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "eduarda-ba-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
       "eduarda-ba-plank": { id: "hCjGsRQ", label: "Power point plank" },
       "eduarda-ba-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
       "eduarda-up-chest": { id: "DOoWcnA", label: "Lever chest press" },
@@ -1818,7 +1796,7 @@
       "eduarda-bb-hammer": { id: "HPlPoQA", label: "Cable hammer curl with rope" },
       "eduarda-bb-triceps-french": { id: "i11JWU7", label: "Cable standing reverse grip one arm overhead triceps extension" },
       "eduarda-bb-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
-      "eduarda-bb-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "eduarda-bb-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
       "eduarda-opt-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
       "eduarda-opt-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
       "eduarda-opt-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
@@ -1830,7 +1808,7 @@
       const media = EXERCISE_MEDIA[exercise.id];
       if (!media) return "";
       const alt = `${exercise.name}: simulação visual do movimento`;
-      const src = `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
+      const src = media.url || `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
       return `<img class="movement-image" src="${src}" alt="${escapeHtml(alt)}" title="${escapeHtml(media.label)}" loading="lazy" decoding="async" onerror="this.closest('.exercise-visual').classList.add('media-error'); this.remove();">`;
     }
 
