@@ -57,7 +57,7 @@
     body {
       min-height: 100%;
       margin: 0;
-      padding: 18px 0 88px;
+      padding: 18px 0 124px;
       background:
         radial-gradient(circle at 16% 0%, rgba(70, 195, 255, .08), transparent 28rem),
         linear-gradient(180deg, #050917 0%, #071022 100%);
@@ -126,9 +126,9 @@
 
     .icon-button {
       display: grid;
-      width: 38px;
-      height: 38px;
-      min-width: 38px;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
       place-items: center;
       border: 1px solid rgba(116, 147, 190, .42);
       border-radius: 8px;
@@ -326,7 +326,7 @@
     label.weight-label {
       display: block;
       color: #7890b6;
-      font-size: 9px;
+      font-size: 10px;
       line-height: 1;
       letter-spacing: 3px;
       text-transform: uppercase;
@@ -350,7 +350,7 @@
 
     .weight-input {
       width: 96px;
-      height: 31px;
+      height: 44px;
       padding: 0 10px;
       border: 1px solid #53627c;
       border-radius: 6px;
@@ -368,9 +368,9 @@
 
     .done-button {
       display: grid;
-      width: 31px;
-      height: 31px;
-      min-width: 31px;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
       place-items: center;
       margin-top: 1px;
       border: 0;
@@ -489,7 +489,8 @@
     .rest-button {
       display: inline-grid;
       min-width: 54px;
-      height: 34px;
+      min-height: 44px;
+      height: 44px;
       place-items: center;
       padding: 0 14px;
       border: 1px solid #0ea5e9;
@@ -594,7 +595,8 @@
 
       .rest-button {
         min-width: 44px;
-        height: 34px;
+        min-height: 44px;
+        height: 44px;
         padding: 0 8px;
         font-size: 12px;
       }
@@ -761,7 +763,15 @@
       color: var(--muted);
     }
 
-    .pin-back-btn {
+    .pin-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pin-back-btn,
+    .pin-reset-btn {
       background: none;
       border: none;
       color: var(--muted);
@@ -770,7 +780,19 @@
       padding: 12px;
     }
 
-    .pin-back-btn:hover {
+    .pin-reset-btn {
+      color: var(--rose);
+      font-size: 13px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    .pin-reset-btn.is-armed {
+      color: var(--text);
+    }
+
+    .pin-back-btn:hover,
+    .pin-reset-btn:hover {
       color: var(--text);
     }
 
@@ -779,7 +801,8 @@
       border: 1px solid var(--line);
       color: var(--muted);
       border-radius: 999px;
-      padding: 6px 12px;
+      min-height: 44px;
+      padding: 8px 14px;
       font-size: 12px;
       cursor: pointer;
       margin-top: 6px;
@@ -921,7 +944,8 @@
     .icon-button,
     .logout-button,
     .rest-button,
-    .pin-back-btn {
+    .pin-back-btn,
+    .pin-reset-btn {
       border-color: rgba(242, 211, 186, .18);
       background: rgba(255, 255, 255, .035);
       color: var(--champagne);
@@ -931,7 +955,8 @@
     .icon-button:hover,
     .logout-button:hover,
     .rest-button:hover,
-    .pin-back-btn:hover {
+    .pin-back-btn:hover,
+    .pin-reset-btn:hover {
       border-color: rgba(242, 211, 186, .4);
       color: var(--text);
     }
@@ -963,6 +988,10 @@
         linear-gradient(135deg, rgba(247, 217, 194, .16), rgba(201, 141, 105, .08)),
         rgba(255, 255, 255, .04);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 10px 30px rgba(0, 0, 0, .2);
+    }
+
+    .tab.is-today:not([aria-selected="true"]) {
+      border-color: rgba(242, 211, 186, .18);
     }
 
     .day-kicker,
@@ -1179,9 +1208,147 @@
       color: var(--metal-light);
     }
 
+    .app-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .action-button,
+    .media-toggle,
+    .variant-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border: 1px solid rgba(242, 211, 186, .18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .035);
+      color: var(--champagne);
+      font-size: 12px;
+      font-weight: 720;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055);
+    }
+
+    .action-button {
+      padding: 0 14px;
+    }
+
+    .action-button:hover,
+    .media-toggle:hover,
+    .variant-button:hover {
+      border-color: rgba(242, 211, 186, .4);
+      color: var(--text);
+    }
+
+    .action-button[disabled] {
+      opacity: .55;
+      cursor: default;
+    }
+
+    .action-button[hidden] {
+      display: none;
+    }
+
+    .warmup-panel {
+      margin-top: 8px;
+      padding: 0;
+      border: 1px solid rgba(232, 178, 142, .22);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+    }
+
+    .warmup-panel summary {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: var(--metal-light);
+      font-size: 12px;
+      font-weight: 780;
+      cursor: pointer;
+    }
+
+    .warmup-panel p {
+      padding: 0 12px 10px;
+    }
+
+    .warmup-panel p + p {
+      padding-top: 0;
+    }
+
+    .exercise-controls {
+      display: grid;
+      gap: 10px;
+      margin: -4px 0 16px;
+    }
+
+    .variant-control {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .variant-button {
+      min-height: 44px;
+      padding: 0 11px;
+      color: var(--muted);
+    }
+
+    .variant-button[aria-pressed="true"] {
+      border-color: rgba(242, 211, 186, .48);
+      background:
+        linear-gradient(135deg, rgba(247, 217, 194, .18), rgba(201, 141, 105, .09)),
+        rgba(255, 255, 255, .04);
+      color: var(--text);
+    }
+
+    .media-toggle {
+      display: none;
+      width: fit-content;
+      padding: 0 13px;
+    }
+
+    .history-line {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .app-shell.compact-mode .exercise {
+      grid-template-columns: minmax(0, 1fr) auto;
+      min-height: 0;
+      padding: 18px 16px;
+    }
+
+    .app-shell.compact-mode .exercise-visual {
+      display: none;
+      grid-column: 1 / -1;
+      width: 100%;
+      max-height: 260px;
+    }
+
+    .app-shell.compact-mode .exercise.show-media .exercise-visual {
+      display: block;
+    }
+
+    .app-shell.compact-mode .media-toggle {
+      display: inline-flex;
+    }
+
+    .rest-bar.is-complete .timer {
+      filter: drop-shadow(0 0 14px rgba(242, 211, 186, .45));
+    }
+
     @media (max-width: 560px) {
       body {
         padding-top: 12px;
+        padding-bottom: 132px;
       }
 
       header {
@@ -1195,9 +1362,46 @@
         border-radius: 14px;
       }
 
+      .app-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .action-button {
+        width: 100%;
+        padding: 0 10px;
+      }
+
+      .tabs-shell {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+      }
+
+      .tab {
+        flex: 0 0 auto;
+        min-width: 132px;
+        min-height: 44px;
+        scroll-snap-align: start;
+      }
+
+      .tab:last-child:nth-child(odd) {
+        grid-column: auto;
+      }
+
       .exercise {
         border-radius: 20px;
         min-height: 176px;
+      }
+
+      .done-button {
+        width: 44px;
+        height: 44px;
+      }
+
+      .weight-input {
+        height: 44px;
       }
 
       .exercise-visual {
@@ -1256,7 +1460,10 @@
         <button class="pin-key" type="button" data-digit="0">0</button>
         <button class="pin-key action" type="button" data-action="back" aria-label="Apagar">⌫</button>
       </div>
-      <button class="pin-back-btn" type="button" id="pinBack">← Voltar</button>
+      <div class="pin-actions">
+        <button class="pin-reset-btn" type="button" id="pinReset" hidden>Esqueci meu PIN</button>
+        <button class="pin-back-btn" type="button" id="pinBack">← Voltar</button>
+      </div>
     </div>
   </section>
 
@@ -1276,6 +1483,13 @@
         <button class="icon-button" id="resetDay" type="button" title="Limpar treino do dia" aria-label="Limpar treino do dia">
           <span aria-hidden="true">↺</span>
         </button>
+      </div>
+      <div class="app-actions" aria-label="Ações do treino">
+        <button class="action-button" id="todayWorkout" type="button">Treino de hoje</button>
+        <button class="action-button" id="compactMode" type="button">Modo compacto</button>
+        <button class="action-button" id="exportData" type="button">Exportar dados</button>
+        <label class="action-button" for="importData">Importar dados</label>
+        <input id="importData" type="file" accept="application/json" hidden>
       </div>
     </header>
 
@@ -1312,6 +1526,8 @@
 
   <script>
     const ACTIVE_KEY = "gym-app-active-profile";
+    const UI_KEY = "gym-app-ui";
+    const EXPORT_VERSION = 1;
     const todayKey = getLocalDayKey();
     const LOAD_WARMUP_TIP = "Dica de aquecimento: no primeiro exercício de cada grupo muscular, faça 1 ou 2 séries com 40~50% da carga válida antes das séries principais.";
 
@@ -1554,8 +1770,8 @@
         }
       },
       eduarda: {
-        name: "Eduarda",
-        initials: "E",
+        name: "Maria Eduarda",
+        initials: "ME",
         accent: "var(--violet)",
         title: "FitPlan",
         subtitle: "5 dias + sábado opcional • Emagrecimento/condicionamento • Glúteos/costas/abdômen • 1h",
@@ -1787,7 +2003,7 @@
       "lower-b-rdl": { id: "wQ2c4XD", label: "Barbell romanian deadlift" },
       "lower-b-hip-thrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "lower-b-articulated-leg-press": { id: "WWD6FzI", label: "Sled 45 degrees one leg press" },
-      "lower-b-hamstring": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "lower-b-hamstring": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
       "lower-b-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
       "lower-b-seated-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
       "upper-b-chest-machine": { id: "DOoWcnA", label: "Lever chest press" },
@@ -1798,7 +2014,7 @@
       "upper-b-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
       "upper-b-face-pull": { id: "ZfyAGhK", label: "Cable standing rear delt row with rope" },
       "full-body-horizontal-leg-press": { id: "9KU9TYF", label: "Lever horizontal one leg press" },
-      "full-body-hamstring": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "full-body-hamstring": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
       "full-body-chest": { id: "DOoWcnA", label: "Lever chest press" },
       "full-body-row": { id: "fUBheHs", label: "Cable seated row" },
       "full-body-shoulder-press": { id: "vqsbmL0", label: "Lever shoulder press v. 2" },
@@ -1880,7 +2096,7 @@
       "eduarda-up-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
       "eduarda-up-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
       "eduarda-up-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
-      "eduarda-lb-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "eduarda-lb-curl": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
       "eduarda-lb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "eduarda-lb-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
       "eduarda-lb-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
@@ -1920,7 +2136,7 @@
       "fernando-ub-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
       "fernando-ub-triceps-french": { id: "2IxROQ1", label: "Cable overhead triceps extension" },
       "fernando-lb-lying-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
-      "fernando-lb-seated-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "fernando-lb-seated-curl": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
       "fernando-lb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "fernando-lb-legpress-high": { id: "10Z2DXU", label: "Sled 45 degree leg press glutes" },
       "fernando-lb-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
@@ -1935,10 +2151,83 @@
       "fernando-fb-abs": { id: "WW95auq", label: "Cable kneeling crunch" }
     };
 
-    function renderMovementMedia(exercise) {
-      const media = EXERCISE_MEDIA[exercise.id];
+    const EXERCISE_VARIANTS = {
+      "lower-b-hamstring": [
+        { key: "cadeira-flexora", label: "Cadeira flexora", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" } },
+        { key: "stiff-halteres", label: "Stiff com halteres", media: { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" } }
+      ],
+      "full-body-hamstring": [
+        { key: "cadeira-flexora", label: "Cadeira flexora", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" } },
+        { key: "stiff-halteres", label: "Stiff com halteres", media: { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" } }
+      ],
+      "sara-lb-uni-thrust": [
+        { key: "elevacao-pelvica-unilateral", label: "Elevação pélvica unilateral", media: { id: "rmEukuS", label: "Single leg bridge" } },
+        { key: "coice-polia", label: "Coice na polia", media: { id: "Kpajagk", label: "Cable standing hip extension" } }
+      ],
+      "sara-ub-row-curva": [
+        { key: "remada-curvada-barra", label: "Remada curvada com barra", media: { id: "eZyBC3j", label: "Barbell bent over row" } },
+        { key: "remada-unilateral-halter", label: "Remada unilateral com halter", media: { id: "Fhdtwf3", label: "Lever one arm bent over row" } }
+      ],
+      "fernanda-ua-press": [
+        { key: "supino-maquina", label: "Supino máquina", media: { id: "DOoWcnA", label: "Lever chest press" } },
+        { key: "supino-halteres", label: "Supino com halteres", media: { id: "SpYC0Kp", label: "Dumbbell bench press" } }
+      ],
+      "fernanda-ub-fly": [
+        { key: "crucifixo-maquina", label: "Crucifixo máquina", media: { id: "v3xmPAR", label: "Lever seated fly" } },
+        { key: "supino-leve", label: "Supino leve", media: { id: "SpYC0Kp", label: "Dumbbell bench press" } }
+      ],
+      "fernanda-ub-curl": [
+        { key: "rosca-martelo", label: "Rosca martelo", media: { id: "IGtBdNT", label: "Dumbbell seated hammer curl" } },
+        { key: "rosca-cabo", label: "Rosca cabo", media: { id: "G08RZcQ", label: "Cable curl" } }
+      ],
+      "fernando-la-smith-squat": [
+        { key: "agachamento-smith", label: "Agachamento no Smith", media: { id: "jFtipLl", label: "Smith squat" } },
+        { key: "hack-squat", label: "Hack squat", media: { id: "Qa55kX1", label: "Sled hack squat" } }
+      ],
+      "fernando-fb-legpress": [
+        { key: "leg-press-horizontal", label: "Leg press horizontal", media: { id: "9KU9TYF", label: "Lever horizontal one leg press" } },
+        { key: "leg-press-articulado", label: "Leg press articulado", media: { id: "WWD6FzI", label: "Sled 45 degrees one leg press" } }
+      ],
+      "fernando-fb-row": [
+        { key: "remada-baixa", label: "Remada baixa", media: { id: "fUBheHs", label: "Cable seated row" } },
+        { key: "remada-maquina", label: "Remada máquina", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-row.webp", label: "Lever seated row machine" } }
+      ]
+    };
+
+    function slugify(value) {
+      return String(value)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "opcao";
+    }
+
+    function getExerciseVariants(exercise) {
+      if (EXERCISE_VARIANTS[exercise.id]) return EXERCISE_VARIANTS[exercise.id];
+      if (!/\sou\s/i.test(exercise.name)) return [{ key: "base", label: exercise.name }];
+      return exercise.name.split(/\sou\s/i).map((label) => {
+        const cleaned = label.trim();
+        return { key: slugify(cleaned), label: cleaned };
+      });
+    }
+
+    function getSelectedVariant(exercise) {
+      const variants = getExerciseVariants(exercise);
+      const storedKey = state?.variants?.[exercise.id];
+      return variants.find((variant) => variant.key === storedKey) || variants[0];
+    }
+
+    function exerciseStateKey(exercise, variant) {
+      const variants = getExerciseVariants(exercise);
+      if (variants.length <= 1 || variant.key === variants[0].key) return exercise.id;
+      return `${exercise.id}::${variant.key}`;
+    }
+
+    function renderMovementMedia(exercise, variant = getSelectedVariant(exercise)) {
+      const media = variant?.media || EXERCISE_MEDIA[exercise.id];
       if (!media) return "";
-      const alt = `${exercise.name}: simulação visual do movimento`;
+      const alt = `${variant?.label || exercise.name}: simulação visual do movimento`;
       const src = media.url || `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
       return `<img class="movement-image" src="${src}" alt="${escapeHtml(alt)}" title="${escapeHtml(media.label)}" loading="lazy" decoding="async" onerror="this.closest('.exercise-visual').classList.add('media-error'); this.remove();">`;
     }
@@ -1947,6 +2236,7 @@
     let currentProfile = null;
     let activeTab = null;
     let state = null;
+    let uiState = loadUiState();
     let timerId = null;
     let timerEndsAt = 0;
     let activeRest = 0;
@@ -1955,6 +2245,8 @@
     let pinScreenProfile = null;
     let pinFirstAttempt = "";
     let pinBuffer = "";
+    let pinResetArmed = false;
+    let pinResetTimer = null;
 
     const screenPicker = document.querySelector("#screen-picker");
     const screenPin = document.querySelector("#screen-pin");
@@ -1964,18 +2256,74 @@
     const progressText = document.querySelector("#progressText");
     const progressFill = document.querySelector("#progressFill");
     const stopTimer = document.querySelector("#stopTimer");
+    const compactModeButton = document.querySelector("#compactMode");
+    const todayWorkoutButton = document.querySelector("#todayWorkout");
+    const importDataInput = document.querySelector("#importData");
 
     function loadProfileState(profileId) {
       const profile = profiles[profileId];
       try {
         const parsed = JSON.parse(localStorage.getItem(profileStateKey(profileId))) || {};
+        const activeForToday = getTodayWorkoutKey(profile) || parsed.activeTab || profile.defaultTab;
         if (parsed.day !== todayKey) {
-          return { day: todayKey, activeTab: parsed.activeTab || profile.defaultTab, weights: parsed.weights || {}, done: {} };
+          return {
+            day: todayKey,
+            activeTab: activeForToday,
+            weights: parsed.weights || {},
+            done: {},
+            history: parsed.history || {},
+            variants: parsed.variants || {},
+            expandedMedia: parsed.expandedMedia || {}
+          };
         }
-        return { day: todayKey, weights: {}, done: {}, activeTab: profile.defaultTab, ...parsed };
+        return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, expandedMedia: {}, activeTab: activeForToday, ...parsed };
       } catch {
-        return { day: todayKey, weights: {}, done: {}, activeTab: profile.defaultTab };
+        return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, expandedMedia: {}, activeTab: getTodayWorkoutKey(profile) || profile.defaultTab };
       }
+    }
+
+    function loadUiState() {
+      try {
+        return { compact: false, ...JSON.parse(localStorage.getItem(UI_KEY)) };
+      } catch {
+        return { compact: false };
+      }
+    }
+
+    function saveUiState() {
+      localStorage.setItem(UI_KEY, JSON.stringify(uiState));
+    }
+
+    function getTodayWorkoutKey(profile) {
+      const prefixes = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+      const prefix = prefixes[new Date().getDay()];
+      return profile.tabs.find((tab) => tab.label.startsWith(prefix))?.key || null;
+    }
+
+    function updateModeControls() {
+      screenApp.classList.toggle("compact-mode", !!uiState.compact);
+      if (compactModeButton) {
+        compactModeButton.textContent = uiState.compact ? "Modo visual" : "Modo compacto";
+        compactModeButton.setAttribute("aria-pressed", String(!!uiState.compact));
+      }
+    }
+
+    function updateTodayButton() {
+      const profile = currentProfile ? profiles[currentProfile] : null;
+      const todayKeyForProfile = profile ? getTodayWorkoutKey(profile) : null;
+      if (!todayWorkoutButton) return;
+      todayWorkoutButton.hidden = !profile;
+      if (!profile) return;
+      if (!todayKeyForProfile) {
+        todayWorkoutButton.disabled = true;
+        todayWorkoutButton.textContent = "Hoje: descanso";
+        todayWorkoutButton.title = "Não há treino cadastrado para hoje neste perfil.";
+        return;
+      }
+      todayWorkoutButton.disabled = todayKeyForProfile === activeTab;
+      todayWorkoutButton.title = todayKeyForProfile === activeTab ? "Você já está no treino de hoje." : "Ir para o treino de hoje";
+      const todayTab = profile?.tabs.find((tab) => tab.key === todayKeyForProfile);
+      todayWorkoutButton.textContent = todayTab ? `Hoje: ${todayTab.label}` : "Treino de hoje";
     }
 
     function saveProfileState() {
@@ -2018,6 +2366,7 @@
       pinScreenProfile = profileId;
       pinBuffer = "";
       pinFirstAttempt = "";
+      clearPinResetRequest();
       const hasPin = !!localStorage.getItem(profilePinKey(profileId));
       pinScreenMode = hasPin ? "enter" : "setup";
       setPinError("");
@@ -2035,10 +2384,13 @@
       document.querySelectorAll("#screen-pin .pin-dot").forEach((dot, i) => {
         dot.classList.toggle("filled", i < pinBuffer.length);
       });
+      renderPinResetButton();
     }
 
     function pinPress(digit) {
       if (pinBuffer.length >= 4) return;
+      if (pinResetArmed) setPinError("");
+      clearPinResetRequest();
       pinBuffer += digit;
       renderPinScreen();
       if (pinBuffer.length === 4) {
@@ -2047,8 +2399,60 @@
     }
 
     function pinBackspace() {
+      if (pinResetArmed) setPinError("");
+      clearPinResetRequest();
       pinBuffer = pinBuffer.slice(0, -1);
       renderPinScreen();
+    }
+
+    function clearPinResetRequest() {
+      pinResetArmed = false;
+      if (pinResetTimer) {
+        clearTimeout(pinResetTimer);
+        pinResetTimer = null;
+      }
+    }
+
+    function renderPinResetButton() {
+      const btn = document.querySelector("#pinReset");
+      if (!btn) return;
+      const canReset = pinScreenProfile
+        && pinScreenMode === "enter"
+        && !!localStorage.getItem(profilePinKey(pinScreenProfile));
+      btn.hidden = !canReset;
+      btn.textContent = pinResetArmed ? "Resetar PIN" : "Esqueci meu PIN";
+      btn.classList.toggle("is-armed", pinResetArmed);
+    }
+
+    function requestPinReset() {
+      if (!pinScreenProfile || pinScreenMode !== "enter") return;
+
+      if (!pinResetArmed) {
+        pinResetArmed = true;
+        pinBuffer = "";
+        renderPinScreen();
+        setPinError("Toque em Resetar PIN para criar um novo PIN neste aparelho.");
+        pinResetTimer = setTimeout(() => {
+          pinResetTimer = null;
+          pinResetArmed = false;
+          if (pinScreenMode === "enter") {
+            renderPinScreen();
+            setPinError("");
+          }
+        }, 6000);
+        return;
+      }
+
+      localStorage.removeItem(profilePinKey(pinScreenProfile));
+      if (localStorage.getItem(ACTIVE_KEY) === pinScreenProfile) {
+        localStorage.removeItem(ACTIVE_KEY);
+      }
+      clearPinResetRequest();
+      pinBuffer = "";
+      pinFirstAttempt = "";
+      pinScreenMode = "setup";
+      renderPinScreen();
+      setPinError("PIN removido. Defina um novo PIN.");
     }
 
     function setPinError(msg) {
@@ -2116,11 +2520,14 @@
       document.querySelector("#appTitle").textContent = profile.title;
       document.querySelector("#profileIndicator").textContent = `Perfil: ${profile.name}`;
       document.querySelector("#appSubtitle").textContent = profile.subtitle;
+      updateModeControls();
+      updateTodayButton();
       const tabsShell = document.querySelector("#tabsShell");
       tabsShell.innerHTML = "";
+      const todayWorkoutKey = getTodayWorkoutKey(profile);
       profile.tabs.forEach((tab) => {
         const btn = document.createElement("button");
-        btn.className = "tab";
+        btn.className = `tab${tab.key === todayWorkoutKey ? " is-today" : ""}`;
         btn.type = "button";
         btn.dataset.tab = tab.key;
         btn.style.setProperty("--tab-color", tab.color);
@@ -2140,10 +2547,65 @@
       document.querySelectorAll("#tabsShell .tab").forEach((tab) => {
         tab.setAttribute("aria-selected", String(tab.dataset.tab === activeTab));
       });
+      updateTodayButton();
       const activeButton = document.querySelector("#tabsShell .tab[aria-selected='true']");
       if (activeButton) {
         activeButton.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
       }
+    }
+
+    function parseLoad(value) {
+      const normalized = String(value || "").replace(",", ".").match(/\d+(?:\.\d+)?/);
+      return normalized ? Number(normalized[0]) : null;
+    }
+
+    function formatLoad(value) {
+      if (!Number.isFinite(value)) return "";
+      return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(1))).replace(".", ",");
+    }
+
+    function getHistoryEntries(key) {
+      return state?.history?.[key] || [];
+    }
+
+    function getHistorySummary(key) {
+      const entries = getHistoryEntries(key).filter((entry) => Number.isFinite(entry.load));
+      if (!entries.length) return "";
+      const last = entries[entries.length - 1];
+      const best = entries.reduce((max, entry) => Math.max(max, entry.load), 0);
+      return `Última: ${formatLoad(last.load)} kg • Melhor: ${formatLoad(best)} kg`;
+    }
+
+    function recordExerciseHistory(exercise, variant, weightValue) {
+      const load = parseLoad(weightValue);
+      if (!Number.isFinite(load)) return;
+      const key = exerciseStateKey(exercise, variant);
+      state.history = state.history || {};
+      const entries = state.history[key] || [];
+      const entry = {
+        date: todayKey,
+        tab: activeTab,
+        exerciseId: exercise.id,
+        variant: variant.key,
+        load
+      };
+      const todayIndex = entries.findIndex((item) => item.date === todayKey && item.tab === activeTab);
+      if (todayIndex >= 0) entries[todayIndex] = entry;
+      else entries.push(entry);
+      state.history[key] = entries.slice(-16);
+    }
+
+    function renderVariantControls(exercise, variants, selectedVariant) {
+      if (variants.length <= 1) return "";
+      return `
+        <div class="variant-control" role="group" aria-label="Variação do exercício">
+          ${variants.map((variant) => `
+            <button class="variant-button" type="button" data-variant="${escapeHtml(variant.key)}" aria-pressed="${variant.key === selectedVariant.key}">
+              ${escapeHtml(variant.label)}
+            </button>
+          `).join("")}
+        </div>
+      `;
     }
 
     function renderWorkout() {
@@ -2157,19 +2619,36 @@
       summary.innerHTML = `
         <p class="day-kicker">${workout.total}</p>
         <h2>${workout.title}</h2>
-        ${workout.warmup ? `<p>${workout.warmup}</p>` : ""}
-        <p class="warmup-tip">${LOAD_WARMUP_TIP}</p>
+        <details class="warmup-panel">
+          <summary>Aquecimento</summary>
+          ${workout.warmup ? `<p>${workout.warmup}</p>` : ""}
+          <p>${LOAD_WARMUP_TIP}</p>
+        </details>
       `;
       workoutEl.appendChild(summary);
 
       workout.exercises.forEach((exercise) => {
+        const variants = getExerciseVariants(exercise);
+        const selectedVariant = getSelectedVariant(exercise);
+        const stateKey = exerciseStateKey(exercise, selectedVariant);
+        const displayName = variants.length > 1 ? selectedVariant.label : exercise.name;
+        const historySummary = getHistorySummary(stateKey);
+        const mediaExpanded = !!state.expandedMedia?.[exercise.id];
+        const controlsHtml = variants.length > 1 || uiState.compact ? `
+          <div class="exercise-controls">
+            ${renderVariantControls(exercise, variants, selectedVariant)}
+            <button class="media-toggle" type="button">${mediaExpanded ? "Ocultar movimento" : "Ver movimento"}</button>
+          </div>
+        ` : "";
         const article = document.createElement("article");
-        article.className = `exercise${state.done[exercise.id] ? " done" : ""}`;
+        article.className = `exercise${state.done[stateKey] ? " done" : ""}${mediaExpanded ? " show-media" : ""}`;
         article.dataset.id = exercise.id;
+        article.dataset.stateKey = stateKey;
         article.innerHTML = `
           <div class="exercise-main">
-            <h2 class="exercise-title">${exercise.name}</h2>
+            <h2 class="exercise-title">${escapeHtml(displayName)}</h2>
             <p class="exercise-note">${exercise.note}</p>
+            ${controlsHtml}
             <div class="metrics">
               <div>
                 <span class="metric-label">Séries</span>
@@ -2190,30 +2669,58 @@
             </div>
             ${exercise.trackWeight === false ? "" : `
               <div class="weight-row">
-                <label class="weight-label" for="weight-${exercise.id}">Carga (kg)</label>
-                <input class="weight-input" id="weight-${exercise.id}" inputmode="decimal" autocomplete="off" value="${state.weights[exercise.id] || ""}">
+                <label class="weight-label" for="weight-${stateKey}">Carga (kg)</label>
+                <input class="weight-input" id="weight-${stateKey}" inputmode="decimal" autocomplete="off" value="${state.weights[stateKey] || ""}">
               </div>
+              ${historySummary ? `<p class="history-line">${historySummary}</p>` : ""}
             `}
           </div>
           <figure class="exercise-visual">
-            ${renderMovementMedia(exercise)}
+            ${renderMovementMedia(exercise, selectedVariant)}
           </figure>
-          <button class="done-button" type="button" title="Concluir exercício" aria-label="Concluir ${exercise.name}">
+          <button class="done-button" type="button" title="Concluir exercício" aria-label="Concluir ${displayName}">
             <span class="check-ring" aria-hidden="true"></span>
           </button>
         `;
+        article.querySelectorAll(".variant-button").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.variants = state.variants || {};
+            state.variants[exercise.id] = button.dataset.variant;
+            saveProfileState();
+            renderWorkout();
+          });
+        });
+        article.querySelector(".media-toggle")?.addEventListener("click", () => {
+          state.expandedMedia = state.expandedMedia || {};
+          state.expandedMedia[exercise.id] = !state.expandedMedia[exercise.id];
+          saveProfileState();
+          renderWorkout();
+        });
         const weightInput = article.querySelector(".weight-input");
         if (weightInput) {
           weightInput.addEventListener("input", (event) => {
-            state.weights[exercise.id] = event.target.value.trim();
+            state.weights[stateKey] = event.target.value.trim();
             saveProfileState();
           });
         }
         article.querySelector(".done-button").addEventListener("click", () => {
-          const nextValue = !state.done[exercise.id];
-          state.done[exercise.id] = nextValue;
+          const nextValue = !state.done[stateKey];
+          state.done[stateKey] = nextValue;
           article.classList.toggle("done", nextValue);
-          if (nextValue && exercise.restSeconds > 0) startRest(exercise.restSeconds);
+          if (nextValue) {
+            recordExerciseHistory(exercise, selectedVariant, weightInput?.value);
+            const nextHistorySummary = getHistorySummary(stateKey);
+            if (nextHistorySummary && weightInput) {
+              let historyLine = article.querySelector(".history-line");
+              if (!historyLine) {
+                historyLine = document.createElement("p");
+                historyLine.className = "history-line";
+                article.querySelector(".weight-row")?.after(historyLine);
+              }
+              historyLine.textContent = nextHistorySummary;
+            }
+            if (exercise.restSeconds > 0) startRest(exercise.restSeconds);
+          }
           saveProfileState();
           updateProgress();
         });
@@ -2225,7 +2732,7 @@
     function updateProgress() {
       const profile = profiles[currentProfile];
       const exercises = profile.workouts[activeTab].exercises;
-      const done = exercises.filter((e) => state.done[e.id]).length;
+      const done = exercises.filter((exercise) => state.done[exerciseStateKey(exercise, getSelectedVariant(exercise))]).length;
       const total = exercises.length;
       progressText.textContent = `${done}/${total}`;
       progressFill.style.setProperty("--progress", `${total ? (done / total) * 100 : 0}%`);
@@ -2242,6 +2749,7 @@
     function startRest(seconds) {
       activeRest = seconds;
       timerEndsAt = Date.now() + seconds * 1000;
+      document.querySelector(".rest-bar")?.classList.remove("is-complete");
       document.querySelectorAll(".rest-button").forEach((b) => {
         b.classList.toggle("active", Number(b.dataset.rest) === seconds);
       });
@@ -2260,8 +2768,14 @@
         timerEl.textContent = "00:00";
         timerEl.classList.remove("running");
       }
+      document.querySelector(".rest-bar")?.classList.remove("is-complete");
       if (stopTimer) stopTimer.classList.add("hidden");
       document.querySelectorAll(".rest-button").forEach((b) => b.classList.remove("active"));
+    }
+
+    function signalRestComplete() {
+      document.querySelector(".rest-bar")?.classList.add("is-complete");
+      if ("vibrate" in navigator) navigator.vibrate([180, 80, 180]);
     }
 
     function tickTimer() {
@@ -2272,11 +2786,62 @@
         clearInterval(timerId);
         timerId = null;
         if (activeRest) {
-          timerEl.textContent = "00:00";
+          signalRestComplete();
+          timerEl.textContent = "Fim";
           stopTimer.classList.add("hidden");
           document.querySelectorAll(".rest-button").forEach((b) => b.classList.remove("active"));
+          activeRest = 0;
         }
       }
+    }
+
+    /* === Data portability === */
+    function collectStoredData() {
+      const values = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith("gym-app-")) values[key] = localStorage.getItem(key);
+      }
+      return {
+        app: "FitPlan",
+        version: EXPORT_VERSION,
+        exportedAt: new Date().toISOString(),
+        values
+      };
+    }
+
+    function exportData() {
+      const payload = collectStoredData();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `fitplan-backup-${todayKey}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function importData(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        try {
+          const payload = JSON.parse(String(reader.result || "{}"));
+          if (!payload.values || typeof payload.values !== "object") {
+            throw new Error("Formato inválido");
+          }
+          const ok = window.confirm("Importar este backup vai substituir os dados locais do FitPlan neste aparelho. Continuar?");
+          if (!ok) return;
+          Object.entries(payload.values).forEach(([key, value]) => {
+            if (key.startsWith("gym-app-")) localStorage.setItem(key, String(value));
+          });
+          window.location.reload();
+        } catch {
+          window.alert("Não foi possível importar o arquivo. Verifique se ele é um backup válido do FitPlan.");
+        }
+      });
+      reader.readAsText(file);
     }
 
     /* === Wiring === */
@@ -2285,6 +2850,27 @@
     });
 
     stopTimer.addEventListener("click", stopRest);
+
+    compactModeButton.addEventListener("click", () => {
+      uiState.compact = !uiState.compact;
+      saveUiState();
+      updateModeControls();
+      renderWorkout();
+    });
+
+    todayWorkoutButton.addEventListener("click", () => {
+      const todayWorkout = getTodayWorkoutKey(profiles[currentProfile]);
+      if (!todayWorkout) return;
+      activeTab = todayWorkout;
+      saveProfileState();
+      renderWorkout();
+    });
+
+    document.querySelector("#exportData").addEventListener("click", exportData);
+    importDataInput.addEventListener("change", (event) => {
+      importData(event.target.files?.[0]);
+      importDataInput.value = "";
+    });
 
     document.querySelector("#resetDay").addEventListener("click", () => {
       if (!state) return;
@@ -2307,9 +2893,18 @@
     document.querySelector("#pinBack").addEventListener("click", () => {
       pinBuffer = "";
       pinFirstAttempt = "";
+      clearPinResetRequest();
       setPinError("");
       showScreen("picker");
     });
+
+    document.querySelector("#pinReset").addEventListener("click", requestPinReset);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
 
     /* === Init === */
     (function init() {
