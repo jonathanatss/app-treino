@@ -224,6 +224,16 @@
       line-height: 1.45;
     }
 
+    .day-summary .warmup-tip {
+      margin-top: 6px;
+      padding: 10px 12px;
+      border: 1px solid rgba(232, 178, 142, .22);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+    }
+
     .day-kicker {
       color: #63ceff;
       font-size: 10px;
@@ -1303,6 +1313,7 @@
   <script>
     const ACTIVE_KEY = "gym-app-active-profile";
     const todayKey = getLocalDayKey();
+    const LOAD_WARMUP_TIP = "Dica de aquecimento: no primeiro exercício de cada grupo muscular, faça 1 ou 2 séries com 40~50% da carga válida antes das séries principais.";
 
     const profiles = {
       jonathan: {
@@ -1901,7 +1912,7 @@
       "fernando-la-bulgarian": { id: "qx4fgX7", label: "Dumbbell single leg split squat" },
       "fernando-la-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
       "fernando-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
-      "fernando-ub-row-machine": { id: "Fhdtwf3", label: "Lever one arm bent over row" },
+      "fernando-ub-row-machine": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-row.webp", label: "Lever seated row machine" },
       "fernando-ub-neutral-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
       "fernando-ub-incline-db": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
       "fernando-ub-fly": { id: "v3xmPAR", label: "Lever seated fly" },
@@ -2147,6 +2158,7 @@
         <p class="day-kicker">${workout.total}</p>
         <h2>${workout.title}</h2>
         ${workout.warmup ? `<p>${workout.warmup}</p>` : ""}
+        <p class="warmup-tip">${LOAD_WARMUP_TIP}</p>
       `;
       workoutEl.appendChild(summary);
 
