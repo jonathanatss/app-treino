@@ -1640,6 +1640,92 @@
             ]
           }
         }
+      },
+      fernando: {
+        name: "Fernando",
+        initials: "Fe",
+        accent: "var(--champagne)",
+        title: "FitPlan",
+        subtitle: "5 dias • Hipertrofia • Volume equilibrado • Sem stiff • ~1h",
+        defaultTab: "upperA",
+        tabs: [
+          { key: "upperA", label: "Seg • Superior A", color: "var(--rose)" },
+          { key: "lowerA", label: "Ter • Inferior A", color: "var(--green)" },
+          { key: "upperB", label: "Qui • Superior B", color: "var(--violet)" },
+          { key: "lowerB", label: "Sex • Inferior B", color: "var(--blue)" },
+          { key: "fullBody", label: "Sáb • Full Body", color: "var(--green)" }
+        ],
+        workouts: {
+          upperA: {
+            title: "Segunda • Superior A",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de ombro 3 min",
+            total: "18 séries • ~60 min",
+            exercises: [
+              { id: "fernando-ua-flat-db", name: "Supino reto com halteres", note: "Peito principal, progressão de carga", sets: "3", reps: "6–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernando-ua-incline-db", name: "Supino inclinado com halteres", note: "Peito superior, carga controlada", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-ua-pulldown-wide", name: "Puxada alta aberta", note: "Costas vertical, foco em dorsais", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-ua-row-low", name: "Remada baixa", note: "Costas horizontal, peito alto", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-ua-lateral", name: "Elevação lateral", note: "Deltoide medial, controle total", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernando-ua-triceps-rope", name: "Tríceps corda", note: "Cotovelos fixos, extensão completa", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "fernando-ua-curl", name: "Rosca direta", note: "Bíceps base, sem balanço", sets: "2", reps: "8–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          lowerA: {
+            title: "Terça • Inferior A • Quadríceps",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de quadril/tornozelo 3 min",
+            total: "15 séries • ~60 min",
+            exercises: [
+              { id: "fernando-la-smith-squat", name: "Agachamento no Smith ou hack squat", note: "Movimento principal de quadríceps", sets: "3", reps: "6–10", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
+              { id: "fernando-la-legpress", name: "Leg press 45°", note: "Quadríceps/glúteo, amplitude controlada", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "fernando-la-ext", name: "Cadeira extensora", note: "Quadríceps isolado, descida controlada", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "fernando-la-bulgarian", name: "Afundo búlgaro ou passada no Smith", note: "Unilateral, controle de joelho e quadril", sets: "2", reps: "8–10 cada perna", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-la-curl", name: "Mesa flexora", note: "Posterior complementar", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "fernando-la-calf", name: "Panturrilha em pé", note: "Amplitude completa", sets: "3", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          upperB: {
+            title: "Quinta • Superior B",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de ombro 3 min",
+            total: "16 séries • ~60 min",
+            exercises: [
+              { id: "fernando-ub-row-machine", name: "Remada máquina articulada", note: "Costas principal, trajetória estável", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-ub-neutral-pulldown", name: "Puxada neutra", note: "Dorsais, pegada confortável", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-ub-incline-db", name: "Supino inclinado com halteres", note: "Peito superior, estímulo moderado", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-ub-fly", name: "Crucifixo máquina ou crossover", note: "Peito isolado, amplitude confortável", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "fernando-ub-lateral", name: "Elevação lateral com halteres", note: "Ombros sem depender de desenvolvimento", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernando-ub-hammer", name: "Rosca martelo", note: "Braquial e antebraço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "fernando-ub-triceps-french", name: "Tríceps francês ou testa cabo", note: "Tríceps, amplitude controlada", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          lowerB: {
+            title: "Sexta • Inferior B • Posterior + Glúteos",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade de quadril 3 min",
+            total: "15 séries • ~60 min",
+            exercises: [
+              { id: "fernando-lb-lying-curl", name: "Mesa flexora", note: "Posterior principal, sem stiff", sets: "3", reps: "8–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernando-lb-seated-curl", name: "Cadeira flexora", note: "Posterior em outro ângulo", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "fernando-lb-hipthrust", name: "Elevação pélvica máquina ou barra", note: "Glúteo principal, pausa no topo", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-lb-legpress-high", name: "Leg press pés mais altos", note: "Ênfase posterior/glúteo", sets: "2", reps: "10–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-lb-abductor", name: "Cadeira abdutora", note: "Glúteo médio, controle na volta", sets: "2", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernando-lb-calf", name: "Panturrilha sentada", note: "Sóleo, tempo sob tensão", sets: "3", reps: "12–20", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          fullBody: {
+            title: "Sábado • Full Body + Braços/Abdômen",
+            warmup: "Aquecimento: 5 min cardio leve + mobilidade geral 3 min",
+            total: "17 séries • ~60 min",
+            exercises: [
+              { id: "fernando-fb-legpress", name: "Leg press horizontal ou articulado", note: "Perna complementar, sem moer recuperação", sets: "2", reps: "10–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-fb-curl", name: "Mesa flexora", note: "Posterior leve/moderado", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "fernando-fb-flat-db", name: "Supino reto com halteres", note: "Peito complementar", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "fernando-fb-row", name: "Remada baixa ou máquina", note: "Costas complementar", sets: "2", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "fernando-fb-lateral", name: "Elevação lateral", note: "Ombro medial, execução limpa", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "fernando-fb-scott", name: "Rosca Scott", note: "Bíceps com base estável", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "fernando-fb-triceps", name: "Tríceps pulley", note: "Tríceps complemento", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "fernando-fb-abs", name: "Abdominal na polia", note: "Core com carga progressiva", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          }
+        }
       }
     };
 
@@ -1801,7 +1887,41 @@
       "eduarda-opt-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
       "eduarda-opt-kickback": { id: "Kpajagk", label: "Cable standing hip extension" },
       "eduarda-opt-side-plank": { id: "5VXmnV5", label: "Bodyweight incline side plank" },
-      "eduarda-opt-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" }
+      "eduarda-opt-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" },
+      "fernando-ua-flat-db": { id: "SpYC0Kp", label: "Dumbbell bench press" },
+      "fernando-ua-incline-db": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "fernando-ua-pulldown-wide": { id: "RVwzP10", label: "Cable pulldown" },
+      "fernando-ua-row-low": { id: "hvV79Si", label: "Cable low seated row" },
+      "fernando-ua-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "fernando-ua-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "fernando-ua-curl": { id: "25GPyDY", label: "Barbell curl" },
+      "fernando-la-smith-squat": { id: "jFtipLl", label: "Smith squat" },
+      "fernando-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "fernando-la-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "fernando-la-bulgarian": { id: "qx4fgX7", label: "Dumbbell single leg split squat" },
+      "fernando-la-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "fernando-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
+      "fernando-ub-row-machine": { id: "Fhdtwf3", label: "Lever one arm bent over row" },
+      "fernando-ub-neutral-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
+      "fernando-ub-incline-db": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "fernando-ub-fly": { id: "v3xmPAR", label: "Lever seated fly" },
+      "fernando-ub-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "fernando-ub-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
+      "fernando-ub-triceps-french": { id: "2IxROQ1", label: "Cable overhead triceps extension" },
+      "fernando-lb-lying-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "fernando-lb-seated-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "fernando-lb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "fernando-lb-legpress-high": { id: "10Z2DXU", label: "Sled 45 degree leg press glutes" },
+      "fernando-lb-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "fernando-lb-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "fernando-fb-legpress": { id: "9KU9TYF", label: "Lever horizontal one leg press" },
+      "fernando-fb-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "fernando-fb-flat-db": { id: "SpYC0Kp", label: "Dumbbell bench press" },
+      "fernando-fb-row": { id: "fUBheHs", label: "Cable seated row" },
+      "fernando-fb-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "fernando-fb-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
+      "fernando-fb-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "fernando-fb-abs": { id: "WW95auq", label: "Cable kneeling crunch" }
     };
 
     function renderMovementMedia(exercise) {
