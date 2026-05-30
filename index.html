@@ -2063,7 +2063,7 @@
       "full-body-cable-curl": { id: "G08RZcQ", label: "Cable curl" },
       "full-body-triceps": { id: "qRZ5S1N", label: "Cable one arm tricep pushdown" },
       "full-body-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
-      "sara-la-squat": { id: "Qa55kX1", label: "Sled hack squat" },
+      "sara-la-squat": { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
       "sara-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "sara-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
       "sara-la-ext": { id: "my33uHU", label: "Lever leg extension" },
@@ -2092,7 +2092,7 @@
       "sara-ub-tricep-testa": { id: "1cTf2Ux", label: "EZ bar standing french press" },
       "sara-ub-abs": { id: "WhuFnR7", label: "Lying leg raise flat bench" },
       "fernanda-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
-      "fernanda-la-hack": { id: "Qa55kX1", label: "Sled hack squat" },
+      "fernanda-la-hack": { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
       "fernanda-la-ext": { id: "my33uHU", label: "Lever leg extension" },
       "fernanda-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "fernanda-la-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
@@ -2203,6 +2203,7 @@
       machineRow: { url: "https://gymvisual.com/img/p/6/6/1/4/6614.gif", label: "Lever seated row" },
       singleArmMachineRow: { url: "https://gymvisual.com/img/p/5/9/2/3/5923.gif", label: "Lever one arm seated row" },
       smithHipThrust: { url: "https://liftmanual.com/wp-content/uploads/2023/04/smith-hip-raise.webp", label: "Smith hip raise" },
+      sledHackSquat: { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
       smithLunge: { url: "https://gymvisual.com/img/p/5/6/0/6/5606.gif", label: "Smith rear lunge" },
       treadmillWalk: { url: "https://gymvisual.com/img/p/1/4/4/5/7/14457.gif", label: "Walking on incline treadmill" },
       vBarPushdown: { url: "https://gymvisual.com/img/p/1/0/4/7/2/10472.gif", label: "Cable triceps pushdown V-bar" }
@@ -2248,7 +2249,7 @@
       ],
       "fernando-la-smith-squat": [
         { key: "agachamento-smith", label: "Agachamento no Smith", media: { id: "jFtipLl", label: "Smith squat" } },
-        { key: "hack-squat", label: "Hack squat", media: { id: "Qa55kX1", label: "Sled hack squat" } }
+        { key: "hack-squat", label: "Hack squat", media: MEDIA_ALIASES.sledHackSquat }
       ],
       "fernando-fb-legpress": [
         { key: "leg-press-horizontal", label: "Leg press horizontal", media: { id: "9KU9TYF", label: "Lever horizontal one leg press" } },
@@ -2262,7 +2263,7 @@
 
     const AUTO_VARIANT_MEDIA = {
       "lower-a-squat": {
-        "hack-squat": { id: "Qa55kX1", label: "Sled hack squat" },
+        "hack-squat": MEDIA_ALIASES.sledHackSquat,
         "agachamento-livre": EXERCISE_MEDIA["lower-a-squat"]
       },
       "upper-a-fly": {
