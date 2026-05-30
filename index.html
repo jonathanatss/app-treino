@@ -59,6 +59,7 @@
       min-height: 100%;
       margin: 0;
       padding: calc(18px + var(--safe-top)) 0 124px;
+      overflow-anchor: none;
       background:
         radial-gradient(circle at 16% 0%, rgba(70, 195, 255, .08), transparent 28rem),
         linear-gradient(180deg, #050917 0%, #071022 100%);
@@ -1043,6 +1044,7 @@
       min-height: 0;
       padding: 15px 16px;
       gap: 12px;
+      cursor: pointer;
     }
 
     .exercise.done:not(.expanded-done) .exercise-note,
@@ -1354,6 +1356,11 @@
       display: block;
     }
 
+    .exercise.done:not(.expanded-done) .done-summary::after {
+      content: " • toque no card para detalhes";
+      color: var(--dim);
+    }
+
     .app-shell.compact-mode .exercise {
       grid-template-columns: minmax(0, 1fr) auto;
       min-height: 0;
@@ -1407,21 +1414,22 @@
       }
 
       .tabs-shell {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 6px;
-        overflow-x: auto;
-        scroll-snap-type: x proximity;
+        overflow: visible;
+        scroll-snap-type: none;
       }
 
       .tab {
-        flex: 0 0 auto;
-        min-width: 132px;
+        width: 100%;
+        min-width: 0;
         min-height: 44px;
-        scroll-snap-align: start;
+        scroll-snap-align: none;
       }
 
       .tab:last-child:nth-child(odd) {
-        grid-column: auto;
+        grid-column: 1 / -1;
       }
 
       .exercise {
@@ -2042,7 +2050,7 @@
       "lower-b-seated-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
       "upper-b-chest-machine": { id: "DOoWcnA", label: "Lever chest press" },
       "upper-b-chest-accessory": { id: "v3xmPAR", label: "Lever seated fly" },
-      "upper-b-unilateral-row": { id: "Fhdtwf3", label: "Lever one arm bent over row" },
+      "upper-b-unilateral-row": { url: "https://gymvisual.com/img/p/6/6/1/4/6614.gif", label: "Lever seated row" },
       "upper-b-unilateral-pulldown": { id: "U5INZY6", label: "Cable one arm pulldown" },
       "upper-b-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
       "upper-b-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
@@ -2119,7 +2127,7 @@
       "eduarda-ba-pulldown-wide": { id: "RVwzP10", label: "Cable pulldown" },
       "eduarda-ba-row": { id: "hvV79Si", label: "Cable low seated row" },
       "eduarda-ba-pulldown": { id: "x69MAlq", label: "Cable straight arm pulldown" },
-      "eduarda-ba-machine-row": { id: "Fhdtwf3", label: "Lever one arm bent over row" },
+      "eduarda-ba-machine-row": { url: "https://gymvisual.com/img/p/6/6/1/4/6614.gif", label: "Lever seated row" },
       "eduarda-ba-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
       "eduarda-ba-plank": { id: "hCjGsRQ", label: "Power point plank" },
       "eduarda-ba-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
@@ -2162,7 +2170,7 @@
       "fernando-la-bulgarian": { id: "qx4fgX7", label: "Dumbbell single leg split squat" },
       "fernando-la-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
       "fernando-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
-      "fernando-ub-row-machine": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-row.webp", label: "Lever seated row machine" },
+      "fernando-ub-row-machine": { url: "https://gymvisual.com/img/p/6/6/1/4/6614.gif", label: "Lever seated row" },
       "fernando-ub-neutral-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
       "fernando-ub-incline-db": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
       "fernando-ub-fly": { id: "v3xmPAR", label: "Lever seated fly" },
@@ -2183,6 +2191,21 @@
       "fernando-fb-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
       "fernando-fb-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
       "fernando-fb-abs": { id: "WW95auq", label: "Cable kneeling crunch" }
+    };
+
+    const MEDIA_ALIASES = {
+      cableCrossover: { url: "https://gymvisual.com/img/p/4/8/8/8/4888.gif", label: "Cable crossover variation" },
+      cableHipAbduction: { url: "https://gymvisual.com/img/p/2/9/5/3/9/29539.gif", label: "Cable hip abduction" },
+      cableKickback: { url: "https://gymvisual.com/img/p/3/3/8/5/4/33854.gif", label: "Cable straight leg diagonal kickback" },
+      ezSkullCrusher: { url: "https://gymvisual.com/img/p/7/5/5/2/7552.gif", label: "EZ bar lying triceps extension" },
+      gobletSquat: { url: "https://liftmanual.com/wp-content/uploads/2023/04/kettlebell-goblet-squat.webp", label: "Goblet squat" },
+      legRaise: { url: "https://gymvisual.com/img/p/5/3/5/6/5356.gif", label: "Lying leg raise flat bench" },
+      machineRow: { url: "https://gymvisual.com/img/p/6/6/1/4/6614.gif", label: "Lever seated row" },
+      singleArmMachineRow: { url: "https://gymvisual.com/img/p/5/9/2/3/5923.gif", label: "Lever one arm seated row" },
+      smithHipThrust: { url: "https://liftmanual.com/wp-content/uploads/2023/04/smith-hip-raise.webp", label: "Smith hip raise" },
+      smithLunge: { url: "https://gymvisual.com/img/p/5/6/0/6/5606.gif", label: "Smith rear lunge" },
+      treadmillWalk: { url: "https://gymvisual.com/img/p/1/4/4/5/7/14457.gif", label: "Walking on incline treadmill" },
+      vBarPushdown: { url: "https://gymvisual.com/img/p/1/0/4/7/2/10472.gif", label: "Cable triceps pushdown V-bar" }
     };
 
     const EXERCISE_VARIANTS = {
@@ -2214,6 +2237,15 @@
         { key: "rosca-martelo", label: "Rosca martelo", media: { id: "IGtBdNT", label: "Dumbbell seated hammer curl" } },
         { key: "rosca-cabo", label: "Rosca cabo", media: { id: "G08RZcQ", label: "Cable curl" } }
       ],
+      "fernanda-opt-cardio": [
+        { key: "caminhada", label: "Caminhada", media: MEDIA_ALIASES.treadmillWalk },
+        { key: "bike", label: "Bike", media: { id: "a8VDgLw", label: "Stationary bike walk" } },
+        { key: "eliptico", label: "Elíptico", media: { id: "rjtuP6X", label: "Walk elliptical cross trainer" } }
+      ],
+      "eduarda-ba-machine-row": [
+        { key: "remada-maquina-articulada", label: "Remada máquina articulada", media: MEDIA_ALIASES.machineRow },
+        { key: "unilateral", label: "Unilateral", media: MEDIA_ALIASES.singleArmMachineRow }
+      ],
       "fernando-la-smith-squat": [
         { key: "agachamento-smith", label: "Agachamento no Smith", media: { id: "jFtipLl", label: "Smith squat" } },
         { key: "hack-squat", label: "Hack squat", media: { id: "Qa55kX1", label: "Sled hack squat" } }
@@ -2224,8 +2256,111 @@
       ],
       "fernando-fb-row": [
         { key: "remada-baixa", label: "Remada baixa", media: { id: "fUBheHs", label: "Cable seated row" } },
-        { key: "remada-maquina", label: "Remada máquina", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-row.webp", label: "Lever seated row machine" } }
+        { key: "remada-maquina", label: "Remada máquina", media: MEDIA_ALIASES.machineRow }
       ]
+    };
+
+    const AUTO_VARIANT_MEDIA = {
+      "lower-a-squat": {
+        "hack-squat": { id: "Qa55kX1", label: "Sled hack squat" },
+        "agachamento-livre": EXERCISE_MEDIA["lower-a-squat"]
+      },
+      "upper-a-fly": {
+        "crucifixo-maquina": EXERCISE_MEDIA["upper-a-fly"],
+        "crossover": MEDIA_ALIASES.cableCrossover
+      },
+      "lower-b-hip-thrust": {
+        "elevacao-pelvica-barra": EXERCISE_MEDIA["lower-b-hip-thrust"],
+        "smith": MEDIA_ALIASES.smithHipThrust
+      },
+      "lower-b-abductor": {
+        "abdutora-maquina": EXERCISE_MEDIA["lower-b-abductor"],
+        "cabo": MEDIA_ALIASES.cableHipAbduction
+      },
+      "upper-b-chest-accessory": {
+        "chest-press-unilateral": EXERCISE_MEDIA["upper-b-chest-machine"],
+        "peck-deck": EXERCISE_MEDIA["upper-b-chest-accessory"]
+      },
+      "full-body-chest": {
+        "supino-maquina-convergente": EXERCISE_MEDIA["full-body-chest"],
+        "crossover": MEDIA_ALIASES.cableCrossover
+      },
+      "sara-la-squat": {
+        "agachamento-livre": EXERCISE_MEDIA["lower-a-squat"],
+        "no-hack": EXERCISE_MEDIA["sara-la-squat"]
+      },
+      "sara-ua-pulldown": {
+        "puxada-alta-neutra": EXERCISE_MEDIA["sara-ua-pulldown"],
+        "pegada-media": EXERCISE_MEDIA["eduarda-ba-pulldown-wide"]
+      },
+      "sara-lb-rdl": {
+        "levantamento-terra-romeno-com-barra": EXERCISE_MEDIA["sara-lb-rdl"],
+        "halteres": EXERCISE_MEDIA["sara-lb-stiff"]
+      },
+      "sara-ub-tricep-testa": {
+        "triceps-testa": MEDIA_ALIASES.ezSkullCrusher,
+        "frances": EXERCISE_MEDIA["sara-ub-tricep-testa"]
+      },
+      "fernanda-la-hack": {
+        "hack-squat": EXERCISE_MEDIA["fernanda-la-hack"],
+        "agachamento-goblet": MEDIA_ALIASES.gobletSquat
+      },
+      "fernanda-la-calf": {
+        "panturrilha-em-pe": EXERCISE_MEDIA["fernanda-la-calf"],
+        "sentada": EXERCISE_MEDIA["lower-b-seated-calf"]
+      },
+      "fernanda-ua-curl": {
+        "rosca-direta": EXERCISE_MEDIA["upper-a-curl"],
+        "cabo": EXERCISE_MEDIA["fernanda-ua-curl"]
+      },
+      "fernanda-lb-hipthrust": {
+        "elevacao-pelvica": EXERCISE_MEDIA["fernanda-lb-hipthrust"],
+        "glute-bridge": { id: "rmEukuS", label: "Single leg bridge" }
+      },
+      "fernanda-ub-row": {
+        "remada-maquina": MEDIA_ALIASES.machineRow,
+        "cabo": EXERCISE_MEDIA["fernanda-ub-row"]
+      },
+      "eduarda-up-triceps": {
+        "triceps-pulley-corda": EXERCISE_MEDIA["eduarda-up-triceps"],
+        "barra-w": MEDIA_ALIASES.vBarPushdown
+      },
+      "eduarda-lb-kickback": {
+        "gluteo-no-cabo": EXERCISE_MEDIA["eduarda-lb-kickback"],
+        "coice-na-polia": MEDIA_ALIASES.cableKickback
+      },
+      "eduarda-lb-abs": {
+        "abdominal-infra": EXERCISE_MEDIA["eduarda-lb-abs"],
+        "elevacao-de-pernas": MEDIA_ALIASES.legRaise
+      },
+      "eduarda-bb-pulldown": {
+        "puxada-alta-neutra": EXERCISE_MEDIA["eduarda-bb-pulldown"],
+        "media": EXERCISE_MEDIA["eduarda-ba-pulldown-wide"]
+      },
+      "eduarda-bb-row": {
+        "remada-baixa-maquina": MEDIA_ALIASES.machineRow,
+        "cabo": EXERCISE_MEDIA["eduarda-bb-row"]
+      },
+      "eduarda-bb-hammer": {
+        "rosca-martelo-corda": EXERCISE_MEDIA["eduarda-bb-hammer"],
+        "barra-h": EXERCISE_MEDIA["upper-b-hammer"]
+      },
+      "fernando-la-bulgarian": {
+        "afundo-bulgaro": EXERCISE_MEDIA["fernando-la-bulgarian"],
+        "passada-no-smith": MEDIA_ALIASES.smithLunge
+      },
+      "fernando-ub-fly": {
+        "crucifixo-maquina": EXERCISE_MEDIA["fernando-ub-fly"],
+        "crossover": MEDIA_ALIASES.cableCrossover
+      },
+      "fernando-ub-triceps-french": {
+        "triceps-frances": EXERCISE_MEDIA["fernando-ub-triceps-french"],
+        "testa-cabo": { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp", label: "Cable lying triceps extension" }
+      },
+      "fernando-lb-hipthrust": {
+        "elevacao-pelvica-maquina": MEDIA_ALIASES.smithHipThrust,
+        "barra": EXERCISE_MEDIA["fernando-lb-hipthrust"]
+      }
     };
 
     function slugify(value) {
@@ -2237,13 +2372,18 @@
         .replace(/^-|-$/g, "") || "opcao";
     }
 
+    function withVariantMedia(exerciseId, variant) {
+      const media = variant.media || AUTO_VARIANT_MEDIA[exerciseId]?.[variant.key] || EXERCISE_MEDIA[exerciseId];
+      return media ? { ...variant, media } : variant;
+    }
+
     function getExerciseVariants(exercise) {
-      if (EXERCISE_VARIANTS[exercise.id]) return EXERCISE_VARIANTS[exercise.id];
+      if (EXERCISE_VARIANTS[exercise.id]) return EXERCISE_VARIANTS[exercise.id].map((variant) => withVariantMedia(exercise.id, variant));
       if (!/\sou\s/i.test(exercise.name)) return [{ key: "base", label: exercise.name }];
       return exercise.name.split(/\sou\s/i).map((label) => {
         const cleaned = label.trim();
         return { key: slugify(cleaned), label: cleaned };
-      });
+      }).map((variant) => withVariantMedia(exercise.id, variant));
     }
 
     function getSelectedVariant(exercise) {
@@ -2642,6 +2782,68 @@
       `;
     }
 
+    function getExerciseDoneSummary(exercise, stateKey) {
+      return [
+        exercise.sets ? `${exercise.sets} séries` : "",
+        exercise.reps ? `${exercise.reps} reps` : "",
+        state.weights[stateKey] ? `${state.weights[stateKey]} kg` : ""
+      ].filter(Boolean).join(" • ") || "Concluído";
+    }
+
+    function updateExerciseCardForVariant(article, exercise) {
+      const variants = getExerciseVariants(exercise);
+      const selectedVariant = getSelectedVariant(exercise);
+      const stateKey = exerciseStateKey(exercise, selectedVariant);
+      const displayName = variants.length > 1 ? selectedVariant.label : exercise.name;
+      const isDone = !!state.done[stateKey];
+      const doneExpanded = !!state.expandedDone?.[stateKey];
+      const historySummary = getHistorySummary(stateKey);
+
+      article.dataset.stateKey = stateKey;
+      article.classList.toggle("done", isDone);
+      article.classList.toggle("expanded-done", doneExpanded);
+      article.title = isDone ? "Toque no card para ver detalhes. Toque no check para desmarcar." : "";
+      article.querySelector(".exercise-title").textContent = displayName;
+      article.querySelector(".done-summary").textContent = getExerciseDoneSummary(exercise, stateKey);
+      article.querySelectorAll(".variant-button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.variant === selectedVariant.key));
+      });
+
+      const visual = article.querySelector(".exercise-visual");
+      if (visual) {
+        visual.classList.remove("media-error");
+        visual.innerHTML = renderMovementMedia(exercise, selectedVariant);
+      }
+
+      const weightInput = article.querySelector(".weight-input");
+      const weightLabel = article.querySelector(".weight-label");
+      if (weightInput) {
+        weightInput.id = `weight-${stateKey}`;
+        weightInput.value = state.weights[stateKey] || "";
+      }
+      if (weightLabel) {
+        weightLabel.setAttribute("for", `weight-${stateKey}`);
+      }
+
+      let historyLine = article.querySelector(".history-line");
+      if (historySummary && weightInput) {
+        if (!historyLine) {
+          historyLine = document.createElement("p");
+          historyLine.className = "history-line";
+          article.querySelector(".weight-row")?.after(historyLine);
+        }
+        historyLine.textContent = historySummary;
+      } else if (historyLine) {
+        historyLine.remove();
+      }
+
+      const doneButton = article.querySelector(".done-button");
+      if (doneButton) {
+        doneButton.title = isDone ? "Desmarcar exercício" : "Concluir exercício";
+        doneButton.setAttribute("aria-label", `${isDone ? "Desmarcar" : "Concluir"} ${displayName}`);
+      }
+    }
+
     function renderWorkout() {
       const profile = profiles[currentProfile];
       const workout = profile.workouts[activeTab];
@@ -2670,7 +2872,7 @@
         const historySummary = getHistorySummary(stateKey);
         const mediaExpanded = !!state.expandedMedia?.[exercise.id];
         const doneExpanded = !!state.expandedDone?.[stateKey];
-        const doneSummary = [exercise.sets ? `${exercise.sets} séries` : "", exercise.reps ? `${exercise.reps} reps` : "", state.weights[stateKey] ? `${state.weights[stateKey]} kg` : ""].filter(Boolean).join(" • ");
+        const doneSummary = getExerciseDoneSummary(exercise, stateKey);
         const controlsHtml = variants.length > 1 || uiState.compact ? `
           <div class="exercise-controls">
             ${renderVariantControls(exercise, variants, selectedVariant)}
@@ -2681,6 +2883,7 @@
         article.className = `exercise${isDone ? " done" : ""}${doneExpanded ? " expanded-done" : ""}${mediaExpanded ? " show-media" : ""}`;
         article.dataset.id = exercise.id;
         article.dataset.stateKey = stateKey;
+        article.title = isDone ? "Toque no card para ver detalhes. Toque no check para desmarcar." : "";
         article.innerHTML = `
           <div class="exercise-main">
             <h2 class="exercise-title">${escapeHtml(displayName)}</h2>
@@ -2716,59 +2919,116 @@
           <figure class="exercise-visual">
             ${renderMovementMedia(exercise, selectedVariant)}
           </figure>
-          <button class="done-button" type="button" title="${isDone ? "Reabrir exercício" : "Concluir exercício"}" aria-label="${isDone ? "Reabrir" : "Concluir"} ${displayName}">
+          <button class="done-button" type="button" title="${isDone ? "Desmarcar exercício" : "Concluir exercício"}" aria-label="${isDone ? "Desmarcar" : "Concluir"} ${displayName}">
             <span class="check-ring" aria-hidden="true"></span>
           </button>
         `;
+        article.addEventListener("click", (event) => {
+          const currentKey = article.dataset.stateKey || stateKey;
+          if (!state.done[currentKey]) return;
+          if (event.target.closest("button,input,label,a,summary,details")) return;
+          const scrollXBefore = window.scrollX;
+          const scrollYBefore = window.scrollY;
+          state.expandedDone = state.expandedDone || {};
+          state.expandedDone[currentKey] = !state.expandedDone[currentKey];
+          article.classList.toggle("expanded-done", state.expandedDone[currentKey]);
+          saveProfileState();
+          requestAnimationFrame(() => {
+            window.scrollTo(scrollXBefore, scrollYBefore);
+            setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 0);
+            setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 120);
+          });
+        });
         article.querySelectorAll(".variant-button").forEach((button) => {
           button.addEventListener("click", () => {
+            const scrollXBefore = window.scrollX;
+            const scrollYBefore = window.scrollY;
             state.variants = state.variants || {};
             state.variants[exercise.id] = button.dataset.variant;
             saveProfileState();
-            renderWorkout();
+            updateExerciseCardForVariant(article, exercise);
+            updateProgress();
+            requestAnimationFrame(() => {
+              window.scrollTo(scrollXBefore, scrollYBefore);
+              setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 0);
+              setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 120);
+            });
           });
         });
         article.querySelector(".media-toggle")?.addEventListener("click", () => {
+          const scrollXBefore = window.scrollX;
+          const scrollYBefore = window.scrollY;
           state.expandedMedia = state.expandedMedia || {};
           state.expandedMedia[exercise.id] = !state.expandedMedia[exercise.id];
           saveProfileState();
           renderWorkout();
+          requestAnimationFrame(() => {
+            window.scrollTo(scrollXBefore, scrollYBefore);
+            setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 0);
+            setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 120);
+          });
         });
         const weightInput = article.querySelector(".weight-input");
         if (weightInput) {
           weightInput.addEventListener("input", (event) => {
-            state.weights[stateKey] = event.target.value.trim();
+            const currentKey = article.dataset.stateKey || stateKey;
+            state.weights[currentKey] = event.target.value.trim();
+            const doneSummaryEl = article.querySelector(".done-summary");
+            if (doneSummaryEl) doneSummaryEl.textContent = getExerciseDoneSummary(exercise, currentKey);
             saveProfileState();
           });
         }
-        article.querySelector(".done-button").addEventListener("click", () => {
-          const wasDone = !!state.done[stateKey];
+        const doneButton = article.querySelector(".done-button");
+        doneButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const scrollXBefore = window.scrollX;
+          const scrollYBefore = window.scrollY;
+          const keepScrollPosition = () => requestAnimationFrame(() => {
+            window.scrollTo(scrollXBefore, scrollYBefore);
+            setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 0);
+            setTimeout(() => window.scrollTo(scrollXBefore, scrollYBefore), 120);
+          });
+          const currentKey = article.dataset.stateKey || stateKey;
+          const wasDone = !!state.done[currentKey];
           if (wasDone) {
-            state.expandedDone = state.expandedDone || {};
-            state.expandedDone[stateKey] = !state.expandedDone[stateKey];
-            article.classList.toggle("expanded-done", state.expandedDone[stateKey]);
+            delete state.done[currentKey];
+            if (state.expandedDone) delete state.expandedDone[currentKey];
+            article.classList.remove("done", "expanded-done");
+            article.title = "";
+            doneButton.title = "Concluir exercício";
+            doneButton.setAttribute("aria-label", `Concluir ${displayName}`);
             saveProfileState();
+            updateProgress();
+            keepScrollPosition();
             return;
           }
 
-          state.done[stateKey] = true;
-          if (state.expandedDone) delete state.expandedDone[stateKey];
+          state.done[currentKey] = true;
+          if (state.expandedDone) delete state.expandedDone[currentKey];
           article.classList.add("done");
           article.classList.remove("expanded-done");
-            recordExerciseHistory(exercise, selectedVariant, weightInput?.value);
-            const nextHistorySummary = getHistorySummary(stateKey);
-            if (nextHistorySummary && weightInput) {
-              let historyLine = article.querySelector(".history-line");
-              if (!historyLine) {
-                historyLine = document.createElement("p");
-                historyLine.className = "history-line";
-                article.querySelector(".weight-row")?.after(historyLine);
-              }
-              historyLine.textContent = nextHistorySummary;
+          article.title = "Toque no card para ver detalhes. Toque no check para desmarcar.";
+          doneButton.title = "Desmarcar exercício";
+          doneButton.setAttribute("aria-label", `Desmarcar ${displayName}`);
+          const doneSummaryEl = article.querySelector(".done-summary");
+          if (doneSummaryEl) {
+            doneSummaryEl.textContent = getExerciseDoneSummary(exercise, currentKey);
+          }
+          recordExerciseHistory(exercise, getSelectedVariant(exercise), weightInput?.value);
+          const nextHistorySummary = getHistorySummary(currentKey);
+          if (nextHistorySummary && weightInput) {
+            let historyLine = article.querySelector(".history-line");
+            if (!historyLine) {
+              historyLine = document.createElement("p");
+              historyLine.className = "history-line";
+              article.querySelector(".weight-row")?.after(historyLine);
             }
-            if (exercise.restSeconds > 0) startRest(exercise.restSeconds);
+            historyLine.textContent = nextHistorySummary;
+          }
+          if (exercise.restSeconds > 0) startRest(exercise.restSeconds);
           saveProfileState();
-          renderWorkout();
+          updateProgress();
+          keepScrollPosition();
         });
         workoutEl.appendChild(article);
       });
