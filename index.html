@@ -1757,7 +1757,7 @@
             warmup: "Aquecimento: 5 min de aeróbico leve + ativação de glúteos com faixa 2x15",
             total: "16 séries • ~55 min",
             exercises: [
-              { id: "sara-la-squat", name: "Agachamento livre ou no hack", note: "Quadríceps principal, técnica acima de tudo", sets: "3", reps: "6–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "sara-la-squat", name: "Agachamento com halteres ou hack", note: "Quadríceps principal, controle de amplitude e base estável", sets: "3", reps: "6–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
               { id: "sara-la-hipthrust", name: "Elevação pélvica com barra", note: "Glúteo principal, pausa 1s no topo", sets: "3", reps: "8–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-la-legpress", name: "Leg press 45°", note: "Quadríceps complemento, pés médios", sets: "3", reps: "10–12", rir: "1", restLabel: "90 s", restSeconds: 90 },
               { id: "sara-la-ext", name: "Cadeira extensora", note: "Quadríceps isolado, controle excêntrico", sets: "2", reps: "12–15", rir: "0", restLabel: "60 s", restSeconds: 60 },
@@ -2275,6 +2275,7 @@
       cableCrossover: { url: "https://gymvisual.com/img/p/4/8/8/8/4888.gif", label: "Cable crossover variation" },
       cableHipAbduction: { url: "https://gymvisual.com/img/p/2/9/5/3/9/29539.gif", label: "Cable hip abduction" },
       cableKickback: { url: "https://gymvisual.com/img/p/3/3/8/5/4/33854.gif", label: "Cable straight leg diagonal kickback" },
+      dumbbellGobletSquat: { url: "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-goblet-squat.gif", label: "Dumbbell goblet squat" },
       ezSkullCrusher: { url: "https://gymvisual.com/img/p/7/5/5/2/7552.gif", label: "EZ bar lying triceps extension" },
       gobletSquat: { url: "https://liftmanual.com/wp-content/uploads/2023/04/kettlebell-goblet-squat.webp", label: "Goblet squat" },
       legRaise: { url: "https://gymvisual.com/img/p/5/3/5/6/5356.gif", label: "Lying leg raise flat bench" },
@@ -2366,7 +2367,8 @@
         "crossover-de-cima-para-baixo": MEDIA_ALIASES.cableCrossover
       },
       "sara-la-squat": {
-        "agachamento-livre": EXERCISE_MEDIA["lower-a-squat"],
+        "agachamento-com-halteres": MEDIA_ALIASES.dumbbellGobletSquat,
+        "hack": EXERCISE_MEDIA["sara-la-squat"],
         "no-hack": EXERCISE_MEDIA["sara-la-squat"]
       },
       "sara-ua-pulldown": {
