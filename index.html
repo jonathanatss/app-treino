@@ -1052,6 +1052,7 @@
     .exercise.done:not(.expanded-done) .metrics,
     .exercise.done:not(.expanded-done) .weight-row,
     .exercise.done:not(.expanded-done) .history-line,
+    .exercise.done:not(.expanded-done) .prep-panel,
     .exercise.done:not(.expanded-done) .exercise-visual {
       display: none;
     }
@@ -1342,6 +1343,83 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.35;
+    }
+
+    .prep-panel {
+      max-width: 390px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(242, 211, 186, .16);
+    }
+
+    .prep-panel summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 34px;
+      color: var(--cream);
+      cursor: pointer;
+      list-style: none;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .prep-panel summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .prep-panel summary::after {
+      content: "+";
+      display: grid;
+      min-width: 22px;
+      height: 22px;
+      place-items: center;
+      border: 1px solid rgba(242, 211, 186, .22);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .prep-panel[open] summary::after {
+      content: "-";
+    }
+
+    .prep-summary-value {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 680;
+      text-transform: uppercase;
+    }
+
+    .prep-note,
+    .prep-empty {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .prep-list {
+      display: grid;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .prep-row {
+      display: grid;
+      grid-template-columns: 54px 86px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .prep-row strong {
+      color: var(--text);
+      font-size: 13px;
     }
 
     .done-summary {
@@ -2365,6 +2443,45 @@
       }
     };
 
+    const PREP_EXERCISE_META = {
+      jonathan: {
+        "lower-a-squat": { group: "quadríceps", kind: "heavy" },
+        "lower-a-leg-press": { group: "quadríceps", kind: "heavy" },
+        "lower-a-ext": { group: "quadríceps", kind: "isolation" },
+        "lower-a-curl": { group: "posterior", kind: "isolation" },
+        "lower-a-calf": { group: "panturrilha", kind: "isolation" },
+        "upper-a-incline-db": { group: "peito", kind: "heavy" },
+        "upper-a-fly": { group: "peito", kind: "isolation" },
+        "upper-a-row": { group: "costas", kind: "heavy" },
+        "upper-a-pulldown": { group: "costas", kind: "moderate" },
+        "upper-a-lateral": { group: "ombros", kind: "isolation" },
+        "upper-a-triceps": { group: "tríceps", kind: "isolation" },
+        "upper-a-curl": { group: "bíceps", kind: "isolation" },
+        "upper-a-abs-machine": { group: "abdômen", kind: "isolation" },
+        "lower-b-rdl": { group: "posterior", kind: "heavy" },
+        "lower-b-hip-thrust": { group: "glúteos", kind: "heavy" },
+        "lower-b-articulated-leg-press": { group: "quadríceps", kind: "moderate" },
+        "lower-b-hamstring": { group: "posterior", kind: "isolation" },
+        "lower-b-abductor": { group: "glúteos", kind: "isolation" },
+        "lower-b-seated-calf": { group: "panturrilha", kind: "isolation" },
+        "upper-b-chest-machine": { group: "peito", kind: "heavy" },
+        "upper-b-chest-accessory": { group: "peito", kind: "moderate" },
+        "upper-b-unilateral-row": { group: "costas", kind: "heavy" },
+        "upper-b-unilateral-pulldown": { group: "costas", kind: "moderate" },
+        "upper-b-hammer": { group: "bíceps", kind: "isolation" },
+        "upper-b-triceps-rope": { group: "tríceps", kind: "isolation" },
+        "upper-b-face-pull": { group: "ombros", kind: "isolation" },
+        "full-body-horizontal-leg-press": { group: "quadríceps", kind: "moderate" },
+        "full-body-hamstring": { group: "posterior", kind: "isolation" },
+        "full-body-chest": { group: "peito", kind: "moderate" },
+        "full-body-row": { group: "costas", kind: "moderate" },
+        "full-body-shoulder-press": { group: "ombros", kind: "moderate" },
+        "full-body-cable-curl": { group: "bíceps", kind: "isolation" },
+        "full-body-triceps": { group: "tríceps", kind: "isolation" },
+        "full-body-abs": { group: "abdômen", kind: "isolation" }
+      }
+    };
+
     function slugify(value) {
       return String(value)
         .normalize("NFD")
@@ -2752,6 +2869,167 @@
       return `Última: ${formatLoad(last.load)} kg • Melhor: ${formatLoad(best)} kg`;
     }
 
+    function hasAnyTerm(text, terms) {
+      return terms.some((term) => text.includes(term));
+    }
+
+    function inferPrepGroup(exercise) {
+      const text = slugify(`${exercise.name} ${exercise.note || ""}`);
+      if (hasAnyTerm(text, ["panturrilha", "calf", "soleo", "gastrocnemio"])) return "panturrilha";
+      if (hasAnyTerm(text, ["abdominal", "abdomen", "core", "prancha", "dead-bug", "bird-dog"])) return "abdômen";
+      if (hasAnyTerm(text, ["biceps", "rosca", "martelo", "scott", "curl"])) return "bíceps";
+      if (hasAnyTerm(text, ["triceps", "pulley", "testa", "frances"])) return "tríceps";
+      if (hasAnyTerm(text, ["desenvolvimento", "ombro", "deltoide", "elevacao-lateral", "face-pull", "voador-inverso", "crucifixo-invertido"])) return "ombros";
+      if (hasAnyTerm(text, ["supino", "peito", "peitoral", "crossover", "crucifixo", "chest-press", "peck-deck", "paralelas"])) return "peito";
+      if (hasAnyTerm(text, ["remada", "puxada", "pulldown", "costas", "dorsais", "dorsal"])) return "costas";
+      if (hasAnyTerm(text, ["flexora", "posterior", "terra-romeno", "romeno", "stiff"])) return "posterior";
+      if (hasAnyTerm(text, ["elevacao-pelvica", "gluteo", "gluteos", "abdutora", "abdutora", "abductor", "coice", "bulgaro", "afundo"])) return "glúteos";
+      if (hasAnyTerm(text, ["agachamento", "hack", "leg-press", "extensora", "quadriceps", "smith"])) return "quadríceps";
+      return "geral";
+    }
+
+    function inferPrepKind(exercise) {
+      const text = slugify(`${exercise.name} ${exercise.note || ""}`);
+      if (hasAnyTerm(text, [
+        "extensora", "flexora", "abdutora", "abdutora", "coice", "panturrilha", "calf",
+        "rosca", "triceps", "pulley", "elevacao-lateral", "face-pull", "voador",
+        "crucifixo", "crossover", "abdominal", "prancha"
+      ])) return "isolation";
+      if (hasAnyTerm(text, [
+        "agachamento", "hack", "leg-press", "terra-romeno", "romeno", "stiff",
+        "supino", "chest-press", "remada-curvada", "remada-maquina", "remada-unilateral",
+        "remada-articulada", "elevacao-pelvica"
+      ])) return "heavy";
+      return "moderate";
+    }
+
+    function inferPrepMeta(exercise) {
+      return {
+        group: inferPrepGroup(exercise),
+        kind: inferPrepKind(exercise)
+      };
+    }
+
+    function getPrepMeta(exercise) {
+      return PREP_EXERCISE_META[currentProfile]?.[exercise.id] || inferPrepMeta(exercise);
+    }
+
+    function getActiveWorkoutExercises() {
+      return profiles[currentProfile]?.workouts?.[activeTab]?.exercises || [];
+    }
+
+    function isFirstPrepForGroup(exercise, workoutExercises = getActiveWorkoutExercises()) {
+      const meta = getPrepMeta(exercise);
+      if (!meta) return false;
+      const exerciseIndex = workoutExercises.findIndex((item) => item.id === exercise.id);
+      const previousExercises = workoutExercises.slice(0, Math.max(0, exerciseIndex));
+      return !previousExercises.some((item) => getPrepMeta(item)?.group === meta.group);
+    }
+
+    function roundPrepLoad(value) {
+      return Math.round(value * 2) / 2;
+    }
+
+    function buildPrepSets(load, kind, isFirstForGroup) {
+      if (!isFirstForGroup) {
+        if (kind === "isolation") return [];
+        return [{ percent: 50, reps: "5 reps" }];
+      }
+
+      if (kind === "heavy") {
+        if (load >= 80) {
+          return [
+            { percent: 40, reps: "8 reps" },
+            { percent: 60, reps: "5 reps" },
+            { percent: 75, reps: "3 reps" },
+            { percent: 85, reps: "1–2 reps" }
+          ];
+        }
+        if (load >= 40) {
+          return [
+            { percent: 50, reps: "8 reps" },
+            { percent: 70, reps: "4–5 reps" }
+          ];
+        }
+        return [{ percent: 50, reps: "8–10 reps" }];
+      }
+
+      if (kind === "moderate") {
+        if (load >= 60) {
+          return [
+            { percent: 50, reps: "8 reps" },
+            { percent: 70, reps: "4 reps" }
+          ];
+        }
+        return [{ percent: 50, reps: "8 reps" }];
+      }
+
+      return [{ percent: 50, reps: "10–12 reps" }];
+    }
+
+    function renderPreparatoryPanel(exercise, stateKey, workoutExercises = getActiveWorkoutExercises()) {
+      if (exercise.trackWeight === false) return "";
+      const meta = getPrepMeta(exercise);
+      if (!meta) return "";
+
+      const load = parseLoad(state.weights[stateKey]);
+      if (!Number.isFinite(load)) {
+        return `
+          <details class="prep-panel">
+            <summary><span>Preparatórias</span><span class="prep-summary-value">carga pendente</span></summary>
+            <p class="prep-empty">Informe a carga válida para calcular as séries de aproximação.</p>
+          </details>
+        `;
+      }
+
+      const isFirstForGroup = isFirstPrepForGroup(exercise, workoutExercises);
+      const prepSets = buildPrepSets(load, meta.kind, isFirstForGroup)
+        .map((set) => ({ ...set, load: roundPrepLoad(load * (set.percent / 100)) }));
+      const summary = prepSets.length ? `${prepSets.length} séries` : "opcional";
+      const note = isFirstForGroup
+        ? `${meta.group}: aquecimento específico antes das séries válidas.`
+        : `${meta.group} já aquecido neste treino; use só se precisar sentir o movimento.`;
+
+      return `
+        <details class="prep-panel">
+          <summary><span>Preparatórias</span><span class="prep-summary-value">${escapeHtml(summary)}</span></summary>
+          <p class="prep-note">${escapeHtml(note)} Não contam como séries de trabalho.</p>
+          ${prepSets.length ? `
+            <div class="prep-list">
+              ${prepSets.map((set) => `
+                <div class="prep-row">
+                  <span>${set.percent}%</span>
+                  <strong>${formatLoad(set.load)} kg</strong>
+                  <span>${escapeHtml(set.reps)}</span>
+                </div>
+              `).join("")}
+            </div>
+          ` : ""}
+        </details>
+      `;
+    }
+
+    function updatePreparatoryPanel(article, exercise, stateKey) {
+      const currentPanel = article.querySelector(".prep-panel");
+      const wasOpen = !!currentPanel?.open;
+      const nextHtml = renderPreparatoryPanel(exercise, stateKey);
+      if (!nextHtml) {
+        currentPanel?.remove();
+        return;
+      }
+      const template = document.createElement("template");
+      template.innerHTML = nextHtml.trim();
+      const nextPanel = template.content.firstElementChild;
+      if (nextPanel && wasOpen) nextPanel.open = true;
+      if (currentPanel) {
+        currentPanel.replaceWith(nextPanel);
+        return;
+      }
+      const historyLine = article.querySelector(".history-line");
+      if (historyLine) historyLine.after(nextPanel);
+      else article.querySelector(".weight-row")?.after(nextPanel);
+    }
+
     function recordExerciseHistory(exercise, variant, weightValue) {
       const load = parseLoad(weightValue);
       if (!Number.isFinite(load)) return;
@@ -2838,6 +3116,7 @@
       } else if (historyLine) {
         historyLine.remove();
       }
+      updatePreparatoryPanel(article, exercise, stateKey);
 
       const doneButton = article.querySelector(".done-button");
       if (doneButton) {
@@ -2916,6 +3195,7 @@
                 <input class="weight-input" id="weight-${stateKey}" inputmode="decimal" autocomplete="off" value="${state.weights[stateKey] || ""}">
               </div>
               ${historySummary ? `<p class="history-line">${historySummary}</p>` : ""}
+              ${renderPreparatoryPanel(exercise, stateKey, workout.exercises)}
             `}
           </div>
           <figure class="exercise-visual">
@@ -2977,6 +3257,7 @@
             state.weights[currentKey] = event.target.value.trim();
             const doneSummaryEl = article.querySelector(".done-summary");
             if (doneSummaryEl) doneSummaryEl.textContent = getExerciseDoneSummary(exercise, currentKey);
+            updatePreparatoryPanel(article, exercise, currentKey);
             saveProfileState();
           });
         }
