@@ -1681,9 +1681,10 @@
       },
       upperA: {
         title: "Terça • Superior A • Ênfase peito",
-        warmup: "Aquecimento: 5 min cardio + rotação externa ombro elástico 2x15",
-        total: "18 séries • ~60–65 min",
+        warmup: "Aquecimento: 5 min cardio leve antes do prehab de ombros",
+        total: "18 séries + 2 prehab • ~65 min",
         exercises: [
+          { id: "upper-a-external-rotation", name: "Rotação externa de ombros", note: "Prehab do ombro esquerdo, cotovelo fixo e carga leve", sets: "2", reps: "15 cada lado", rir: "2–3", restLabel: "45 s", restSeconds: 45, trackWeight: false },
           { id: "upper-a-incline-db", name: "Supino inclinado halteres pegada neutra", note: "Peito principal, ombro-friendly", sets: "3", reps: "6–8", rir: "0–1", restLabel: "2–3 min", restSeconds: 180 },
           { id: "upper-a-fly", name: "Crossover de cima para baixo", note: "Peitoral inferior, amplitude controlada e sem estressar o ombro", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
           { id: "upper-a-row", name: "Remada curvada máquina", note: "Costas pesadas, estabilidade e progressão", sets: "2", reps: "6–8", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
@@ -1702,16 +1703,17 @@
           { id: "lower-b-rdl", name: "Levantamento terra romeno", note: "Cadeia posterior pesada, sem técnica avançada", sets: "3", reps: "6–8", rir: "1", restLabel: "2–3 min", restSeconds: 180 },
           { id: "lower-b-hip-thrust", name: "Elevação pélvica barra ou Smith", note: "Glúteo direto, pausa 1s no topo", sets: "3", reps: "8–10", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
           { id: "lower-b-articulated-leg-press", name: "Leg press articulado unilateral", note: "Quadríceps/glúteo unilateral, controle de assimetria", sets: "2", reps: "8–10 cada lado", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
-          { id: "lower-b-hamstring", name: "Cadeira flexora ou stiff com halteres", note: "Posterior complementar", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
+          { id: "lower-b-hamstring", name: "Cadeira flexora", note: "Posterior complementar sem sobrecarregar lombar", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
           { id: "lower-b-abductor", name: "Abdutora máquina ou cabo", note: "Glúteo médio", sets: "2", reps: "15", rir: "0", restLabel: "60 s", restSeconds: 60 },
           { id: "lower-b-seated-calf", name: "Panturrilha sentada", note: "Sóleo, tempo sob tensão", sets: "3", reps: "12–20", rir: "0", restLabel: "60 s", restSeconds: 60 }
         ]
       },
       upperB: {
         title: "Sexta • Superior B • Peito + Costas unilateral + Braços",
-        warmup: "Aquecimento: 5 min cardio + rotação externa ombro elástico 2x15",
-        total: "17 séries • ~60 min",
+        warmup: "Aquecimento: 5 min cardio leve antes do prehab de ombros",
+        total: "17 séries + 2 prehab • ~60–65 min",
         exercises: [
+          { id: "upper-b-external-rotation", name: "Rotação externa de ombros", note: "Prehab do ombro esquerdo, controle sem fadigar", sets: "2", reps: "15 cada lado", rir: "2–3", restLabel: "45 s", restSeconds: 45, trackWeight: false },
           { id: "upper-b-chest-machine", name: "Supino reto máquina convergente", note: "Peito principal, ombro protegido", sets: "3", reps: "8–10", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
           { id: "upper-b-chest-accessory", name: "Paralelas assistidas", note: "Peitoral inferior, tronco levemente inclinado e amplitude segura para o ombro", sets: "2", reps: "6–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
           { id: "upper-b-unilateral-row", name: "Remada unilateral articulada", note: "Correção de assimetria, controle escapular", sets: "3", reps: "8–10 cada lado", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
@@ -1723,19 +1725,52 @@
       },
       fullBody: {
         title: "Sábado • Full Body • 3º estímulo perna e peito",
-        warmup: "Aquecimento: 5 min cardio + rotação externa ombro elástico 2x15 + mobilidade de ombro 5 min",
-        total: "18 séries • ~60–70 min",
+        warmup: "Aquecimento: 5 min cardio + mobilidade de ombro 5 min antes do prehab",
+        total: "20 séries + 2 prehab • ~70–75 min",
         exercises: [
+          { id: "full-body-external-rotation", name: "Rotação externa de ombros", note: "Prehab antes do desenvolvimento, carga leve", sets: "2", reps: "15 cada lado", rir: "2–3", restLabel: "45 s", restSeconds: 45, trackWeight: false },
           { id: "full-body-horizontal-leg-press", name: "Leg press horizontal", note: "3º estímulo de perna, foco controlado em quadríceps", sets: "3", reps: "10–12", rir: "0–1", restLabel: "2 min", restSeconds: 120 },
-          { id: "full-body-hamstring", name: "Cadeira flexora ou stiff com halteres", note: "Posterior complementar", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
+          { id: "full-body-hamstring", name: "Cadeira flexora", note: "Posterior complementar sem sobrecarregar lombar", sets: "2", reps: "10–12", rir: "0", restLabel: "90 s", restSeconds: 90 },
           { id: "full-body-chest", name: "Supino máquina convergente ou crossover de cima para baixo", note: "3º estímulo de peito, opção com foco em peitoral inferior", sets: "2", reps: "10–15", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
           { id: "full-body-row", name: "Remada bilateral com polia", note: "Costas moderada, trajetória estável", sets: "2", reps: "10–12", rir: "0–1", restLabel: "90 s", restSeconds: 90 },
+          { id: "full-body-straight-arm-pulldown", name: "Pulldown na polia", note: "Isolador de dorsal com braços quase estendidos", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
           { id: "full-body-shoulder-press", name: "Desenvolvimento máquina pegada neutra", note: "Ombro com trajetória guiada, sem travar cotovelos no topo", sets: "2", reps: "8–10", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
           { id: "full-body-cable-curl", name: "Rosca no cabo", note: "Bíceps, tensão constante", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "full-body-triceps", name: "Tríceps unilateral no cabo", note: "Tríceps e simetria lado a lado", sets: "3", reps: "12–15 cada lado", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "full-body-abs", name: "Abdominal máquina", note: "Core com carga progressiva, execução simples", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
         ]
       }
+        }
+      },
+      jonathanToday: {
+        name: "Jonathan Hoje",
+        initials: "JH",
+        accent: "var(--green)",
+        title: "FitPlan",
+        subtitle: "Treino pontual • Full body leve/social • 30% da carga usual • Poupar escápula/ombro/peito direitos • 18/07/2026",
+        defaultTab: "today",
+        tabs: [
+          { key: "today", label: "Hoje • Full Body 30%", color: "var(--green)" }
+        ],
+        workouts: {
+          today: {
+            title: "Hoje • Full Body leve/social • 30% da carga usual",
+            warmup: "Regra do dia: usar ~30% da carga normal, RIR 4–5 e dor no máximo 0–2/10. Se aumentar, irradiar, apertar o peito ou alterar respiração, pare. Sem stiff/RDL, elevação pélvica, supino livre, desenvolvimento ou remada pesada.",
+            total: "16 séries + cardio • ~50–60 min",
+            exercises: [
+              { id: "today-bike-warmup", name: "Bike leve", note: "Aquecimento sem impacto, ritmo conversável", sets: "1", reps: "6–8 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false },
+              { id: "today-external-rotation", name: "Rotação externa de ombros", note: "Ativação leve; carga simbólica, sem buscar fadiga", sets: "2", reps: "15 cada lado", rir: "4–5", restLabel: "30–45 s", restSeconds: 45, trackWeight: false },
+              { id: "today-leg-press", name: "Leg press 45° leve", note: "30% da carga usual, pés médios e sem prender respiração", sets: "2", reps: "15", rir: "4–5", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "today-leg-extension", name: "Cadeira extensora", note: "30% da carga usual, pump de quadríceps sem falha", sets: "2", reps: "15–20", rir: "4", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "today-chest-press", name: "Supino máquina convergente leve", note: "Só se não reproduzir dor; amplitude curta/confortável", sets: "2", reps: "15", rir: "4–5", restLabel: "60 s", restSeconds: 60 },
+              { id: "today-row-light", name: "Remada baixa neutra leve", note: "30% da carga usual; escápula suave, sem puxar forte", sets: "2", reps: "15", rir: "4–5", restLabel: "60 s", restSeconds: 60 },
+              { id: "today-cable-curl", name: "Rosca no cabo leve", note: "Pump de bíceps sem balançar tronco", sets: "2", reps: "15–20", rir: "3–4", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "today-triceps-rope", name: "Tríceps corda leve", note: "Cotovelo fixo; pare se puxar peito/ombro", sets: "2", reps: "15–20", rir: "3–4", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "today-calf-seated", name: "Panturrilha sentada", note: "Amplitude completa, pausa curta no topo", sets: "2", reps: "15–20", rir: "2–3", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "today-abs-machine", name: "Abdominal máquina", note: "Leve/moderado, sem puxar com ombro ou braço", sets: "2", reps: "12–15", rir: "3–4", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "today-bike-cooldown", name: "Bike leve final", note: "Opcional para fechar junto com o grupo", sets: "1", reps: "8–10 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          }
         }
       },
       sara: {
@@ -2110,6 +2145,7 @@
     const EXERCISE_MEDIA_BASE = "https://static.exercisedb.dev/media/";
     const EXERCISE_MEDIA = {
       "upper-a-incline-db": { id: "PG1kcIb", label: "Dumbbell incline hammer press" },
+      "upper-a-external-rotation": { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-standing-shoulder-external-rotation.webp", label: "Cable standing shoulder external rotation" },
       "upper-a-row": { id: "X3cqyXz", label: "Lever bent over row" },
       "upper-a-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
       "upper-a-fly": { url: "https://gymvisual.com/img/p/4/8/8/8/4888.gif", label: "Cable high to low crossover" },
@@ -2128,6 +2164,7 @@
       "lower-b-hamstring": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
       "lower-b-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
       "lower-b-seated-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "upper-b-external-rotation": { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-standing-shoulder-external-rotation.webp", label: "Cable standing shoulder external rotation" },
       "upper-b-chest-machine": { id: "DOoWcnA", label: "Lever chest press" },
       "upper-b-chest-accessory": { url: "https://gymvisual.com/img/p/1/0/2/8/6/10286.gif", label: "Wide grip chest dip on parallel bars" },
       "upper-b-unilateral-row": { url: "https://gymvisual.com/img/p/6/6/1/4/6614.gif", label: "Lever seated row" },
@@ -2135,14 +2172,27 @@
       "upper-b-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
       "upper-b-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
       "upper-b-face-pull": { id: "ZfyAGhK", label: "Cable standing rear delt row with rope" },
+      "full-body-external-rotation": { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-standing-shoulder-external-rotation.webp", label: "Cable standing shoulder external rotation" },
       "full-body-horizontal-leg-press": { id: "9KU9TYF", label: "Lever horizontal one leg press" },
       "full-body-hamstring": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
       "full-body-chest": { id: "DOoWcnA", label: "Lever chest press" },
       "full-body-row": { id: "fUBheHs", label: "Cable seated row" },
+      "full-body-straight-arm-pulldown": { id: "x69MAlq", label: "Cable straight arm pulldown" },
       "full-body-shoulder-press": { id: "vqsbmL0", label: "Lever shoulder press v. 2" },
       "full-body-cable-curl": { id: "G08RZcQ", label: "Cable curl" },
       "full-body-triceps": { id: "qRZ5S1N", label: "Cable one arm tricep pushdown" },
       "full-body-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
+      "today-bike-warmup": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "today-external-rotation": { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-standing-shoulder-external-rotation.webp", label: "Cable standing shoulder external rotation" },
+      "today-leg-extension": { id: "my33uHU", label: "Lever leg extension" },
+      "today-leg-press": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "today-chest-press": { id: "DOoWcnA", label: "Lever chest press" },
+      "today-row-light": { id: "fUBheHs", label: "Cable seated row" },
+      "today-cable-curl": { id: "G08RZcQ", label: "Cable curl" },
+      "today-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "today-calf-seated": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "today-abs-machine": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
+      "today-bike-cooldown": { id: "a8VDgLw", label: "Stationary bike walk" },
       "sara-la-squat": { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
       "sara-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "sara-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
@@ -2293,14 +2343,6 @@
     };
 
     const EXERCISE_VARIANTS = {
-      "lower-b-hamstring": [
-        { key: "cadeira-flexora", label: "Cadeira flexora", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" } },
-        { key: "stiff-halteres", label: "Stiff com halteres", media: { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" } }
-      ],
-      "full-body-hamstring": [
-        { key: "cadeira-flexora", label: "Cadeira flexora", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" } },
-        { key: "stiff-halteres", label: "Stiff com halteres", media: { id: "5eLRITT", label: "Dumbbell stiff leg deadlift" } }
-      ],
       "sara-lb-uni-thrust": [
         { key: "elevacao-pelvica-unilateral", label: "Elevação pélvica unilateral", media: { id: "rmEukuS", label: "Single leg bridge" } },
         { key: "coice-polia", label: "Coice na polia", media: { id: "Kpajagk", label: "Cable standing hip extension" } }
@@ -2456,6 +2498,7 @@
         "lower-a-ext": { group: "quadríceps", kind: "isolation" },
         "lower-a-curl": { group: "posterior", kind: "isolation" },
         "lower-a-calf": { group: "panturrilha", kind: "isolation" },
+        "upper-a-external-rotation": { group: "ombros", kind: "isolation" },
         "upper-a-incline-db": { group: "peito", kind: "heavy" },
         "upper-a-fly": { group: "peito", kind: "isolation" },
         "upper-a-row": { group: "costas", kind: "heavy" },
@@ -2470,6 +2513,7 @@
         "lower-b-hamstring": { group: "posterior", kind: "isolation" },
         "lower-b-abductor": { group: "glúteos", kind: "isolation" },
         "lower-b-seated-calf": { group: "panturrilha", kind: "isolation" },
+        "upper-b-external-rotation": { group: "ombros", kind: "isolation" },
         "upper-b-chest-machine": { group: "peito", kind: "heavy" },
         "upper-b-chest-accessory": { group: "peito", kind: "moderate" },
         "upper-b-unilateral-row": { group: "costas", kind: "heavy" },
@@ -2477,14 +2521,26 @@
         "upper-b-hammer": { group: "bíceps", kind: "isolation" },
         "upper-b-triceps-rope": { group: "tríceps", kind: "isolation" },
         "upper-b-face-pull": { group: "ombros", kind: "isolation" },
+        "full-body-external-rotation": { group: "ombros", kind: "isolation" },
         "full-body-horizontal-leg-press": { group: "quadríceps", kind: "moderate" },
         "full-body-hamstring": { group: "posterior", kind: "isolation" },
         "full-body-chest": { group: "peito", kind: "moderate" },
         "full-body-row": { group: "costas", kind: "moderate" },
+        "full-body-straight-arm-pulldown": { group: "costas", kind: "isolation" },
         "full-body-shoulder-press": { group: "ombros", kind: "moderate" },
         "full-body-cable-curl": { group: "bíceps", kind: "isolation" },
         "full-body-triceps": { group: "tríceps", kind: "isolation" },
         "full-body-abs": { group: "abdômen", kind: "isolation" }
+      },
+      jonathanToday: {
+        "today-leg-extension": { group: "quadríceps", kind: "isolation" },
+        "today-leg-press": { group: "quadríceps", kind: "moderate" },
+        "today-chest-press": { group: "peito", kind: "moderate" },
+        "today-row-light": { group: "costas", kind: "moderate" },
+        "today-cable-curl": { group: "bíceps", kind: "isolation" },
+        "today-triceps-rope": { group: "tríceps", kind: "isolation" },
+        "today-calf-seated": { group: "panturrilha", kind: "isolation" },
+        "today-abs-machine": { group: "abdômen", kind: "isolation" }
       }
     };
 
