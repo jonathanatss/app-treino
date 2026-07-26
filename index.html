@@ -1742,37 +1742,6 @@
       }
         }
       },
-      jonathanToday: {
-        name: "Jonathan Hoje",
-        initials: "JH",
-        accent: "var(--green)",
-        title: "FitPlan",
-        subtitle: "Treino pontual • Full body leve/social • 30% da carga usual • Poupar escápula/ombro/peito direitos • 18/07/2026",
-        defaultTab: "today",
-        tabs: [
-          { key: "today", label: "Hoje • Full Body 30%", color: "var(--green)" }
-        ],
-        workouts: {
-          today: {
-            title: "Hoje • Full Body leve/social • 30% da carga usual",
-            warmup: "Regra do dia: usar ~30% da carga normal, RIR 4–5 e dor no máximo 0–2/10. Se aumentar, irradiar, apertar o peito ou alterar respiração, pare. Sem stiff/RDL, elevação pélvica, supino livre, desenvolvimento ou remada pesada.",
-            total: "16 séries + cardio • ~50–60 min",
-            exercises: [
-              { id: "today-bike-warmup", name: "Bike leve", note: "Aquecimento sem impacto, ritmo conversável", sets: "1", reps: "6–8 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false },
-              { id: "today-external-rotation", name: "Rotação externa de ombros", note: "Ativação leve; carga simbólica, sem buscar fadiga", sets: "2", reps: "15 cada lado", rir: "4–5", restLabel: "30–45 s", restSeconds: 45, trackWeight: false },
-              { id: "today-leg-press", name: "Leg press 45° leve", note: "30% da carga usual, pés médios e sem prender respiração", sets: "2", reps: "15", rir: "4–5", restLabel: "60–75 s", restSeconds: 75 },
-              { id: "today-leg-extension", name: "Cadeira extensora", note: "30% da carga usual, pump de quadríceps sem falha", sets: "2", reps: "15–20", rir: "4", restLabel: "45–60 s", restSeconds: 60 },
-              { id: "today-chest-press", name: "Supino máquina convergente leve", note: "Só se não reproduzir dor; amplitude curta/confortável", sets: "2", reps: "15", rir: "4–5", restLabel: "60 s", restSeconds: 60 },
-              { id: "today-row-light", name: "Remada baixa neutra leve", note: "30% da carga usual; escápula suave, sem puxar forte", sets: "2", reps: "15", rir: "4–5", restLabel: "60 s", restSeconds: 60 },
-              { id: "today-cable-curl", name: "Rosca no cabo leve", note: "Pump de bíceps sem balançar tronco", sets: "2", reps: "15–20", rir: "3–4", restLabel: "45–60 s", restSeconds: 60 },
-              { id: "today-triceps-rope", name: "Tríceps corda leve", note: "Cotovelo fixo; pare se puxar peito/ombro", sets: "2", reps: "15–20", rir: "3–4", restLabel: "45–60 s", restSeconds: 60 },
-              { id: "today-calf-seated", name: "Panturrilha sentada", note: "Amplitude completa, pausa curta no topo", sets: "2", reps: "15–20", rir: "2–3", restLabel: "45–60 s", restSeconds: 60 },
-              { id: "today-abs-machine", name: "Abdominal máquina", note: "Leve/moderado, sem puxar com ombro ou braço", sets: "2", reps: "12–15", rir: "3–4", restLabel: "45–60 s", restSeconds: 60 },
-              { id: "today-bike-cooldown", name: "Bike leve final", note: "Opcional para fechar junto com o grupo", sets: "1", reps: "8–10 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false }
-            ]
-          }
-        }
-      },
       sara: {
         name: "Sara",
         initials: "S",
@@ -2182,17 +2151,6 @@
       "full-body-cable-curl": { id: "G08RZcQ", label: "Cable curl" },
       "full-body-triceps": { id: "qRZ5S1N", label: "Cable one arm tricep pushdown" },
       "full-body-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
-      "today-bike-warmup": { id: "a8VDgLw", label: "Stationary bike walk" },
-      "today-external-rotation": { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-standing-shoulder-external-rotation.webp", label: "Cable standing shoulder external rotation" },
-      "today-leg-extension": { id: "my33uHU", label: "Lever leg extension" },
-      "today-leg-press": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
-      "today-chest-press": { id: "DOoWcnA", label: "Lever chest press" },
-      "today-row-light": { id: "fUBheHs", label: "Cable seated row" },
-      "today-cable-curl": { id: "G08RZcQ", label: "Cable curl" },
-      "today-triceps-rope": { id: "dU605di", label: "Cable rope triceps pushdown" },
-      "today-calf-seated": { id: "bOOdeyc", label: "Lever seated calf raise" },
-      "today-abs-machine": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
-      "today-bike-cooldown": { id: "a8VDgLw", label: "Stationary bike walk" },
       "sara-la-squat": { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
       "sara-la-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
       "sara-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
@@ -2531,16 +2489,6 @@
         "full-body-cable-curl": { group: "bíceps", kind: "isolation" },
         "full-body-triceps": { group: "tríceps", kind: "isolation" },
         "full-body-abs": { group: "abdômen", kind: "isolation" }
-      },
-      jonathanToday: {
-        "today-leg-extension": { group: "quadríceps", kind: "isolation" },
-        "today-leg-press": { group: "quadríceps", kind: "moderate" },
-        "today-chest-press": { group: "peito", kind: "moderate" },
-        "today-row-light": { group: "costas", kind: "moderate" },
-        "today-cable-curl": { group: "bíceps", kind: "isolation" },
-        "today-triceps-rope": { group: "tríceps", kind: "isolation" },
-        "today-calf-seated": { group: "panturrilha", kind: "isolation" },
-        "today-abs-machine": { group: "abdômen", kind: "isolation" }
       }
     };
 
