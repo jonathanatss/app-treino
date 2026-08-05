@@ -2078,6 +2078,68 @@
             ]
           }
         }
+      },
+      nathalia: {
+        name: "Nathália",
+        initials: "Na",
+        accent: "var(--green)",
+        title: "FitPlan",
+        subtitle: "Full Body 3x • Perda de gordura + saúde muscular • Lombar protegida • 08/2026",
+        defaultTab: "fullA",
+        tabs: [
+          { key: "fullA", label: "Seg • Full Body A", color: "var(--green)" },
+          { key: "fullB", label: "Qua • Full Body B", color: "var(--rose)" },
+          { key: "fullC", label: "Sex • Full Body C", color: "var(--blue)" }
+        ],
+        workouts: {
+          fullA: {
+            title: "Segunda • Full Body A • Quadríceps + Braços",
+            warmup: "Aquecimento: 5–8 min bike/esteira + 1–2 séries preparatórias no primeiro exercício de perna e superior",
+            total: "23 séries • ~55–65 min",
+            exercises: [
+              { id: "nathalia-fa-smith-squat", name: "Agachamento no Smith", note: "Quadríceps com trajetória estável, sem buscar carga máxima", sets: "3", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "nathalia-fa-legpress", name: "Leg press 45°", note: "Amplitude controlada, lombar colada no banco e sem descer demais", sets: "2", reps: "10–12", rir: "2", restLabel: "90 s", restSeconds: 90 },
+              { id: "nathalia-fa-ext", name: "Cadeira extensora", note: "Quadríceps isolado, controle na descida", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "nathalia-fa-pulldown", name: "Puxada alta na polia", note: "Costas vertical, tronco estável", sets: "3", reps: "8–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "nathalia-fa-db-press", name: "Supino reto com halteres", note: "Peito com halteres, sem depender de máquina", sets: "3", reps: "8–10", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "nathalia-fa-triceps", name: "Tríceps corda", note: "Cotovelos fixos, extensão completa", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "nathalia-fa-curl", name: "Rosca direta barra W ou halteres", note: "Bíceps base, sem balanço", sets: "3", reps: "8–12", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "nathalia-fa-plank", name: "Prancha", note: "Core anti-extensão, coluna neutra", sets: "3", reps: "30–45s", rir: "1–2", restLabel: "30–45 s", restSeconds: 45, trackWeight: false }
+            ]
+          },
+          fullB: {
+            title: "Quarta • Full Body B • Posterior + Glúteos",
+            warmup: "Aquecimento: 5–8 min bike/esteira + mobilidade leve de quadril + séries preparatórias",
+            total: "23 séries • ~55–65 min",
+            exercises: [
+              { id: "nathalia-fb-hipthrust", name: "Elevação pélvica com barra ou Smith", note: "Glúteo principal, pausa 1s no topo", sets: "4", reps: "8–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "nathalia-fb-seated-curl", name: "Cadeira flexora", note: "Posterior sem exigir lombar", sets: "3", reps: "10–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "nathalia-fb-bulgarian", name: "Afundo búlgaro com halteres leves", note: "Unilateral; se incomodar lombar/equilíbrio, trocar por abdutora", sets: "2", reps: "10 cada lado", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "nathalia-fb-row", name: "Remada baixa na polia com triângulo", note: "Costas horizontal, peito alto e coluna neutra", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "nathalia-fb-lateral", name: "Elevação lateral", note: "Ombro sem máquina de desenvolvimento", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "nathalia-fb-triceps-french", name: "Tríceps francês na polia", note: "Cabeça longa do tríceps, amplitude controlada", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "nathalia-fb-hammer", name: "Rosca martelo", note: "Bíceps, braquial e antebraço", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "nathalia-fb-deadbug", name: "Dead bug", note: "Core com controle lombar", sets: "3", reps: "10 cada lado", rir: "1–2", restLabel: "30–45 s", restSeconds: 45, trackWeight: false },
+              { id: "nathalia-fb-bike", name: "Bike leve/moderada", note: "Condicionamento sem impacto", sets: "1", reps: "10–15 min", rir: "confortável", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          fullC: {
+            title: "Sexta • Full Body C • Glúteos + Costas + Braços",
+            warmup: "Aquecimento: 5–8 min bike/esteira + séries preparatórias no primeiro exercício de perna e superior",
+            total: "24 séries • ~55–65 min",
+            exercises: [
+              { id: "nathalia-fc-sumo", name: "Agachamento sumô com halter", note: "Glúteos e pernas com carga controlável", sets: "3", reps: "10–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "nathalia-fc-legpress-high", name: "Leg press 45° pés médios/altos", note: "Ênfase glúteo/posterior, sem perder contato lombar no banco", sets: "2", reps: "10–12", rir: "2", restLabel: "90 s", restSeconds: 90 },
+              { id: "nathalia-fc-abductor", name: "Cadeira abdutora", note: "Glúteo médio, pausa curta na abertura", sets: "3", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "nathalia-fc-one-arm-row", name: "Remada unilateral com halter apoiada no banco", note: "Costas com apoio, reduzindo roubo da lombar", sets: "3", reps: "10–12 cada lado", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "nathalia-fc-incline-db", name: "Supino inclinado com halteres", note: "Peito superior sem crucifixo/crossover", sets: "2", reps: "8–10", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "nathalia-fc-lateral", name: "Elevação lateral", note: "Deltoide medial, controle total", sets: "2", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "nathalia-fc-scott", name: "Rosca Scott", note: "Bíceps com base estável", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "nathalia-fc-triceps", name: "Tríceps pulley barra ou corda", note: "Tríceps base, cotovelos estáveis", sets: "3", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "nathalia-fc-crunch", name: "Crunch no solo", note: "Abdômen sem carga axial", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60, trackWeight: false }
+            ]
+          }
+        }
       }
     };
 
@@ -2280,7 +2342,33 @@
       "fernando-fb-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
       "fernando-fb-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
       "fernando-fb-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
-      "fernando-fb-abs": { id: "WW95auq", label: "Cable kneeling crunch" }
+      "fernando-fb-abs": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "nathalia-fa-smith-squat": { id: "jFtipLl", label: "Smith squat" },
+      "nathalia-fa-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "nathalia-fa-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "nathalia-fa-pulldown": { id: "RVwzP10", label: "Cable pulldown" },
+      "nathalia-fa-db-press": { id: "SpYC0Kp", label: "Dumbbell bench press" },
+      "nathalia-fa-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "nathalia-fa-curl": { id: "25GPyDY", label: "Barbell curl" },
+      "nathalia-fa-plank": { id: "hCjGsRQ", label: "Power point plank" },
+      "nathalia-fb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "nathalia-fb-seated-curl": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
+      "nathalia-fb-bulgarian": { id: "qx4fgX7", label: "Dumbbell single leg split squat" },
+      "nathalia-fb-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "nathalia-fb-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "nathalia-fb-triceps-french": { id: "2IxROQ1", label: "Cable overhead triceps extension" },
+      "nathalia-fb-hammer": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
+      "nathalia-fb-deadbug": { url: "https://liftmanual.com/wp-content/uploads/2023/04/dead-bug.webp", label: "Dead bug" },
+      "nathalia-fb-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "nathalia-fc-sumo": { url: "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-sumo-squat.webp", label: "Dumbbell sumo squat" },
+      "nathalia-fc-legpress-high": { id: "10Z2DXU", label: "Sled 45 degree leg press glutes" },
+      "nathalia-fc-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "nathalia-fc-one-arm-row": { url: "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-one-arm-bent-over-row.gif", label: "Dumbbell one arm bent over row" },
+      "nathalia-fc-incline-db": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "nathalia-fc-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
+      "nathalia-fc-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
+      "nathalia-fc-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "nathalia-fc-crunch": { url: "https://liftmanual.com/wp-content/uploads/2023/04/crunch.gif", label: "Crunch floor" }
     };
 
     const MEDIA_ALIASES = {
@@ -2490,6 +2578,34 @@
         "full-body-cable-curl": { group: "bíceps", kind: "isolation" },
         "full-body-triceps": { group: "tríceps", kind: "isolation" },
         "full-body-abs": { group: "abdômen", kind: "isolation" }
+      },
+      nathalia: {
+        "nathalia-fa-smith-squat": { group: "quadríceps", kind: "moderate" },
+        "nathalia-fa-legpress": { group: "quadríceps", kind: "moderate" },
+        "nathalia-fa-ext": { group: "quadríceps", kind: "isolation" },
+        "nathalia-fa-pulldown": { group: "costas", kind: "moderate" },
+        "nathalia-fa-db-press": { group: "peito", kind: "moderate" },
+        "nathalia-fa-triceps": { group: "tríceps", kind: "isolation" },
+        "nathalia-fa-curl": { group: "bíceps", kind: "isolation" },
+        "nathalia-fa-plank": { group: "abdômen", kind: "isolation" },
+        "nathalia-fb-hipthrust": { group: "glúteos", kind: "moderate" },
+        "nathalia-fb-seated-curl": { group: "posterior", kind: "isolation" },
+        "nathalia-fb-bulgarian": { group: "quadríceps/glúteos", kind: "moderate" },
+        "nathalia-fb-row": { group: "costas", kind: "moderate" },
+        "nathalia-fb-lateral": { group: "ombros", kind: "isolation" },
+        "nathalia-fb-triceps-french": { group: "tríceps", kind: "isolation" },
+        "nathalia-fb-hammer": { group: "bíceps", kind: "isolation" },
+        "nathalia-fb-deadbug": { group: "abdômen", kind: "isolation" },
+        "nathalia-fb-bike": { group: "cardio", kind: "cardio" },
+        "nathalia-fc-sumo": { group: "glúteos/pernas", kind: "moderate" },
+        "nathalia-fc-legpress-high": { group: "glúteos/posterior", kind: "moderate" },
+        "nathalia-fc-abductor": { group: "glúteos", kind: "isolation" },
+        "nathalia-fc-one-arm-row": { group: "costas", kind: "moderate" },
+        "nathalia-fc-incline-db": { group: "peito", kind: "moderate" },
+        "nathalia-fc-lateral": { group: "ombros", kind: "isolation" },
+        "nathalia-fc-scott": { group: "bíceps", kind: "isolation" },
+        "nathalia-fc-triceps": { group: "tríceps", kind: "isolation" },
+        "nathalia-fc-crunch": { group: "abdômen", kind: "isolation" }
       }
     };
 
