@@ -2167,6 +2167,88 @@
             ]
           }
         }
+      },
+      pablo: {
+        name: "Pablo",
+        initials: "P",
+        accent: "var(--blue)",
+        title: "FitPlan",
+        subtitle: "Upper/Lower 4x + cardio 2x • Recomposição • Base técnica e condicionamento • 08/2026",
+        defaultTab: "upperA",
+        tabs: [
+          { key: "upperA", label: "Seg • Superior A", color: "var(--blue)" },
+          { key: "lowerA", label: "Ter • Inferior A", color: "var(--green)" },
+          { key: "upperB", label: "Qui • Superior B", color: "var(--violet)" },
+          { key: "lowerB", label: "Sex • Inferior B", color: "var(--rose)" },
+          { key: "cardio", label: "Sáb • Cardio", color: "var(--green)" }
+        ],
+        workouts: {
+          upperA: {
+            title: "Segunda • Superior A • Peito + Costas + Core",
+            warmup: "Aquecimento: 5–8 min bike/esteira + 1–2 séries preparatórias no primeiro supino e na primeira puxada",
+            total: "18 séries • ~55–65 min",
+            exercises: [
+              { id: "pablo-ua-chest", name: "Supino reto máquina ou halteres", note: "Peito base, execução controlada e sem pressa para carga", sets: "3", reps: "8–10", rir: "2", restLabel: "90 s", restSeconds: 90 },
+              { id: "pablo-ua-pulldown", name: "Puxada alta frente pegada neutra ou aberta", note: "Costas/dorsais, peito alto e escápulas controladas", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "pablo-ua-row", name: "Remada baixa no cabo", note: "Costas horizontal, tronco estável", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "pablo-ua-incline", name: "Supino inclinado com halteres", note: "Peito superior, amplitude confortável", sets: "2", reps: "10–12", rir: "2", restLabel: "90 s", restSeconds: 90 },
+              { id: "pablo-ua-facepull", name: "Face pull na corda", note: "Trapézio médio/baixo e estabilidade escapular", sets: "2", reps: "15–20", rir: "1–2", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-ua-shrug", name: "Encolhimento com halteres", note: "Trapézio, pausa curta no topo", sets: "2", reps: "12–15", rir: "1–2", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-ua-abs", name: "Abdominal máquina ou abdominal na polia", note: "Core com carga progressiva; se não tiver máquina, usar polia", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          lowerA: {
+            title: "Terça • Inferior A • Base de pernas + Bike",
+            warmup: "Aquecimento: 5–8 min bike + séries preparatórias no leg press",
+            total: "17 séries + bike • ~55–65 min",
+            exercises: [
+              { id: "pablo-la-legpress", name: "Leg press 45° ou horizontal", note: "Quadríceps principal sem agachamento livre/hack", sets: "3", reps: "10–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "pablo-la-ext", name: "Cadeira extensora", note: "Quadríceps isolado, controle na descida", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-la-curl", name: "Mesa flexora ou cadeira flexora", note: "Posterior de coxa sem stiff/RDL", sets: "3", reps: "10–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "pablo-la-abductor", name: "Cadeira abdutora", note: "Glúteo médio e estabilidade de quadril", sets: "2", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "pablo-la-calf", name: "Panturrilha em pé ou no leg press", note: "Amplitude completa e pausa no topo", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-la-bike", name: "Bike leve/moderada", note: "Condicionamento, ritmo sustentável", sets: "1", reps: "20 min", rir: "moderado", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          upperB: {
+            title: "Quinta • Superior B • Peito + Dorsais + Braços",
+            warmup: "Aquecimento: 5–8 min bike/esteira + séries preparatórias no primeiro supino e na primeira remada",
+            total: "20 séries • ~60–70 min",
+            exercises: [
+              { id: "pablo-ub-incline", name: "Supino inclinado máquina ou halteres", note: "Peito superior, progressão técnica", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "pablo-ub-row", name: "Remada unilateral máquina ou halter apoiado", note: "Costas com apoio, controle lado a lado", sets: "3", reps: "10–12 cada lado", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "pablo-ub-pulldown", name: "Puxada alta frente", note: "Dorsais, sem jogar tronco para trás", sets: "3", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "pablo-ub-fly", name: "Crucifixo máquina ou peck deck", note: "Peito isolado, amplitude confortável", sets: "2", reps: "12–15", rir: "1–2", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-ub-shoulder", name: "Desenvolvimento máquina ou halteres sentado", note: "Ombros com trajetória controlada", sets: "2", reps: "10–12", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "pablo-ub-curl", name: "Rosca direta ou rosca no cabo", note: "Bíceps base, sem balanço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-ub-triceps", name: "Tríceps corda", note: "Cotovelos fixos, extensão completa", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-ub-abs", name: "Abdominal máquina ou abdominal na polia", note: "Core com carga progressiva; se não tiver máquina, usar polia", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
+            ]
+          },
+          lowerB: {
+            title: "Sexta • Inferior B • Pernas + Core + Bike",
+            warmup: "Aquecimento: 5–8 min bike + séries preparatórias no primeiro exercício de perna",
+            total: "17 séries + bike • ~55–65 min",
+            exercises: [
+              { id: "pablo-lb-squat", name: "Agachamento no Smith ou goblet squat com halter", note: "Padrão de agachar sem agachamento livre", sets: "3", reps: "10–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "pablo-lb-legpress", name: "Leg press com pés um pouco mais altos", note: "Pernas com ênfase maior em glúteos, sem stiff/RDL", sets: "3", reps: "10–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "pablo-lb-curl", name: "Cadeira flexora", note: "Posterior de coxa direto e seguro", sets: "3", reps: "10–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "pablo-lb-adductor", name: "Cadeira adutora", note: "Adutores e estabilidade do quadril", sets: "2", reps: "15–20", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "pablo-lb-calf", name: "Panturrilha sentada", note: "Sóleo, amplitude completa", sets: "3", reps: "12–20", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+              { id: "pablo-lb-abs", name: "Abdominal máquina ou abdominal na polia", note: "Core com carga progressiva; se não tiver máquina, usar polia", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 },
+              { id: "pablo-lb-bike", name: "Bike leve/moderada", note: "Condicionamento, ritmo sustentável", sets: "1", reps: "20 min", rir: "moderado", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          cardio: {
+            title: "Sábado • Cardio progressivo • Volta aos 5 km",
+            warmup: "Aquecimento: 5 min caminhando antes de trotar",
+            total: "25–35 min • Opcional/progressivo",
+            exercises: [
+              { id: "pablo-cardio-run", name: "Corrida/caminhada intervalada", note: "Comece com 2 min caminhando + 1 min trotando; aumente o trote ao longo das semanas", sets: "1", reps: "25–35 min", rir: "confortável", restLabel: "—", restSeconds: 0, trackWeight: false },
+              { id: "pablo-cardio-mobility", name: "Mobilidade de quadril e torácica", note: "Compensa rotina sentada e ajuda postura para corrida/treino", sets: "1", reps: "5–8 min", rir: "leve", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          }
+        }
       }
     };
 
@@ -2411,7 +2493,37 @@
       "nathalia-fc-lateral": { id: "DsgkuIt", label: "Dumbbell lateral raise" },
       "nathalia-fc-scott": { id: "b6hQYMb", label: "Lever preacher curl" },
       "nathalia-fc-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
-      "nathalia-fc-crunch": { id: "WW95auq", label: "Cable kneeling crunch" }
+      "nathalia-fc-crunch": { id: "WW95auq", label: "Cable kneeling crunch" },
+      "pablo-ua-chest": { id: "SpYC0Kp", label: "Dumbbell bench press" },
+      "pablo-ua-pulldown": { id: "RVwzP10", label: "Cable pulldown" },
+      "pablo-ua-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "pablo-ua-incline": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "pablo-ua-facepull": { id: "ZfyAGhK", label: "Cable standing rear delt row with rope" },
+      "pablo-ua-shrug": { url: "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-shrug.webp", label: "Dumbbell shrug" },
+      "pablo-ua-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
+      "pablo-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "pablo-la-ext": { id: "my33uHU", label: "Lever leg extension" },
+      "pablo-la-curl": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
+      "pablo-la-abductor": { id: "CHpahtl", label: "Lever seated hip abduction" },
+      "pablo-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
+      "pablo-la-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "pablo-ub-incline": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "pablo-ub-row": { url: "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-one-arm-bent-over-row.gif", label: "Dumbbell one arm bent over row" },
+      "pablo-ub-pulldown": { id: "RVwzP10", label: "Cable pulldown" },
+      "pablo-ub-fly": { id: "v3xmPAR", label: "Lever seated fly" },
+      "pablo-ub-shoulder": { id: "vqsbmL0", label: "Lever shoulder press v. 2" },
+      "pablo-ub-curl": { id: "G08RZcQ", label: "Cable curl" },
+      "pablo-ub-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "pablo-ub-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
+      "pablo-lb-squat": { id: "jFtipLl", label: "Smith squat" },
+      "pablo-lb-legpress": { id: "10Z2DXU", label: "Sled 45 degree leg press glutes" },
+      "pablo-lb-curl": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp", label: "Lever seated leg curl" },
+      "pablo-lb-adductor": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-hip-adduction.webp", label: "Lever seated hip adduction" },
+      "pablo-lb-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "pablo-lb-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
+      "pablo-lb-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
+      "pablo-cardio-run": { url: "https://gymvisual.com/img/p/1/4/4/5/7/14457.gif", label: "Walking on incline treadmill" },
+      "pablo-cardio-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" }
     };
 
     const MEDIA_ALIASES = {
@@ -2432,6 +2544,58 @@
     };
 
     const EXERCISE_VARIANTS = {
+      "pablo-ua-chest": [
+        { key: "halteres", label: "halteres", media: EXERCISE_MEDIA["pablo-ua-chest"] },
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] }
+      ],
+      "pablo-ua-abs": [
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ua-abs"] },
+        { key: "polia", label: "polia", media: { id: "WW95auq", label: "Cable kneeling crunch" } }
+      ],
+      "pablo-la-legpress": [
+        { key: "45", label: "45°", media: EXERCISE_MEDIA["pablo-la-legpress"] },
+        { key: "horizontal", label: "horizontal", media: EXERCISE_MEDIA["full-body-horizontal-leg-press"] }
+      ],
+      "pablo-la-curl": [
+        { key: "cadeira-flexora", label: "cadeira flexora", media: EXERCISE_MEDIA["pablo-la-curl"] },
+        { key: "mesa-flexora", label: "mesa flexora", media: EXERCISE_MEDIA["lower-a-curl"] }
+      ],
+      "pablo-la-calf": [
+        { key: "em-pe", label: "em pé", media: EXERCISE_MEDIA["pablo-la-calf"] },
+        { key: "leg-press", label: "no leg press", media: EXERCISE_MEDIA["lower-a-calf"] }
+      ],
+      "pablo-ub-incline": [
+        { key: "halteres", label: "halteres", media: EXERCISE_MEDIA["pablo-ub-incline"] },
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] }
+      ],
+      "pablo-ub-row": [
+        { key: "halter-apoiado", label: "halter apoiado", media: EXERCISE_MEDIA["pablo-ub-row"] },
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["upper-b-unilateral-row"] }
+      ],
+      "pablo-ub-fly": [
+        { key: "peck-deck", label: "peck deck", media: EXERCISE_MEDIA["pablo-ub-fly"] },
+        { key: "crucifixo-maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ub-fly"] }
+      ],
+      "pablo-ub-shoulder": [
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ub-shoulder"] },
+        { key: "halteres", label: "halteres", media: { id: "6jmHNDI", label: "Dumbbell seated shoulder press" } }
+      ],
+      "pablo-ub-curl": [
+        { key: "cabo", label: "cabo", media: EXERCISE_MEDIA["pablo-ub-curl"] },
+        { key: "direta", label: "direta", media: EXERCISE_MEDIA["upper-a-curl"] }
+      ],
+      "pablo-ub-abs": [
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ub-abs"] },
+        { key: "polia", label: "polia", media: { id: "WW95auq", label: "Cable kneeling crunch" } }
+      ],
+      "pablo-lb-squat": [
+        { key: "smith", label: "Smith", media: EXERCISE_MEDIA["pablo-lb-squat"] },
+        { key: "goblet", label: "goblet", media: MEDIA_ALIASES.dumbbellGobletSquat }
+      ],
+      "pablo-lb-abs": [
+        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-lb-abs"] },
+        { key: "polia", label: "polia", media: { id: "WW95auq", label: "Cable kneeling crunch" } }
+      ],
       "sara-lb-uni-thrust": [
         { key: "elevacao-pelvica-unilateral", label: "Elevação pélvica unilateral", media: { id: "rmEukuS", label: "Single leg bridge" } },
         { key: "coice-polia", label: "Coice na polia", media: { id: "Kpajagk", label: "Cable standing hip extension" } }
@@ -2656,6 +2820,38 @@
         "nathalia-fc-scott": { group: "bíceps", kind: "isolation" },
         "nathalia-fc-triceps": { group: "tríceps", kind: "isolation" },
         "nathalia-fc-crunch": { group: "abdômen", kind: "isolation" }
+      },
+      pablo: {
+        "pablo-ua-chest": { group: "peito", kind: "moderate" },
+        "pablo-ua-pulldown": { group: "costas", kind: "moderate" },
+        "pablo-ua-row": { group: "costas", kind: "moderate" },
+        "pablo-ua-incline": { group: "peito", kind: "moderate" },
+        "pablo-ua-facepull": { group: "trapézio/escápulas", kind: "isolation" },
+        "pablo-ua-shrug": { group: "trapézio", kind: "isolation" },
+        "pablo-ua-abs": { group: "abdômen", kind: "isolation" },
+        "pablo-la-legpress": { group: "quadríceps", kind: "moderate" },
+        "pablo-la-ext": { group: "quadríceps", kind: "isolation" },
+        "pablo-la-curl": { group: "posterior", kind: "isolation" },
+        "pablo-la-abductor": { group: "glúteos", kind: "isolation" },
+        "pablo-la-calf": { group: "panturrilha", kind: "isolation" },
+        "pablo-la-bike": { group: "cardio", kind: "cardio" },
+        "pablo-ub-incline": { group: "peito", kind: "moderate" },
+        "pablo-ub-row": { group: "costas", kind: "moderate" },
+        "pablo-ub-pulldown": { group: "costas", kind: "moderate" },
+        "pablo-ub-fly": { group: "peito", kind: "isolation" },
+        "pablo-ub-shoulder": { group: "ombros", kind: "moderate" },
+        "pablo-ub-curl": { group: "bíceps", kind: "isolation" },
+        "pablo-ub-triceps": { group: "tríceps", kind: "isolation" },
+        "pablo-ub-abs": { group: "abdômen", kind: "isolation" },
+        "pablo-lb-squat": { group: "quadríceps", kind: "moderate" },
+        "pablo-lb-legpress": { group: "quadríceps/glúteos", kind: "moderate" },
+        "pablo-lb-curl": { group: "posterior", kind: "isolation" },
+        "pablo-lb-adductor": { group: "adutores", kind: "isolation" },
+        "pablo-lb-calf": { group: "panturrilha", kind: "isolation" },
+        "pablo-lb-abs": { group: "abdômen", kind: "isolation" },
+        "pablo-lb-bike": { group: "cardio", kind: "cardio" },
+        "pablo-cardio-run": { group: "cardio", kind: "cardio" },
+        "pablo-cardio-mobility": { group: "mobilidade", kind: "isolation" }
       }
     };
 
