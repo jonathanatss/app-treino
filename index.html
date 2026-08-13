@@ -2545,52 +2545,52 @@
 
     const EXERCISE_VARIANTS = {
       "pablo-ua-chest": [
-        { key: "halteres", label: "halteres", media: EXERCISE_MEDIA["pablo-ua-chest"] },
-        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] }
+        { key: "halteres", label: "halteres", displayName: "Supino reto com halteres", media: EXERCISE_MEDIA["pablo-ua-chest"] },
+        { key: "maquina", label: "máquina", displayName: "Supino reto máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] }
       ],
       "pablo-ua-abs": [
         { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ua-abs"] },
         { key: "polia", label: "polia", media: { id: "WW95auq", label: "Cable kneeling crunch" } }
       ],
       "pablo-la-legpress": [
-        { key: "45", label: "45°", media: EXERCISE_MEDIA["pablo-la-legpress"] },
-        { key: "horizontal", label: "horizontal", media: EXERCISE_MEDIA["full-body-horizontal-leg-press"] }
+        { key: "45", label: "45°", displayName: "Leg press 45°", media: EXERCISE_MEDIA["pablo-la-legpress"] },
+        { key: "horizontal", label: "horizontal", displayName: "Leg press horizontal", media: EXERCISE_MEDIA["full-body-horizontal-leg-press"] }
       ],
       "pablo-la-curl": [
-        { key: "cadeira-flexora", label: "cadeira flexora", media: EXERCISE_MEDIA["pablo-la-curl"] },
-        { key: "mesa-flexora", label: "mesa flexora", media: EXERCISE_MEDIA["lower-a-curl"] }
+        { key: "cadeira-flexora", label: "cadeira flexora", displayName: "Cadeira flexora", media: EXERCISE_MEDIA["pablo-la-curl"] },
+        { key: "mesa-flexora", label: "mesa flexora", displayName: "Mesa flexora", media: EXERCISE_MEDIA["lower-a-curl"] }
       ],
       "pablo-la-calf": [
-        { key: "em-pe", label: "em pé", media: EXERCISE_MEDIA["pablo-la-calf"] },
-        { key: "leg-press", label: "no leg press", media: EXERCISE_MEDIA["lower-a-calf"] }
+        { key: "em-pe", label: "em pé", displayName: "Panturrilha em pé", media: EXERCISE_MEDIA["pablo-la-calf"] },
+        { key: "leg-press", label: "no leg press", displayName: "Panturrilha no leg press", media: EXERCISE_MEDIA["lower-a-calf"] }
       ],
       "pablo-ub-incline": [
-        { key: "halteres", label: "halteres", media: EXERCISE_MEDIA["pablo-ub-incline"] },
-        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] }
+        { key: "halteres", label: "halteres", displayName: "Supino inclinado com halteres", media: EXERCISE_MEDIA["pablo-ub-incline"] },
+        { key: "maquina", label: "máquina", displayName: "Supino inclinado máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] }
       ],
       "pablo-ub-row": [
-        { key: "halter-apoiado", label: "halter apoiado", media: EXERCISE_MEDIA["pablo-ub-row"] },
-        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["upper-b-unilateral-row"] }
+        { key: "halter-apoiado", label: "halter apoiado", displayName: "Remada unilateral com halter apoiado", media: EXERCISE_MEDIA["pablo-ub-row"] },
+        { key: "maquina", label: "máquina", displayName: "Remada unilateral máquina", media: EXERCISE_MEDIA["upper-b-unilateral-row"] }
       ],
       "pablo-ub-fly": [
-        { key: "peck-deck", label: "peck deck", media: EXERCISE_MEDIA["pablo-ub-fly"] },
-        { key: "crucifixo-maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ub-fly"] }
+        { key: "peck-deck", label: "peck deck", displayName: "Peck deck", media: EXERCISE_MEDIA["pablo-ub-fly"] },
+        { key: "crucifixo-maquina", label: "máquina", displayName: "Crucifixo máquina", media: EXERCISE_MEDIA["pablo-ub-fly"] }
       ],
       "pablo-ub-shoulder": [
-        { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ub-shoulder"] },
-        { key: "halteres", label: "halteres", media: { id: "6jmHNDI", label: "Dumbbell seated shoulder press" } }
+        { key: "maquina", label: "máquina", displayName: "Desenvolvimento máquina", media: EXERCISE_MEDIA["pablo-ub-shoulder"] },
+        { key: "halteres", label: "halteres", displayName: "Desenvolvimento com halteres sentado", media: { id: "6jmHNDI", label: "Dumbbell seated shoulder press" } }
       ],
       "pablo-ub-curl": [
-        { key: "cabo", label: "cabo", media: EXERCISE_MEDIA["pablo-ub-curl"] },
-        { key: "direta", label: "direta", media: EXERCISE_MEDIA["upper-a-curl"] }
+        { key: "cabo", label: "cabo", displayName: "Rosca no cabo", media: EXERCISE_MEDIA["pablo-ub-curl"] },
+        { key: "direta", label: "direta", displayName: "Rosca direta", media: EXERCISE_MEDIA["upper-a-curl"] }
       ],
       "pablo-ub-abs": [
         { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-ub-abs"] },
         { key: "polia", label: "polia", media: { id: "WW95auq", label: "Cable kneeling crunch" } }
       ],
       "pablo-lb-squat": [
-        { key: "smith", label: "Smith", media: EXERCISE_MEDIA["pablo-lb-squat"] },
-        { key: "goblet", label: "goblet", media: MEDIA_ALIASES.dumbbellGobletSquat }
+        { key: "smith", label: "Smith", displayName: "Agachamento no Smith", media: EXERCISE_MEDIA["pablo-lb-squat"] },
+        { key: "goblet", label: "goblet", displayName: "Goblet squat com halter", media: MEDIA_ALIASES.dumbbellGobletSquat }
       ],
       "pablo-lb-abs": [
         { key: "maquina", label: "máquina", media: EXERCISE_MEDIA["pablo-lb-abs"] },
@@ -3448,7 +3448,7 @@
       const variants = getExerciseVariants(exercise);
       const selectedVariant = getSelectedVariant(exercise);
       const stateKey = exerciseStateKey(exercise, selectedVariant);
-      const displayName = variants.length > 1 ? selectedVariant.label : exercise.name;
+      const displayName = variants.length > 1 ? (selectedVariant.displayName || selectedVariant.label) : exercise.name;
       const isDone = !!state.done[stateKey];
       const doneExpanded = !!state.expandedDone?.[stateKey];
       const historySummary = getHistorySummary(stateKey);
@@ -3523,7 +3523,7 @@
         const selectedVariant = getSelectedVariant(exercise);
         const stateKey = exerciseStateKey(exercise, selectedVariant);
         const isDone = !!state.done[stateKey];
-        const displayName = variants.length > 1 ? selectedVariant.label : exercise.name;
+        const displayName = variants.length > 1 ? (selectedVariant.displayName || selectedVariant.label) : exercise.name;
         const historySummary = getHistorySummary(stateKey);
         const mediaExpanded = !!state.expandedMedia?.[exercise.id];
         const doneExpanded = !!state.expandedDone?.[stateKey];
