@@ -2249,6 +2249,79 @@
             ]
           }
         }
+      },
+      igor: {
+        name: "Igor",
+        initials: "I",
+        accent: "var(--violet)",
+        title: "FitPlan",
+        subtitle: "Upper/Lower 4x + cardio 2x • Perda de gordura preservando massa • Descanso qua/sáb/dom • 08/2026",
+        defaultTab: "upperA",
+        tabs: [
+          { key: "upperA", label: "Seg • Superior A", color: "var(--blue)" },
+          { key: "lowerA", label: "Ter • Inferior A", color: "var(--green)" },
+          { key: "upperB", label: "Qui • Superior B", color: "var(--violet)" },
+          { key: "lowerB", label: "Sex • Inferior B", color: "var(--rose)" }
+        ],
+        workouts: {
+          upperA: {
+            title: "Segunda • Superior A • Peito + Costas + Ombros e Braços",
+            warmup: "Aquecimento: 5–8 min de esteira leve + 1–2 séries preparatórias no primeiro supino e na primeira remada",
+            total: "17 séries + cardio • ~65–75 min",
+            exercises: [
+              { id: "igor-ua-chest", name: "Supino reto na máquina convergente", note: "Peito principal com trajetória estável e boa relação estímulo/fadiga", sets: "3", reps: "6–10", rir: "2", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "igor-ua-row", name: "Remada máquina com peito apoiado", note: "Costas sem compensar com a lombar", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "igor-ua-incline", name: "Supino inclinado com halteres", note: "Peitoral superior, amplitude confortável e controlada", sets: "2", reps: "8–12", rir: "2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "igor-ua-pulldown", name: "Puxada alta pegada neutra", note: "Dorsais, peito alto e cotovelos conduzindo o movimento", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "igor-ua-lateral", name: "Elevação lateral na polia ou com halteres", note: "Escolha livre entre polia e halteres; mantenha controle e evite impulso", sets: "3", reps: "12–20", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ua-triceps", name: "Tríceps na polia com corda", note: "Cotovelos estáveis e extensão completa", sets: "2", reps: "10–15", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ua-curl", name: "Rosca direta com barra W", note: "Sem balanço do tronco, controle na descida", sets: "2", reps: "8–12", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ua-cardio", name: "Esteira em ritmo moderado", note: "Ritmo em que ainda consiga falar frases curtas; não é necessário perseguir uma frequência cardíaca fixa", sets: "1", reps: "20–30 min", rir: "moderado", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          lowerA: {
+            title: "Terça • Inferior A • Quadríceps + Posteriores",
+            warmup: "Aquecimento: 5–8 min de bike/esteira + séries preparatórias no leg press; observe conforto e simetria do joelho direito",
+            total: "17 séries • ~60–70 min",
+            exercises: [
+              { id: "igor-la-legpress", name: "Leg press 45°", note: "Base de quadríceps; não reduza a amplitude para aumentar a carga", sets: "3", reps: "8–12", rir: "2", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "igor-la-extension", name: "Cadeira extensora unilateral", note: "Comece pela perna direita, use amplitude sem dor e registre a carga de cada lado", sets: "2", reps: "10–15 cada perna", rir: "2–3", restLabel: "60–90 s", restSeconds: 90 },
+              { id: "igor-la-rdl", name: "RDL (stiff com joelhos levemente flexionados)", note: "Quadril para trás, barra próxima ao corpo e descida somente enquanto a coluna permanecer neutra", sets: "3", reps: "8–12", rir: "2", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "igor-la-curl", name: "Mesa flexora", note: "Posterior de coxa pela flexão do joelho, sem tirar o quadril do apoio", sets: "3", reps: "10–15", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "igor-la-calf", name: "Panturrilha em pé", note: "Amplitude completa e pausa curta no topo", sets: "3", reps: "10–15", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-la-abs", name: "Abdominal na máquina", note: "Core com carga progressiva e movimento controlado", sets: "3", reps: "10–15", rir: "1–2", restLabel: "60 s", restSeconds: 60 }
+            ]
+          },
+          upperB: {
+            title: "Quinta • Superior B • Costas + Peito + Ombros e Braços",
+            warmup: "Aquecimento: 5–8 min de esteira leve + 1–2 séries preparatórias na primeira puxada e no primeiro supino",
+            total: "18 séries + cardio • ~70–80 min",
+            exercises: [
+              { id: "igor-ub-vertical-pull", name: "Puxada alta ou barra fixa assistida", note: "Escolha a variação que permita amplitude completa e progressão consistente", sets: "3", reps: "6–10", rir: "2", restLabel: "2 min", restSeconds: 120 },
+              { id: "igor-ub-incline-machine", name: "Supino inclinado na máquina", note: "Peitoral superior com estabilidade e controle", sets: "3", reps: "8–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "igor-ub-row", name: "Remada baixa na polia", note: "Tronco estável e ombros longe das orelhas", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
+              { id: "igor-ub-fly", name: "Peck deck ou crossover", note: "Peito isolado com amplitude confortável", sets: "2", reps: "10–15", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ub-shoulder", name: "Desenvolvimento na máquina", note: "Trajetória guiada, sem travar os cotovelos", sets: "2", reps: "8–12", rir: "2", restLabel: "90 s", restSeconds: 90 },
+              { id: "igor-ub-rear-delt", name: "Crucifixo inverso na máquina", note: "Deltoide posterior; peito apoiado e movimento sem impulso", sets: "2", reps: "12–20", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ub-triceps", name: "Tríceps francês na polia", note: "Ênfase na cabeça longa, cotovelos apontados à frente", sets: "2", reps: "10–15", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ub-curl", name: "Rosca martelo com halteres", note: "Bíceps, braquial e antebraços com execução estrita", sets: "2", reps: "10–15", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-ub-cardio", name: "Esteira em ritmo moderado", note: "Ritmo sustentável; reduza a intensidade se interferir no treino de pernas do dia seguinte", sets: "1", reps: "20–30 min", rir: "moderado", restLabel: "—", restSeconds: 0, trackWeight: false }
+            ]
+          },
+          lowerB: {
+            title: "Sexta • Inferior B • Quadríceps + Glúteos e Posteriores",
+            warmup: "Aquecimento: 5–8 min de bike/esteira + séries preparatórias no hack/Smith; interrompa se houver dor, inchaço ou falseio",
+            total: "16 séries • ~60–70 min",
+            exercises: [
+              { id: "igor-lb-squat", name: "Hack squat ou agachamento no Smith", note: "Escolha a máquina mais confortável para o joelho e mantenha a mesma técnica entre sessões", sets: "3", reps: "6–10", rir: "2", restLabel: "2–3 min", restSeconds: 180 },
+              { id: "igor-lb-legpress-unilateral", name: "Leg press unilateral", note: "Comece pela perna direita; não force a mesma carga se a execução ou amplitude forem diferentes", sets: "2", reps: "10–15 cada perna", rir: "2–3", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "igor-lb-hipthrust", name: "Elevação pélvica", note: "Glúteos, pausa de 1 segundo no topo sem hiperestender a lombar", sets: "2", reps: "8–12", rir: "2", restLabel: "90–120 s", restSeconds: 120 },
+              { id: "igor-lb-curl", name: "Cadeira flexora", note: "Posterior de coxa, descida controlada", sets: "3", reps: "10–15", rir: "1–2", restLabel: "75–90 s", restSeconds: 90 },
+              { id: "igor-lb-calf", name: "Panturrilha sentada", note: "Amplitude completa e pausa curta no alongamento", sets: "3", reps: "12–20", rir: "1–2", restLabel: "60–75 s", restSeconds: 75 },
+              { id: "igor-lb-abs", name: "Abdominal na máquina", note: "Core com carga progressiva e movimento controlado", sets: "3", reps: "10–15", rir: "1–2", restLabel: "60 s", restSeconds: 60 }
+            ]
+          }
+        }
       }
     };
 
@@ -2523,7 +2596,36 @@
       "pablo-lb-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
       "pablo-lb-bike": { id: "a8VDgLw", label: "Stationary bike walk" },
       "pablo-cardio-run": { url: "https://gymvisual.com/img/p/1/4/4/5/7/14457.gif", label: "Walking on incline treadmill" },
-      "pablo-cardio-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" }
+      "pablo-cardio-mobility": { id: "QY39eBr", label: "Seated piriformis stretch" },
+      "igor-ua-chest": { id: "DOoWcnA", label: "Lever chest press" },
+      "igor-ua-row": { id: "7I6LNUG", label: "Lever seated row" },
+      "igor-ua-incline": { id: "ns0SIbU", label: "Dumbbell incline bench press" },
+      "igor-ua-pulldown": { id: "rkg41Fb", label: "Neutral grip lat pulldown" },
+      "igor-ua-lateral": { id: "goJ6ezq", label: "Cable lateral raise" },
+      "igor-ua-triceps": { id: "dU605di", label: "Cable rope triceps pushdown" },
+      "igor-ua-curl": { id: "25GPyDY", label: "Barbell curl" },
+      "igor-ua-cardio": { id: "rjiM4L3", label: "Walking on incline treadmill" },
+      "igor-la-legpress": { id: "2Qh2J1e", label: "Sled 45 degree leg press side view" },
+      "igor-la-extension": { id: "my33uHU", label: "Lever leg extension" },
+      "igor-la-rdl": { id: "wQ2c4XD", label: "Barbell romanian deadlift" },
+      "igor-la-curl": { id: "17lJ1kr", label: "Lever lying leg curl" },
+      "igor-la-calf": { id: "ykUOVze", label: "Lever standing calf raise" },
+      "igor-la-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" },
+      "igor-ub-vertical-pull": { id: "RVwzP10", label: "Cable pulldown" },
+      "igor-ub-incline-machine": { id: "jHAnWmT", label: "Lever incline chest press" },
+      "igor-ub-row": { id: "hvV79Si", label: "Cable low seated row" },
+      "igor-ub-fly": { id: "v3xmPAR", label: "Lever seated fly" },
+      "igor-ub-shoulder": { id: "vqsbmL0", label: "Lever shoulder press" },
+      "igor-ub-rear-delt": { id: "myfUsKf", label: "Lever seated reverse fly" },
+      "igor-ub-triceps": { id: "2IxROQ1", label: "Cable overhead triceps extension" },
+      "igor-ub-curl": { id: "IGtBdNT", label: "Dumbbell seated hammer curl" },
+      "igor-ub-cardio": { id: "rjiM4L3", label: "Walking on incline treadmill" },
+      "igor-lb-squat": { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
+      "igor-lb-legpress-unilateral": { id: "WWD6FzI", label: "Sled 45 degrees one leg press" },
+      "igor-lb-hipthrust": { id: "qg2PGl6", label: "Barbell glute bridge on bench" },
+      "igor-lb-curl": { id: "Zg3XY7P", label: "Lever seated leg curl" },
+      "igor-lb-calf": { id: "bOOdeyc", label: "Lever seated calf raise" },
+      "igor-lb-abs": { url: "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif", label: "Lever seated crunch machine" }
     };
 
     const MEDIA_ALIASES = {
@@ -2636,6 +2738,22 @@
       "fernando-fb-row": [
         { key: "remada-baixa", label: "Remada baixa", media: { id: "fUBheHs", label: "Cable seated row" } },
         { key: "remada-maquina", label: "Remada máquina", media: MEDIA_ALIASES.machineRow }
+      ],
+      "igor-ua-lateral": [
+        { key: "polia", label: "polia", displayName: "Elevação lateral na polia", media: { id: "goJ6ezq", label: "Cable lateral raise" } },
+        { key: "halteres", label: "halteres", displayName: "Elevação lateral com halteres", media: { id: "DsgkuIt", label: "Dumbbell lateral raise" } }
+      ],
+      "igor-ub-vertical-pull": [
+        { key: "puxada-alta", label: "puxada alta", displayName: "Puxada alta", media: EXERCISE_MEDIA["igor-ub-vertical-pull"] },
+        { key: "barra-assistida", label: "barra assistida", displayName: "Barra fixa assistida", media: { id: "kiJ4Z2K", label: "Assisted pull-up" } }
+      ],
+      "igor-ub-fly": [
+        { key: "peck-deck", label: "peck deck", displayName: "Peck deck", media: EXERCISE_MEDIA["igor-ub-fly"] },
+        { key: "crossover", label: "crossover", displayName: "Crossover", media: { id: "0CXGHya", label: "Cable cross-over variation" } }
+      ],
+      "igor-lb-squat": [
+        { key: "hack", label: "hack", displayName: "Hack squat", media: EXERCISE_MEDIA["igor-lb-squat"] },
+        { key: "smith", label: "Smith", displayName: "Agachamento no Smith", media: { id: "jFtipLl", label: "Smith squat" } }
       ]
     };
 
@@ -2852,6 +2970,37 @@
         "pablo-lb-bike": { group: "cardio", kind: "cardio" },
         "pablo-cardio-run": { group: "cardio", kind: "cardio" },
         "pablo-cardio-mobility": { group: "mobilidade", kind: "isolation" }
+      },
+      igor: {
+        "igor-ua-chest": { group: "peito", kind: "heavy" },
+        "igor-ua-row": { group: "costas", kind: "heavy" },
+        "igor-ua-incline": { group: "peito", kind: "moderate" },
+        "igor-ua-pulldown": { group: "costas", kind: "moderate" },
+        "igor-ua-lateral": { group: "ombros", kind: "isolation" },
+        "igor-ua-triceps": { group: "tríceps", kind: "isolation" },
+        "igor-ua-curl": { group: "bíceps", kind: "isolation" },
+        "igor-ua-cardio": { group: "cardio", kind: "cardio" },
+        "igor-la-legpress": { group: "quadríceps", kind: "heavy" },
+        "igor-la-extension": { group: "quadríceps", kind: "isolation" },
+        "igor-la-rdl": { group: "posterior", kind: "heavy" },
+        "igor-la-curl": { group: "posterior", kind: "isolation" },
+        "igor-la-calf": { group: "panturrilha", kind: "isolation" },
+        "igor-la-abs": { group: "abdômen", kind: "isolation" },
+        "igor-ub-vertical-pull": { group: "costas", kind: "heavy" },
+        "igor-ub-incline-machine": { group: "peito", kind: "heavy" },
+        "igor-ub-row": { group: "costas", kind: "moderate" },
+        "igor-ub-fly": { group: "peito", kind: "isolation" },
+        "igor-ub-shoulder": { group: "ombros", kind: "moderate" },
+        "igor-ub-rear-delt": { group: "ombros", kind: "isolation" },
+        "igor-ub-triceps": { group: "tríceps", kind: "isolation" },
+        "igor-ub-curl": { group: "bíceps", kind: "isolation" },
+        "igor-ub-cardio": { group: "cardio", kind: "cardio" },
+        "igor-lb-squat": { group: "quadríceps", kind: "heavy" },
+        "igor-lb-legpress-unilateral": { group: "quadríceps", kind: "moderate" },
+        "igor-lb-hipthrust": { group: "glúteos", kind: "moderate" },
+        "igor-lb-curl": { group: "posterior", kind: "isolation" },
+        "igor-lb-calf": { group: "panturrilha", kind: "isolation" },
+        "igor-lb-abs": { group: "abdômen", kind: "isolation" }
       }
     };
 
