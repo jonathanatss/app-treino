@@ -362,13 +362,33 @@ button { touch-action: manipulation; }
 .bottom-nav-item small { font-size: 11px; font-weight: 700; }
 .bottom-nav-item.is-active { width: min(100%, 86px); height: 62px; margin: -2px auto 0; background: var(--fit-lime); color: #3d4c00; }
 
-.rest-bar { z-index: 45; bottom: calc(var(--fit-nav) + env(safe-area-inset-bottom, 0px) + 8px); display: none; width: min(calc(100% - 24px), 520px); margin: auto; border: 1px solid #455032; border-radius: 16px; background: #171a13; }
+.rest-bar { z-index: 90; bottom: calc(var(--fit-nav) + env(safe-area-inset-bottom, 0px) + 8px); display: none; width: min(calc(100% - 24px), 520px); margin: auto; padding: 0; overflow: hidden; border: 1px solid #455032; border-radius: 16px; background: #171a13; }
 .rest-bar:has(.timer.running), .rest-bar.is-complete { display: block; }
-.rest-inner { padding: 9px 12px; }
+.rest-inner { box-sizing: border-box; padding: 10px 12px; }
+.rest-status { min-width: 0; }
 .rest-label { color: var(--fit-muted); }
 .timer { color: var(--fit-lime); background: none; font-size: 18px; }
+.rest-actions { min-width: 0; }
 .rest-button { border-color: #464d39; background: #222; color: var(--fit-muted); }
 .rest-button.active { background: var(--fit-lime); color: #1a2100; }
+body:has(.fit-overlay:not([hidden])) .rest-bar:has(.timer.running) { bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); }
+body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { padding-bottom: calc(150px + var(--safe-bottom)); }
+
+@media (max-width: 560px) {
+  .rest-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-areas:
+      "status stop"
+      "actions actions";
+    gap: 9px 8px;
+  }
+  .rest-status { grid-area: status; align-self: center; }
+  .rest-inner > #stopTimer { grid-area: stop; justify-self: end; }
+  .rest-inner:has(#stopTimer.hidden) .rest-status { grid-column: 1 / -1; }
+  .rest-actions { grid-area: actions; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; gap: 6px; }
+  .rest-button { width: 100%; min-width: 0; padding-inline: 4px; white-space: nowrap; }
+}
 
 /* Shared inner screens */
 .screen-heading { margin: 0 0 20px; }
