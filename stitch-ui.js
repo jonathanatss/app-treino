@@ -12,6 +12,7 @@
   let currentRoute = "workout";
   let activeExercise = null;
   let activeExerciseIndex = -1;
+  let activeSheet = null;
 
   const localMediaByUrl = {
     "https://gymvisual.com/img/p/4/8/8/8/4888.gif": "assets/exercises/4888.gif",
@@ -287,6 +288,7 @@
   }
 
   function closeOverlay() {
+    closeActionSheet();
     if (typeof overlay._cleanup === "function") overlay._cleanup();
     overlay._cleanup = null;
     overlay.hidden = true;
@@ -294,6 +296,29 @@
     document.body.style.overflow = "";
     activeExercise = null;
     activeExerciseIndex = -1;
+  }
+
+  function closeActionSheet() {
+    if (!activeSheet) return;
+    activeSheet.remove();
+    activeSheet = null;
+  }
+
+  function showActionSheet(title, content) {
+    closeActionSheet();
+    const sheet = document.createElement("div");
+    sheet.className = "sheet-backdrop exercise-sheet-backdrop";
+    sheet.innerHTML = `<section class="bottom-sheet exercise-action-sheet" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2>${escapeHtml(title)}</h2><button class="sheet-close" type="button" aria-label="Fechar">×</button></div>
+      ${content}
+    </section>`;
+    document.body.appendChild(sheet);
+    activeSheet = sheet;
+    sheet.querySelector(".sheet-close")?.addEventListener("click", closeActionSheet);
+    sheet.addEventListener("click", (event) => { if (event.target === sheet) closeActionSheet(); });
+    window.requestAnimationFrame(() => sheet.querySelector("button:not([disabled]), input, textarea")?.focus({ preventScroll: true }));
+    return sheet;
   }
 
   function renderProfileCards(query = "") {
@@ -656,6 +681,188 @@
     }).join("")}</div></section>`;
   }
 
+  function lastRecordedLoad(key) {
+    return getHistoryEntries(key).filter((entry) => Number.isFinite(entry.load)).at(-1)?.load;
+  }
+
+  function exerciseRestSeconds(exercise, key) {
+    const custom = Number(state.exerciseRest?.[key]);
+    return Number.isFinite(custom) && custom > 0 ? custom : Number(exercise.restSeconds || 0);
+  }
+
+  function restDurationLabel(seconds) {
+    if (!seconds) return "Sem cronômetro";
+    if (seconds % 60 === 0) return `${seconds / 60} min`;
+    return `${seconds} s`;
+  }
+
+  function showDetailToast(message) {
+    overlay.querySelector(".exercise-action-toast")?.remove();
+    const toast = document.createElement("div");
+    toast.className = "exercise-action-toast";
+    toast.setAttribute("role", "status");
+    toast.textContent = message;
+    overlay.querySelector(".detail-page")?.appendChild(toast);
+    window.setTimeout(() => toast.remove(), 3200);
+  }
+
+  function openExerciseRestEditor(exercise, key) {
+    const prescribed = Number(exercise.restSeconds || 0);
+    const current = exerciseRestSeconds(exercise, key) || 60;
+    const presets = [...new Set([45, 60, 75, 90, 120, 180, current])].sort((a, b) => a - b);
+    const sheet = showActionSheet("Ajustar descanso", `
+      <p class="exercise-sheet-intro">Defina o cronômetro desta alternativa. O descanso padrão do treino é ${escapeHtml(restDurationLabel(prescribed))}.</p>
+      <div class="rest-preset-grid">${presets.map((seconds) => `<button class="rest-preset ${seconds === current ? "is-selected" : ""}" type="button" data-seconds="${seconds}">${escapeHtml(restDurationLabel(seconds))}</button>`).join("")}</div>
+      <label class="exercise-sheet-field"><span>Tempo personalizado (segundos)</span><input class="custom-rest-input" type="number" inputmode="numeric" min="15" max="600" step="15" value="${current}"></label>
+      <div class="exercise-sheet-actions"><button class="primary-button save-rest" type="button">Salvar descanso</button><button class="secondary-button reset-rest" type="button">Usar padrão do treino</button></div>`);
+    const input = sheet.querySelector(".custom-rest-input");
+    sheet.querySelectorAll(".rest-preset").forEach((button) => button.addEventListener("click", () => {
+      input.value = button.dataset.seconds;
+      sheet.querySelectorAll(".rest-preset").forEach((item) => item.classList.toggle("is-selected", item === button));
+    }));
+    sheet.querySelector(".save-rest").addEventListener("click", () => {
+      const seconds = Math.max(15, Math.min(600, Math.round(Number(input.value || current))));
+      state.exerciseRest = state.exerciseRest || {};
+      if (seconds === prescribed) delete state.exerciseRest[key];
+      else state.exerciseRest[key] = seconds;
+      saveProfileState();
+      closeActionSheet();
+      showDetailToast(`Descanso definido em ${restDurationLabel(seconds)}.`);
+    });
+    sheet.querySelector(".reset-rest").addEventListener("click", () => {
+      state.exerciseRest = state.exerciseRest || {};
+      delete state.exerciseRest[key];
+      saveProfileState();
+      closeActionSheet();
+      showDetailToast(`Descanso restaurado para ${restDurationLabel(prescribed)}.`);
+    });
+  }
+
+  function openExerciseNoteEditor(exercise, index, key) {
+    const currentNote = state.exerciseNotes?.[key] || "";
+    const sheet = showActionSheet("Observação pessoal", `
+      <p class="exercise-sheet-intro">Salve regulagem, pegada, desconforto ou uma dica para a próxima sessão.</p>
+      <label class="exercise-sheet-field"><span>Observação sobre ${escapeHtml(getSelectedVariant(exercise).displayName || exercise.name)}</span><textarea class="exercise-note-input" maxlength="300" rows="5" placeholder="Ex.: banco na posição 4 e pés um pouco mais altos.">${escapeHtml(currentNote)}</textarea></label>
+      <small class="note-counter">${currentNote.length}/300</small>
+      <div class="exercise-sheet-actions"><button class="primary-button save-note" type="button">Salvar observação</button><button class="secondary-button clear-note" type="button" ${currentNote ? "" : "disabled"}>Remover observação</button></div>`);
+    const input = sheet.querySelector(".exercise-note-input");
+    const counter = sheet.querySelector(".note-counter");
+    input.addEventListener("input", () => { counter.textContent = `${input.value.length}/300`; });
+    sheet.querySelector(".save-note").addEventListener("click", () => {
+      state.exerciseNotes = state.exerciseNotes || {};
+      const note = input.value.trim();
+      if (note) state.exerciseNotes[key] = note;
+      else delete state.exerciseNotes[key];
+      saveProfileState();
+      closeActionSheet();
+      openExerciseDetail(exercise, index);
+      showDetailToast(note ? "Observação salva." : "Observação removida.");
+    });
+    sheet.querySelector(".clear-note")?.addEventListener("click", () => {
+      state.exerciseNotes = state.exerciseNotes || {};
+      delete state.exerciseNotes[key];
+      saveProfileState();
+      closeActionSheet();
+      openExerciseDetail(exercise, index);
+      showDetailToast("Observação removida.");
+    });
+  }
+
+  function openExerciseHistorySheet(exercise, key) {
+    const variant = getSelectedVariant(exercise);
+    const entries = getHistoryEntries(key)
+      .filter((entry) => Number.isFinite(entry.load))
+      .slice()
+      .reverse();
+    const best = entries.reduce((maximum, entry) => Math.max(maximum, entry.load), 0);
+    showActionSheet("Histórico do exercício", `
+      <p class="exercise-sheet-exercise">${escapeHtml(variant.displayName || variant.label || exercise.name)}</p>
+      ${entries.length ? `<div class="exercise-history-summary"><span><small>ÚLTIMA CARGA</small><strong>${escapeHtml(formatLoad(entries[0].load))} kg</strong></span><span><small>MELHOR CARGA</small><strong>${escapeHtml(formatLoad(best))} kg</strong></span></div>
+      <div class="exercise-history-list">${entries.slice(0, 16).map((entry) => {
+        const workoutName = profiles[currentProfile]?.workouts?.[entry.tab]?.title || "Treino";
+        return `<article><span><strong>${escapeHtml(prettyDate(entry.date))}</strong><small>${escapeHtml(workoutName.replace(/^[^•]+•\s*/, ""))}</small></span><b>${escapeHtml(formatLoad(entry.load))} kg</b></article>`;
+      }).join("")}</div>` : `<div class="exercise-sheet-empty">As cargas concluídas desta alternativa aparecerão aqui.</div>`}
+    `);
+  }
+
+  function resetExerciseToday(exercise, index, key) {
+    state.seriesProgress = state.seriesProgress || {};
+    state.seriesProgress[key] = [];
+    delete state.done[key];
+    removeCurrentExerciseHistory(key);
+    state.sessions = (state.sessions || []).filter((session) => !(session.date === todayKey && session.tab === activeTab));
+    saveProfileState();
+    closeActionSheet();
+    renderWorkout();
+    openExerciseDetail(exercise, index);
+    showDetailToast("Exercício reiniciado para hoje.");
+  }
+
+  function openExerciseActionMenu(exercise, index) {
+    const variant = getSelectedVariant(exercise);
+    const key = exerciseStateKey(exercise, variant);
+    const variants = getExerciseVariants(exercise);
+    const lastLoad = lastRecordedLoad(key);
+    const currentRest = exerciseRestSeconds(exercise, key);
+    const hasCustomRest = Number.isFinite(Number(state.exerciseRest?.[key]));
+    const personalNote = state.exerciseNotes?.[key] || "";
+    const hasTodayProgress = !!state.done[key] || !!state.seriesProgress?.[key]?.length;
+    const canUseLoad = exercise.trackWeight !== false && Number.isFinite(lastLoad);
+    const sheet = showActionSheet("Ações do exercício", `
+      <p class="exercise-sheet-exercise">${escapeHtml(variant.displayName || variant.label || exercise.name)}</p>
+      <div class="exercise-action-list">
+        <button class="exercise-action use-last-load" type="button" ${canUseLoad ? "" : "disabled"}><span class="exercise-action-icon">↶</span><span><strong>${canUseLoad ? `Usar última carga — ${escapeHtml(formatLoad(lastLoad))} kg` : "Usar última carga"}</strong><small>${canUseLoad ? "Preenche a carga sem registrar uma série" : exercise.trackWeight === false ? "Este exercício não registra carga" : "Nenhuma carga anterior encontrada"}</small></span></button>
+        <button class="exercise-action open-exercise-history" type="button"><span class="exercise-action-icon">◷</span><span><strong>Ver histórico do exercício</strong><small>Cargas e sessões registradas</small></span></button>
+        <button class="exercise-action choose-variant" type="button" ${variants.length > 1 ? "" : "disabled"}><span class="exercise-action-icon">⇄</span><span><strong>Trocar alternativa</strong><small>${variants.length > 1 ? `${variants.length} opções para este grupo muscular` : "Não há alternativas cadastradas"}</small></span></button>
+        <button class="exercise-action edit-rest" type="button" ${exercise.restSeconds > 0 ? "" : "disabled"}><span class="exercise-action-icon">◴</span><span><strong>Ajustar descanso</strong><small>${hasCustomRest ? "Personalizado" : "Padrão"}: ${escapeHtml(restDurationLabel(currentRest))}</small></span></button>
+        <button class="exercise-action edit-note" type="button"><span class="exercise-action-icon">✎</span><span><strong>${personalNote ? "Editar observação" : "Adicionar observação"}</strong><small>${personalNote ? escapeHtml(personalNote) : "Regulagem, técnica ou desconforto"}</small></span></button>
+        <button class="exercise-action danger reset-exercise" type="button" ${hasTodayProgress ? "" : "disabled"}><span class="exercise-action-icon">↺</span><span><strong>Reiniciar exercício hoje</strong><small>${hasTodayProgress ? "Remove as séries concluídas de hoje" : "Nenhuma série concluída hoje"}</small></span></button>
+      </div>`);
+    sheet.querySelector(".use-last-load")?.addEventListener("click", () => {
+      state.weights = state.weights || {};
+      state.weights[key] = String(lastLoad);
+      saveProfileState();
+      closeActionSheet();
+      showDetailToast(`Carga preparada: ${formatLoad(lastLoad)} kg.`);
+    });
+    sheet.querySelector(".open-exercise-history")?.addEventListener("click", () => {
+      closeActionSheet();
+      openExerciseHistorySheet(exercise, key);
+    });
+    sheet.querySelector(".choose-variant")?.addEventListener("click", () => {
+      closeActionSheet();
+      const alternatives = overlay.querySelector(".exercise-alternatives");
+      alternatives?.scrollIntoView({ behavior: "smooth", block: "center" });
+      alternatives?.querySelector(".variant-choice")?.focus({ preventScroll: true });
+    });
+    sheet.querySelector(".edit-rest")?.addEventListener("click", () => {
+      closeActionSheet();
+      openExerciseRestEditor(exercise, key);
+    });
+    sheet.querySelector(".edit-note")?.addEventListener("click", () => {
+      closeActionSheet();
+      openExerciseNoteEditor(exercise, index, key);
+    });
+    sheet.querySelector(".reset-exercise")?.addEventListener("click", (event) => {
+      const button = event.currentTarget;
+      if (button.dataset.confirm !== "true") {
+        button.dataset.confirm = "true";
+        button.classList.add("is-confirm");
+        button.querySelector("strong").textContent = "Confirmar reinício";
+        button.querySelector("small").textContent = "Toque novamente para remover as séries de hoje";
+        window.setTimeout(() => {
+          if (!button.isConnected || button.dataset.confirm !== "true") return;
+          button.dataset.confirm = "false";
+          button.classList.remove("is-confirm");
+          button.querySelector("strong").textContent = "Reiniciar exercício hoje";
+          button.querySelector("small").textContent = "Remove as séries concluídas de hoje";
+        }, 6000);
+        return;
+      }
+      resetExerciseToday(exercise, index, key);
+    });
+  }
+
   function openExerciseDetail(exercise, index) {
     const variant = getSelectedVariant(exercise);
     const stateKey = exerciseStateKey(exercise, variant);
@@ -664,17 +871,19 @@
     const prep = getPrepMeta(exercise);
     const history = getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load));
     const last = history.at(-1)?.load;
+    const personalNote = state.exerciseNotes?.[stateKey] || "";
     const variantMarkup = variantButtons(exercise);
     showOverlay(`<div class="overlay-page detail-page ${variantMarkup ? "has-variants" : "no-variants"}">
       <header class="overlay-header"><button class="overlay-close" type="button" aria-label="Voltar">←</button><h2>${escapeHtml(variant.displayName || variant.label || exercise.name)}</h2><button class="overlay-more" type="button" aria-label="Mais opções">⋮</button></header>
       <div class="exercise-media">${media ? `<img class="detail-media-image" src="${media.src}" alt="Demonstração de ${escapeHtml(exercise.name)}" referrerpolicy="no-referrer" decoding="async">` : `<div class="exercise-media-empty">Demonstração não disponível</div>`}<button class="play-fab" type="button" aria-label="Iniciar exercício">▶</button></div>
       ${variantMarkup}
       <div class="detail-metrics"><div class="detail-metric"><small>${icon("target")} MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></div><div class="detail-metric"><small>${icon("equipment")} EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></div></div>
-      <section class="guide-card"><h3><span style="color:var(--fit-lime)">▤</span> Guia de execução</h3><ol class="guide-list"><li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li><li>${escapeHtml(variant.note || exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li><li>Finalize cada repetição sem perder a técnica e respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li></ol></section>
+      <section class="guide-card"><h3><span style="color:var(--fit-lime)">▤</span> Guia de execução</h3><ol class="guide-list"><li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li><li>${escapeHtml(variant.note || exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li><li>Finalize cada repetição sem perder a técnica e respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li></ol>${personalNote ? `<div class="exercise-personal-note"><small>SUA OBSERVAÇÃO</small><p>${escapeHtml(personalNote)}</p></div>` : ""}</section>
       <div class="history-strip"><div><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${formatLoad(last)} kg` : "Sem registro"}</strong></div><button class="text-button detail-history" type="button">Histórico</button></div>
       <button class="primary-button detail-start" type="button">${isDone ? "✓ &nbsp; VER SÉRIES / CORRIGIR" : "▶ &nbsp; INICIAR EXERCÍCIO"}</button>
     </div>`);
     overlay.querySelector(".overlay-close").addEventListener("click", closeOverlay);
+    overlay.querySelector(".overlay-more").addEventListener("click", () => openExerciseActionMenu(exercise, index));
     const detailImage = overlay.querySelector(".detail-media-image");
     if (detailImage) {
       detailImage.addEventListener("error", () => {
@@ -688,7 +897,7 @@
     }
     overlay.querySelector(".play-fab").addEventListener("click", () => openActiveExercise(exercise, index));
     overlay.querySelector(".detail-start").addEventListener("click", () => openActiveExercise(exercise, index));
-    overlay.querySelector(".detail-history").addEventListener("click", () => { closeOverlay(); navigate("history"); });
+    overlay.querySelector(".detail-history").addEventListener("click", () => openExerciseHistorySheet(exercise, stateKey));
     overlay.querySelectorAll(".variant-choice").forEach((button) => button.addEventListener("click", () => {
       state.variants = state.variants || {};
       state.variants[exercise.id] = button.dataset.variant;
@@ -764,7 +973,8 @@
       recordExerciseHistory(exercise, variant, load);
     }
     saveProfileState();
-    if (getSettings().autoRest && exercise.restSeconds > 0 && !isFinished) startRest(exercise.restSeconds);
+    const restSeconds = exerciseRestSeconds(exercise, key);
+    if (getSettings().autoRest && restSeconds > 0 && !isFinished) startRest(restSeconds);
     if (isFinished) {
       const allDone = selectedExercises().every((item) => state.done[exerciseStateKey(item, getSelectedVariant(item))]);
       closeOverlay();
@@ -1504,7 +1714,11 @@
   document.querySelector("#profileSwitcher").addEventListener("click", openUserSwitcher);
   document.querySelector("#settingsButton").addEventListener("click", () => navigate("profile"));
   document.querySelector(".fit-brand").addEventListener("click", (event) => { event.preventDefault(); navigate("workout"); });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !overlay.hidden) closeOverlay(); });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    if (activeSheet) closeActionSheet();
+    else if (!overlay.hidden) closeOverlay();
+  });
 
   if (currentProfile && state) renderApp();
   else renderProfilePicker();

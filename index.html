@@ -3634,12 +3634,14 @@
             sessions: parsed.sessions || [],
             seriesProgress: {},
             variants: parsed.variants || {},
+            exerciseRest: parsed.exerciseRest || {},
+            exerciseNotes: parsed.exerciseNotes || {},
             expandedMedia: parsed.expandedMedia || {}
           };
         }
-        return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, expandedMedia: {}, activeTab: activeForToday, ...parsed };
+        return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: activeForToday, ...parsed };
       } catch {
-        return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, expandedMedia: {}, activeTab: getTodayWorkoutKey(profile) || profile.defaultTab };
+        return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: getTodayWorkoutKey(profile) || profile.defaultTab };
       }
     }
 
@@ -4733,7 +4735,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="stitch-ui.css?v=23">
-  <script src="stitch-ui.js?v=19"></script>
+  <link rel="stylesheet" href="stitch-ui.css?v=25">
+  <script src="stitch-ui.js?v=21"></script>
 </body>
 </html>
