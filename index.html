@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0B0F14">
+  <meta name="theme-color" content="#101010">
   <meta name="description" content="Treinos personalizados com perfis, séries, descanso, cargas e imagens dos movimentos.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="FitPlan">
@@ -26,6 +26,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FitPlan">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: dark;
@@ -1590,60 +1593,68 @@
   </section>
 
   <div class="app-shell" id="screen-app" hidden>
-  <main class="app">
-    <header>
-      <div class="top-row">
-        <div class="brand-heading">
-          <img class="brand-logo" src="icon-192.png" alt="" aria-hidden="true">
+    <header class="fit-topbar">
+      <button class="avatar-button" id="profileSwitcher" type="button" aria-label="Trocar usuário"><span id="topAvatar">FP</span></button>
+      <a class="fit-brand" href="#treino" aria-label="FitPlan — início">FitPlan</a>
+      <button class="top-icon-button" id="settingsButton" type="button" aria-label="Configurações">⚙</button>
+    </header>
+
+    <main class="app fit-content">
+      <section class="fit-view is-active" id="view-workout" data-view="workout">
+        <div class="home-greeting">
           <div>
+            <p class="eyebrow" id="todayLabel">TREINO • HOJE</p>
             <h1 id="appTitle">FitPlan</h1>
             <p class="profile-indicator" id="profileIndicator">Perfil: -</p>
             <p class="subtitle" id="appSubtitle">—</p>
-            <button class="logout-button" id="logoutBtn" type="button">Trocar usuário</button>
           </div>
+          <strong class="exercise-count"><span id="heroExerciseCount">0</span><small>EXERCÍCIOS</small></strong>
         </div>
-        <button class="icon-button" id="resetDay" type="button" title="Limpar treino do dia" aria-label="Limpar treino do dia">
-          <span aria-hidden="true">↺</span>
-        </button>
+
+        <div class="hero-progress" aria-hidden="true">
+          <span id="progressText">0/0</span>
+          <span class="progress-track"><span class="progress-fill" id="progressFill" style="--progress: 0%"></span></span>
+        </div>
+
+        <nav class="tabs-shell" id="tabsShell" aria-label="Treinos"></nav>
+        <section class="workout" id="workout" aria-live="polite"></section>
+      </section>
+
+      <section class="fit-view" id="view-history" data-view="history"></section>
+      <section class="fit-view" id="view-progress" data-view="progress"></section>
+      <section class="fit-view" id="view-profile" data-view="profile"></section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <button class="bottom-nav-item is-active" type="button" data-route="workout"><span>⚒</span><small>Treino</small></button>
+      <button class="bottom-nav-item" type="button" data-route="history"><span>◷</span><small>Histórico</small></button>
+      <button class="bottom-nav-item" type="button" data-route="progress"><span>⌁</span><small>Progresso</small></button>
+      <button class="bottom-nav-item" type="button" data-route="profile"><span>♙</span><small>Perfil</small></button>
+    </nav>
+
+    <aside class="rest-bar" aria-label="Cronômetro de descanso">
+      <div class="rest-inner">
+        <button class="icon-button hidden" id="stopTimer" type="button" title="Zerar descanso" aria-label="Zerar descanso"><span aria-hidden="true">×</span></button>
+        <div><div class="rest-label">Descanso</div><div class="timer" id="timer">00:00</div></div>
+        <div class="rest-actions">
+          <button class="rest-button" type="button" data-rest="60">60s</button>
+          <button class="rest-button" type="button" data-rest="90">90s</button>
+          <button class="rest-button" type="button" data-rest="120">120s</button>
+          <button class="rest-button" type="button" data-rest="180">180s</button>
+        </div>
       </div>
-      <div class="app-actions" aria-label="Ações do treino">
-        <button class="action-button" id="todayWorkout" type="button">Treino de hoje</button>
-        <button class="action-button" id="compactMode" type="button">Modo compacto</button>
-        <button class="action-button" id="exportData" type="button">Exportar dados</button>
-        <label class="action-button" for="importData">Importar dados</label>
-        <input id="importData" type="file" accept="application/json" hidden>
-      </div>
-    </header>
+    </aside>
 
-    <nav class="tabs-shell" id="tabsShell" aria-label="Treinos"></nav>
+    <div class="fit-overlay" id="fitOverlay" hidden></div>
 
-    <section class="workout" id="workout" aria-live="polite"></section>
-
-    <div class="progress-line" aria-hidden="true">
-      <span id="progressText">0/0</span>
-      <span class="progress-track">
-        <span class="progress-fill" id="progressFill" style="--progress: 0%"></span>
-      </span>
+    <div class="sr-only" aria-hidden="true">
+      <button id="resetDay" type="button">Limpar treino</button>
+      <button id="todayWorkout" type="button">Treino de hoje</button>
+      <button id="compactMode" type="button">Modo compacto</button>
+      <button id="exportData" type="button">Exportar dados</button>
+      <button id="logoutBtn" type="button">Trocar usuário</button>
+      <input id="importData" type="file" accept="application/json">
     </div>
-  </main>
-
-  <aside class="rest-bar" aria-label="Cronômetro de descanso">
-    <div class="rest-inner">
-      <button class="icon-button hidden" id="stopTimer" type="button" title="Zerar descanso" aria-label="Zerar descanso">
-        <span aria-hidden="true">×</span>
-      </button>
-      <div>
-        <div class="rest-label">Descanso</div>
-        <div class="timer" id="timer">00:00</div>
-      </div>
-      <div class="rest-actions">
-        <button class="rest-button" type="button" data-rest="60">60s</button>
-        <button class="rest-button" type="button" data-rest="90">90s</button>
-        <button class="rest-button" type="button" data-rest="120">120s</button>
-        <button class="rest-button" type="button" data-rest="180">180s</button>
-      </div>
-    </div>
-  </aside>
   </div>
 
   <script>
@@ -3087,6 +3098,8 @@
             weights: parsed.weights || {},
             done: {},
             history: parsed.history || {},
+            sessions: parsed.sessions || [],
+            seriesProgress: {},
             variants: parsed.variants || {},
             expandedMedia: parsed.expandedMedia || {}
           };
@@ -3151,6 +3164,7 @@
       screenPicker.hidden = name !== "picker";
       screenPin.hidden = name !== "pin";
       screenApp.hidden = name !== "app";
+      window.scrollTo(0, 0);
     }
 
     /* === Profile picker === */
@@ -3987,6 +4001,7 @@
     document.querySelector("#resetDay").addEventListener("click", () => {
       if (!state) return;
       state.done = {};
+      state.seriesProgress = {};
       state.day = todayKey;
       stopRest();
       saveProfileState();
@@ -4029,5 +4044,7 @@
       }
     })();
   </script>
+  <link rel="stylesheet" href="stitch-ui.css?v=15">
+  <script src="stitch-ui.js?v=14"></script>
 </body>
 </html>

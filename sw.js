@@ -1,14 +1,29 @@
-const CACHE_NAME = "fitplan-v6";
-const RUNTIME_CACHE = "fitplan-runtime-v6";
+const CACHE_NAME = "fitplan-v17";
+const RUNTIME_CACHE = "fitplan-runtime-v17";
 
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./stitch-ui.css",
+  "./stitch-ui.js",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png",
-  "./favicon-32.png"
+  "./favicon-32.png",
+  "./assets/exercises/10286.gif",
+  "./assets/exercises/10472.gif",
+  "./assets/exercises/14457.gif",
+  "./assets/exercises/29539.gif",
+  "./assets/exercises/33854.gif",
+  "./assets/exercises/4888.gif",
+  "./assets/exercises/5356.gif",
+  "./assets/exercises/5606.gif",
+  "./assets/exercises/5923.gif",
+  "./assets/exercises/6614.gif",
+  "./assets/exercises/7552.gif",
+  "./assets/exercises/lever-seated-crunch.gif",
+  "./assets/exercises/sled-hack-squat.webp"
 ];
 
 self.addEventListener("install", (event) => {
