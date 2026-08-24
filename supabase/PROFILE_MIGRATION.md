@@ -10,7 +10,7 @@ Não inserir usuários diretamente em `auth.users` por SQL e não colocar `servi
 
 | Chave legada | Nome exibido | Conta Supabase | Situação |
 | --- | --- | --- | --- |
-| `jonathan` | Jonathan | a coletar | piloto recomendado |
+| `jonathan` | Jonathan | configurada | vinculada • piloto ativo |
 | `sara` | Sara | a coletar | pendente |
 | `fernanda` | Fernanda | a coletar | pendente |
 | `eduarda` | Maria Eduarda | a coletar | pendente |
