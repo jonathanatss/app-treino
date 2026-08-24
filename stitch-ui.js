@@ -477,8 +477,15 @@
     const list = document.querySelector("#profileList");
     if (!list) return;
     list.innerHTML = `${cloudAccessMarkup()}
-      <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Seus dados ficam privados</strong>O e-mail identifica qual treino será carregado. Nenhum nome de usuário é exibido nesta tela.</p></div>`;
+      <div class="new-user-divider" aria-hidden="true">OU</div>
+      <button class="new-user-request" type="button" aria-label="Sou novo, responder questionário e solicitar cadastro">
+        <span class="new-user-request-icon" aria-hidden="true">＋</span>
+        <span><strong>Sou novo no FitPlan</strong><small>Responder questionário e solicitar cadastro</small></span>
+        <span class="new-user-request-arrow" aria-hidden="true">›</span>
+      </button>
+      <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Seus dados ficam privados</strong>Quem já tem acesso entra com o e-mail convidado. Novos cadastros são liberados após a análise do questionário.</p></div>`;
     list.querySelector(".cloud-access-card")?.addEventListener("click", openCloudAuthSheet);
+    list.querySelector(".new-user-request")?.addEventListener("click", openTrainingQuestionnaire);
   }
 
   renderProfilePicker = function () {

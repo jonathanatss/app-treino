@@ -22,7 +22,7 @@ for (const [label, source] of [["supabase-client.js", client], ["legacy-cloud-mi
 const sdkAt = html.indexOf("@supabase/supabase-js@2.112.3");
 const clientAt = html.indexOf("supabase-client.js?v=4");
 const migrationAt = html.indexOf("legacy-cloud-migration.js?v=1");
-const uiAt = html.indexOf("stitch-ui.js?v=26");
+const uiAt = html.indexOf("stitch-ui.js?v=27");
 if (!(sdkAt >= 0 && clientAt > sdkAt && migrationAt > clientAt && uiAt > migrationAt)) failures.push("Scripts do Supabase não estão na ordem segura");
 if (!client.includes("signInWithOtp")) failures.push("Login por link mágico ausente");
 if (!client.includes("shouldCreateUser: false")) failures.push("Login ainda permite cadastro público");
@@ -32,6 +32,7 @@ if (!client.includes('.from("profiles")')) failures.push("Leitura do perfil aute
 if (!client.includes("legacy_profile_key")) failures.push("Vínculo com perfil local ausente");
 if (/service[_-]?role/i.test(client)) failures.push("Chave service_role não pode existir no frontend");
 if (!ui.includes("cloud-access-card")) failures.push("Entrada de conta online ausente no seletor");
+if (!ui.includes("new-user-request") || !ui.includes('addEventListener("click", openTrainingQuestionnaire)')) failures.push("Entrada do questionário para novos usuários ausente");
 if (!ui.includes("data-action=\"cloud\"")) failures.push("Conta online ausente nas configurações");
 if (!ui.includes("linkedCloudProfileId") || !ui.includes("applyCloudAuthGate")) failures.push("Entrada automática no perfil vinculado ausente");
 if (ui.includes("openUserSwitcher")) failures.push("Seletor de perfis ainda está acessível");
@@ -42,7 +43,7 @@ if (!initBlock || initBlock.includes("enterApp(")) failures.push("Sessão local 
 if (!serviceWorker.includes('"./supabase-client.js"')) failures.push("Cliente Supabase ausente do cache offline");
 if (!serviceWorker.includes('"./legacy-cloud-migration.js"')) failures.push("Migração local ausente do cache offline");
 if (!serviceWorker.includes("ignoreSearch: isSameOrigin")) failures.push("Assets versionados não reutilizam o cache offline");
-if (!/fitplan-v40/.test(serviceWorker)) failures.push("Versão do cache não foi incrementada");
+if (!/fitplan-v41/.test(serviceWorker)) failures.push("Versão do cache não foi incrementada");
 if (!serviceWorker.includes('new Request(asset, { cache: "reload" })')) failures.push("Atualização do app shell pode reutilizar assets obsoletos");
 if (!migration.includes("gym-app-cloud-migration-") || !migration.includes("photosIncluded: false")) failures.push("Migração local idempotente ou limite de fotos ausente");
 if (!migration.includes('onConflict: "user_id,measured_on"')) failures.push("Medidas locais não usam upsert idempotente");
@@ -58,6 +59,7 @@ console.log(JSON.stringify({
   sdkBeforeClient: true,
   magicLink: true,
   loginOnly: true,
+  newUserQuestionnaireEntry: true,
   linkedLegacyProfile: true,
   pinnedSdk: "2.112.3",
   localMigrationWithConsent: true,
