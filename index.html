@@ -1549,7 +1549,7 @@
   <section id="screen-picker" hidden>
     <div class="lock-screen">
       <div class="lock-header">
-        <img class="lock-logo" src="icon-192.png" alt="" aria-hidden="true">
+        <img class="lock-logo" src="logo-mark.svg" alt="" aria-hidden="true">
         <h1 class="lock-title">FitPlan</h1>
         <p class="lock-subtitle">Quem está treinando?</p>
       </div>
@@ -1560,7 +1560,7 @@
   <section id="screen-pin" hidden>
     <div class="lock-screen">
       <div class="lock-header">
-        <img class="lock-logo" src="icon-192.png" alt="" aria-hidden="true">
+        <img class="lock-logo" src="logo-mark.svg" alt="" aria-hidden="true">
         <h1 class="lock-title" id="pinTitle">—</h1>
         <p class="lock-subtitle" id="pinSubtitle">Digite o PIN</p>
       </div>
@@ -1595,7 +1595,7 @@
   <div class="app-shell" id="screen-app" hidden>
     <header class="fit-topbar">
       <button class="avatar-button" id="profileSwitcher" type="button" aria-label="Trocar usuário"><span id="topAvatar">FP</span></button>
-      <a class="fit-brand" href="#treino" aria-label="FitPlan — início">FitPlan</a>
+      <a class="fit-brand" href="#treino" aria-label="FitPlan — início"><img src="logo-mark.svg" alt=""><span>FitPlan</span></a>
       <button class="top-icon-button" id="settingsButton" type="button" aria-label="Configurações">⚙</button>
     </header>
 
@@ -1645,8 +1645,6 @@
       </div>
     </aside>
 
-    <div class="fit-overlay" id="fitOverlay" hidden></div>
-
     <div class="sr-only" aria-hidden="true">
       <button id="resetDay" type="button">Limpar treino</button>
       <button id="todayWorkout" type="button">Treino de hoje</button>
@@ -1656,6 +1654,37 @@
       <input id="importData" type="file" accept="application/json">
     </div>
   </div>
+
+  <div class="fit-overlay" id="fitOverlay" hidden></div>
+
+  <form name="fitplan-questionario" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="fitplan-questionario">
+    <input name="bot-field">
+    <input name="subject">
+    <input name="nome">
+    <input name="email">
+    <input name="whatsapp">
+    <input name="idade">
+    <input name="altura_cm">
+    <input name="peso_kg">
+    <input name="sexo">
+    <textarea name="rotina"></textarea>
+    <textarea name="objetivo"></textarea>
+    <textarea name="experiencia"></textarea>
+    <textarea name="dias_disponiveis"></textarea>
+    <textarea name="equipamentos_indisponiveis"></textarea>
+    <textarea name="lesoes_limitacoes"></textarea>
+    <textarea name="prioridades"></textarea>
+    <textarea name="exercicios_evitar"></textarea>
+    <textarea name="cardio"></textarea>
+    <textarea name="recuperacao"></textarea>
+    <textarea name="alimentacao"></textarea>
+    <textarea name="saude_medicacoes"></textarea>
+    <textarea name="expectativas"></textarea>
+    <input name="consentimento">
+    <input name="enviado_em">
+    <input name="origem">
+  </form>
 
   <script>
     const ACTIVE_KEY = "gym-app-active-profile";
@@ -2353,6 +2382,54 @@
         h = (((h << 5) + h) ^ pin.charCodeAt(i)) >>> 0;
       }
       return String(h);
+    }
+
+    function recoverJonathanFromTestProfile() {
+      const stateKey = profileStateKey("jonathan");
+      const measurementsKey = "gym-app-profile-jonathan-measurements";
+      const displayNameKey = "gym-app-profile-jonathan-display-name";
+      const rawState = localStorage.getItem(stateKey);
+      if (!rawState) return false;
+
+      try {
+        const candidate = JSON.parse(rawState);
+        const sessions = Array.isArray(candidate.sessions) ? candidate.sessions : [];
+        const squatHistory = candidate.history?.["lower-a-squat"];
+        const isFourMonthTest = sessions.length === 80
+          && sessions[0]?.date === "2026-05-04"
+          && sessions.at(-1)?.date === "2026-08-22"
+          && Array.isArray(squatHistory)
+          && squatHistory.length === 16
+          && squatHistory[0]?.load === 80
+          && squatHistory.at(-1)?.load === 102.5
+          && String(candidate.weights?.["lower-a-leg-press"]) === "205";
+
+        if (!isFourMonthTest) return false;
+
+        localStorage.removeItem(stateKey);
+        localStorage.removeItem(displayNameKey);
+
+        try {
+          const measurements = JSON.parse(localStorage.getItem(measurementsKey) || "[]");
+          const isTestMeasurements = Array.isArray(measurements)
+            && measurements.length === 9
+            && measurements[0]?.date === "2026-05-04"
+            && measurements[0]?.weight === "99.0"
+            && measurements.at(-1)?.date === "2026-08-24"
+            && measurements.at(-1)?.weight === "92.0";
+          if (isTestMeasurements) localStorage.removeItem(measurementsKey);
+        } catch {}
+
+        if (localStorage.getItem(profilePinKey("jonathan")) === hashPin("1234")) {
+          localStorage.removeItem(profilePinKey("jonathan"));
+        }
+        if (localStorage.getItem(ACTIVE_KEY) === "jonathan") {
+          localStorage.removeItem(ACTIVE_KEY);
+        }
+        return true;
+      } catch {
+        return false;
+      }
     }
 
     function escapeHtml(value) {
@@ -3410,8 +3487,21 @@
       return terms.some((term) => text.includes(term));
     }
 
-    function inferPrepGroup(exercise) {
-      const text = slugify(`${exercise.name} ${exercise.note || ""}`);
+    function selectedExerciseName(exercise) {
+      const variants = getExerciseVariants(exercise);
+      const selected = getSelectedVariant(exercise);
+      if (!selected || variants.length <= 1 || selected.key === variants[0].key) return selected?.label || exercise.name;
+      const movementRoot = exercise.name
+        .split(/\sou\s/i)[0]
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .join(" ");
+      return `${movementRoot} ${selected.label}`;
+    }
+
+    function inferWarmupGroup(exercise) {
+      const text = slugify(selectedExerciseName(exercise));
       if (hasAnyTerm(text, ["panturrilha", "calf", "soleo", "gastrocnemio"])) return "panturrilha";
       if (hasAnyTerm(text, ["abdominal", "abdomen", "core", "prancha", "dead-bug", "bird-dog"])) return "abdômen";
       if (hasAnyTerm(text, ["biceps", "rosca", "martelo", "scott", "curl"])) return "bíceps";
@@ -3423,6 +3513,139 @@
       if (hasAnyTerm(text, ["elevacao-pelvica", "gluteo", "gluteos", "abdutora", "abdutora", "abductor", "coice", "bulgaro", "afundo"])) return "glúteos";
       if (hasAnyTerm(text, ["agachamento", "hack", "leg-press", "extensora", "quadriceps", "smith"])) return "quadríceps";
       return "geral";
+    }
+
+    function inferPrepGroupFromName(name) {
+      const text = slugify(name);
+
+      // Condicionamento e mobilidade não possuem um único músculo-alvo.
+      if (hasAnyTerm(text, ["corrida", "caminhada", "esteira", "eliptico", "cardio-zona-2"])) {
+        return "Quadríceps femoral • glúteo máximo • isquiotibiais • tríceps sural";
+      }
+      if (hasAnyTerm(text, ["bike", "bicicleta"])) {
+        return "Quadríceps femoral • glúteo máximo • tríceps sural";
+      }
+      if (hasAnyTerm(text, ["mobilidade"])) {
+        return "Sem alvo único • musculatura do quadril e do tronco";
+      }
+
+      // Tronco.
+      if (hasAnyTerm(text, ["prancha-lateral"])) {
+        return "Oblíquos • quadrado lombar • glúteo médio";
+      }
+      if (hasAnyTerm(text, ["prancha", "dead-bug", "bird-dog"])) {
+        return "Reto abdominal • transverso do abdome • oblíquos";
+      }
+      if (hasAnyTerm(text, ["abdominal-infra", "elevacao-de-pernas", "elevacao-de-joelhos", "leg-raise"])) {
+        return "Reto abdominal • iliopsoas";
+      }
+      if (hasAnyTerm(text, ["abdominal", "abdomen", "crunch"])) {
+        return "Reto abdominal • oblíquos";
+      }
+
+      // Quadril, coxa e perna.
+      if (hasAnyTerm(text, ["panturrilha-sentada", "seated-calf"])) {
+        return "Sóleo";
+      }
+      if (hasAnyTerm(text, ["panturrilha", "calf"])) {
+        return "Gastrocnêmio medial e lateral • sóleo";
+      }
+      if (hasAnyTerm(text, ["adutora", "aducao-de-quadril", "hip-adduction"])) {
+        return "Adutores do quadril: longo, magno, curto e grácil";
+      }
+      if (hasAnyTerm(text, ["abdutora", "abducao-de-quadril", "hip-abduction", "abductor"])) {
+        return "Glúteo médio • glúteo mínimo";
+      }
+      if (hasAnyTerm(text, ["elevacao-pelvica", "hip-thrust", "glute-bridge", "ponte-de-gluteos", "coice", "kickback", "gluteo-no-cabo"])) {
+        return "Glúteo máximo";
+      }
+      if (hasAnyTerm(text, ["rdl", "terra-romeno", "romeno", "stiff"])) {
+        return "Isquiotibiais: bíceps femoral, semitendíneo e semimembranáceo • glúteo máximo";
+      }
+      if (hasAnyTerm(text, ["flexora", "leg-curl", "nordic"])) {
+        return "Isquiotibiais: bíceps femoral, semitendíneo e semimembranáceo";
+      }
+      if (hasAnyTerm(text, ["extensora", "leg-extension"])) {
+        return "Quadríceps femoral: reto femoral e vastos";
+      }
+      if (hasAnyTerm(text, ["bulgaro", "afundo", "passada", "split-squat", "lunge"])) {
+        return "Quadríceps femoral • glúteo máximo • glúteo médio";
+      }
+      if (hasAnyTerm(text, ["sumo"])) {
+        return "Quadríceps femoral • glúteo máximo • adutores do quadril";
+      }
+      if (hasAnyTerm(text, ["leg-press-com-pes-mais-altos", "leg-press-pes-mais-altos", "leg-press-45-pes-medios-altos"])) {
+        return "Glúteo máximo • quadríceps femoral • isquiotibiais";
+      }
+      if (hasAnyTerm(text, ["leg-press"])) {
+        return "Quadríceps femoral • glúteo máximo";
+      }
+      if (hasAnyTerm(text, ["agachamento", "hack", "goblet", "smith", "squat"])) {
+        return "Quadríceps femoral • glúteo máximo • adutor magno";
+      }
+
+      // Cintura escapular, ombro e peito.
+      if (hasAnyTerm(text, ["rotacao-externa", "external-rotation"])) {
+        return "Infraespinhal • redondo menor";
+      }
+      if (hasAnyTerm(text, ["face-pull"])) {
+        return "Deltoide posterior • infraespinhal • redondo menor • trapézio médio • romboides";
+      }
+      if (hasAnyTerm(text, ["crucifixo-inverso", "crucifixo-invertido", "voador-inverso", "reverse-fly", "rear-delt"])) {
+        return "Deltoide posterior • trapézio médio • romboides";
+      }
+      if (hasAnyTerm(text, ["encolhimento", "shrug"])) {
+        return "Trapézio superior • elevador da escápula";
+      }
+      if (hasAnyTerm(text, ["elevacao-lateral", "lateral-raise"])) {
+        return "Deltoide lateral • supraespinhal";
+      }
+      if (hasAnyTerm(text, ["desenvolvimento", "shoulder-press", "overhead-press"])) {
+        return "Deltoide anterior e lateral • tríceps braquial";
+      }
+      if (hasAnyTerm(text, ["supino-inclinado", "incline-chest", "incline-press"])) {
+        return "Peitoral maior (porção clavicular) • deltoide anterior";
+      }
+      if (hasAnyTerm(text, ["crossover-de-cima-para-baixo", "declinado", "decline-press"])) {
+        return "Peitoral maior (porção esternocostal)";
+      }
+      if (hasAnyTerm(text, ["crucifixo", "crossover", "peck-deck", "fly"])) {
+        return "Peitoral maior (porções esternocostal e clavicular)";
+      }
+      if (hasAnyTerm(text, ["supino", "chest-press", "peito"])) {
+        return "Peitoral maior (porções esternocostal e clavicular) • tríceps braquial";
+      }
+
+      // Costas e flexores/extensores do cotovelo.
+      if (hasAnyTerm(text, ["pulldown-na-polia", "pullover", "bracos-estendidos", "straight-arm"])) {
+        return "Latíssimo do dorso (grande dorsal) • redondo maior";
+      }
+      if (hasAnyTerm(text, ["puxada", "barra-fixa", "lat-pulldown", "chin-up", "pull-up"])) {
+        return "Latíssimo do dorso (grande dorsal) • redondo maior • bíceps braquial";
+      }
+      if (hasAnyTerm(text, ["remada", "row"])) {
+        return "Latíssimo do dorso (grande dorsal) • trapézio médio/inferior • romboides • deltoide posterior";
+      }
+      if (hasAnyTerm(text, ["rosca-martelo", "hammer-curl", "barra-h"])) {
+        return "Braquial • braquiorradial • bíceps braquial";
+      }
+      if (hasAnyTerm(text, ["rosca", "biceps", "curl", "scott"])) {
+        return "Bíceps braquial • braquial";
+      }
+      if (hasAnyTerm(text, ["triceps-frances", "triceps-testa", "frances", "testa", "overhead-triceps"])) {
+        return "Tríceps braquial (ênfase na cabeça longa)";
+      }
+      if (hasAnyTerm(text, ["triceps", "pulley"])) {
+        return "Tríceps braquial (cabeças lateral, medial e longa)";
+      }
+
+      return "Corpo inteiro • sem músculo-alvo isolado";
+    }
+
+    window.FitPlanMuscles = Object.freeze({ targetForName: inferPrepGroupFromName });
+
+    function inferPrepGroup(exercise) {
+      return inferPrepGroupFromName(selectedExerciseName(exercise));
     }
 
     function inferPrepKind(exercise) {
@@ -3443,12 +3666,20 @@
     function inferPrepMeta(exercise) {
       return {
         group: inferPrepGroup(exercise),
+        warmupGroup: inferWarmupGroup(exercise),
         kind: inferPrepKind(exercise)
       };
     }
 
     function getPrepMeta(exercise) {
-      return PREP_EXERCISE_META[currentProfile]?.[exercise.id] || inferPrepMeta(exercise);
+      const inferred = inferPrepMeta(exercise);
+      const stored = PREP_EXERCISE_META[currentProfile]?.[exercise.id];
+      return {
+        ...inferred,
+        ...(stored || {}),
+        group: inferred.group,
+        warmupGroup: stored?.group || inferred.warmupGroup
+      };
     }
 
     function getActiveWorkoutExercises() {
@@ -3460,7 +3691,7 @@
       if (!meta) return false;
       const exerciseIndex = workoutExercises.findIndex((item) => item.id === exercise.id);
       const previousExercises = workoutExercises.slice(0, Math.max(0, exerciseIndex));
-      return !previousExercises.some((item) => getPrepMeta(item)?.group === meta.group);
+      return !previousExercises.some((item) => getPrepMeta(item)?.warmupGroup === meta.warmupGroup);
     }
 
     function roundPrepLoad(value) {
@@ -4035,6 +4266,7 @@
 
     /* === Init === */
     (function init() {
+      recoverJonathanFromTestProfile();
       const active = localStorage.getItem(ACTIVE_KEY);
       if (active && profiles[active] && localStorage.getItem(profilePinKey(active))) {
         enterApp(active);
@@ -4044,7 +4276,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="stitch-ui.css?v=15">
-  <script src="stitch-ui.js?v=14"></script>
+  <link rel="stylesheet" href="stitch-ui.css?v=19">
+  <script src="stitch-ui.js?v=17"></script>
 </body>
 </html>

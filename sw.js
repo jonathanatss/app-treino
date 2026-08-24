@@ -1,5 +1,5 @@
-const CACHE_NAME = "fitplan-v17";
-const RUNTIME_CACHE = "fitplan-runtime-v17";
+const CACHE_NAME = "fitplan-v25";
+const RUNTIME_CACHE = "fitplan-runtime-v25";
 
 const APP_SHELL = [
   "./",
@@ -7,8 +7,10 @@ const APP_SHELL = [
   "./stitch-ui.css",
   "./stitch-ui.js",
   "./manifest.webmanifest",
+  "./logo-mark.svg",
   "./icon-192.png",
   "./icon-512.png",
+  "./icon-maskable-512.png",
   "./apple-touch-icon.png",
   "./favicon-32.png",
   "./assets/exercises/10286.gif",

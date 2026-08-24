@@ -50,6 +50,121 @@
     records: "★"
   }[name] || "•");
 
+  const SCIENCE_BASE = {
+    jonathan: {
+      source: "Questionário respondido em 06/08/2026",
+      goal: "Reduzir gordura sem abrir mão de massa muscular e desempenho.",
+      plan: "5 sessões de musculação • PPL + Lower/Upper • descanso quinta e domingo",
+      signals: ["1 ano consistente", "energia boa", "prioridade em costas, ombros, braços e pernas", "afundo/passada fora"],
+      decisions: [
+        ["Por que 5 dias?", "A disponibilidade é alta e a experiência já permite distribuir o volume em sessões especializadas. Cinco dias evitam concentrar séries demais em um único treino e mantêm contato frequente com os grupos prioritários."],
+        ["Por que PPL + Lower/Upper?", "Push, Pull e Legs organizam o trabalho específico; Lower e Upper oferecem um segundo estímulo semanal. Assim, costas, quadríceps, posteriores e braços recebem frequência e volume maiores sem repetir o mesmo padrão em dias seguidos."],
+        ["Por que este volume e RIR?", "O plano usa múltiplas séries semanais e, na maior parte do tempo, termina com 1–2 repetições em reserva. Isso cria estímulo suficiente para hipertrofia, mas controla a fadiga durante uma fase de redução de gordura."],
+        ["Por que esses exercícios?", "Máquinas, cabos e exercícios estáveis favorecem progressão mensurável. Afundos e passadas foram excluídos por preferência; o volume de pernas foi realocado para hack, leg press, extensora e flexoras."],
+        ["Como o cardio entra?", "Corrida e caminhada podem ser mantidas em intensidade compatível com a recuperação. O cardio complementa o gasto energético, enquanto a musculação e a ingestão de proteína são as âncoras para preservar massa magra."]
+      ]
+    },
+    sara: {
+      source: "Dados do perfil e da prescrição atual — questionário não anexado",
+      goal: "Desenvolver pernas e glúteos sem deixar os demais grupos sem estímulo direto.",
+      plan: "4 sessões de musculação • Upper/Lower 2x • RIR predominante de 1–2",
+      signals: ["prioridade em pernas e glúteos", "4 dias por semana", "volume direto para o corpo todo", "progressão controlada"],
+      decisions: [
+        ["Por que 4 dias?", "Quatro sessões permitem treinar cada metade do corpo duas vezes na semana e ainda deixam dias suficientes para recuperação."],
+        ["Por que Upper/Lower?", "A divisão mantém a frequência de duas exposições semanais por grupo e reserva mais séries nos dias inferiores para quadríceps, posteriores e glúteos."],
+        ["Como o volume foi distribuído?", "Os grupos prioritários recebem mais séries diretas; peito, costas, ombros e braços continuam presentes para equilíbrio muscular. O volume foi espalhado para preservar a qualidade das séries."],
+        ["Por que RIR 1–2?", "Treinar perto da falha torna as séries estimulantes sem exigir falha máxima em toda série. Isso facilita recuperar entre as quatro sessões."],
+        ["O que deve ser revisto?", "Como o questionário original não está disponível nesta versão, dores, preferências e restrições precisam ser confirmadas antes de mudar exercícios ou aumentar volume."]
+      ]
+    },
+    fernanda: {
+      source: "Dados do perfil e da prescrição atual — questionário não anexado",
+      goal: "Recomposição corporal com prioridade em glúteos, pernas e tríceps.",
+      plan: "4 sessões principais + sábado opcional • treinos de aproximadamente 45 min",
+      signals: ["recomposição", "lipedema informado no perfil", "sessões curtas", "sábado flexível"],
+      decisions: [
+        ["Por que 4 dias + opcional?", "As quatro sessões formam a base necessária. O sábado é complementar e só entra quando sono, disposição e recuperação estão bons, evitando transformar uma opção em obrigação."],
+        ["Por que sessões compactas?", "O limite de cerca de 45 minutos exige priorizar exercícios com boa relação entre estímulo e tempo, mantendo descansos maiores nos movimentos principais e acessórios mais objetivos."],
+        ["Como as prioridades aparecem?", "Glúteos e pernas recebem duas exposições principais; tríceps aparece nos treinos superiores. Os outros grupos são mantidos para equilíbrio e saúde articular."],
+        ["Como progredir?", "Primeiro aumente repetições dentro da faixa prescrita com técnica estável; depois, aumente a carga. Sintomas, dor ou inchaço fora do padrão devem reduzir o treino opcional e motivar avaliação profissional."],
+        ["O que deve ser revisto?", "O questionário original não está anexado. Equipamentos, tolerância individual e orientações clínicas relacionadas ao lipedema devem ser reconfirmados nas revisões."]
+      ]
+    },
+    eduarda: {
+      source: "Dados do perfil e da prescrição atual — questionário não anexado",
+      goal: "Emagrecimento e condicionamento, priorizando glúteos, costas e abdômen.",
+      plan: "5 sessões principais + sábado opcional • duração próxima de 1 hora",
+      signals: ["emagrecimento", "condicionamento", "glúteos e costas prioritários", "sábado opcional"],
+      decisions: [
+        ["Por que 5 dias?", "O volume é distribuído para manter as sessões próximas de uma hora. Dias separados de inferiores, costas e superiores evitam que todos os exercícios importantes se acumulem no mesmo treino."],
+        ["Por que repetir costas e inferiores?", "Os grupos prioritários recebem duas exposições semanais. Essa frequência ajuda a praticar os movimentos e permite séries de melhor qualidade do que um único treino muito longo."],
+        ["Qual é o papel do sábado?", "É uma sessão opcional de condicionamento ou complemento. Deve ser retirada quando houver fadiga acumulada, dor muscular alta ou queda de desempenho."],
+        ["Como o emagrecimento é tratado?", "A musculação ajuda a preservar massa magra, mas a perda de peso depende principalmente do balanço energético. O cardio complementa o plano; não substitui dieta e recuperação."],
+        ["O que deve ser revisto?", "Sem o questionário anexado, preferências, limitações e rotina precisam ser confirmadas antes de elevar volume ou tornar o sábado obrigatório."]
+      ]
+    },
+    fernando: {
+      source: "Dados do perfil e da prescrição atual — questionário não anexado",
+      goal: "Hipertrofia com volume equilibrado e sessões próximas de 1 hora.",
+      plan: "5 sessões • Upper/Lower + Full Body • stiff excluído",
+      signals: ["hipertrofia", "5 dias por semana", "volume equilibrado", "preferência sem stiff"],
+      decisions: [
+        ["Por que Upper/Lower + Full Body?", "Quatro dias distribuem o trabalho de superiores e inferiores; o Full Body adiciona uma segunda ou terceira exposição leve sem criar outro treino longo e isolado."],
+        ["Por que volume equilibrado?", "Nenhum grupo foi marcado como prioridade dominante. Por isso, o plano reparte séries entre os grandes grupos e usa acessórios para completar braços, ombros e panturrilhas."],
+        ["Por que o stiff saiu?", "A preferência foi respeitada e o trabalho de posteriores foi mantido com flexoras e outros padrões tolerados. Adesão e execução consistente valem mais que insistir em um exercício específico."],
+        ["Como progredir?", "Aumente repetições até o topo da faixa, mantendo o RIR e a técnica; só então suba a carga. O quinto dia deve ser ajustado se a performance cair por várias sessões."],
+        ["O que deve ser revisto?", "O questionário original não está anexado. A razão para evitar o stiff, possíveis dores e equipamentos disponíveis precisam ser confirmados."]
+      ]
+    },
+    nathalia: {
+      source: "Questionário respondido em 05/08/2026",
+      goal: "Perder gordura, fortalecer a musculatura e recuperar constância com proteção lombar.",
+      plan: "3 sessões Full Body • segunda, quarta e sexta • recuperação entre sessões",
+      signals: ["nível intermediário", "3 dias disponíveis", "histórico de hérnia lombar", "forte dor muscular com estímulos novos"],
+      decisions: [
+        ["Por que Full Body 3x?", "Os três dias disponíveis já são alternados. Treinar o corpo todo em cada sessão mantém frequência regular por grupo, sem precisar encaixar uma divisão de quatro ou cinco dias que não caberia na rotina."],
+        ["Por que o volume é moderado?", "O histórico de dor muscular forte com exercícios novos favorece começar com dose recuperável e aumentar apenas após constância. Mais volume não ajuda se comprometer a próxima sessão."],
+        ["Como a lombar foi considerada?", "O plano prioriza apoio, controle e amplitude tolerada, evitando depender do leg press que já esteve associado a uma crise. Nenhum exercício deve provocar dor irradiada, formigamento ou perda de força."],
+        ["Por que esses grupos aparecem?", "Quadríceps, posteriores, glúteos e braços foram citados como prioridades, mas cada treino mantém padrões de empurrar e puxar para não criar lacunas."],
+        ["E a perda de gordura?", "A musculação preserva e desenvolve tecido muscular; a redução de gordura exige ajuste alimentar compatível. O primeiro marcador de sucesso definido no questionário é constância, seguido de disposição e composição corporal."]
+      ]
+    },
+    pablo: {
+      source: "Questionário respondido em 12/08/2026",
+      goal: "Recomposição corporal, redução de gordura abdominal e melhora do condicionamento.",
+      plan: "4 sessões Upper/Lower + 2 cardios • descanso quarta e domingo",
+      signals: ["iniciante", "treina pela manhã", "evita agachamento livre, RDL, terra e elevação pélvica", "pedala e quer voltar aos 5 km"],
+      decisions: [
+        ["Por que Upper/Lower 4x?", "Para um iniciante, a divisão permite praticar cada grupo duas vezes por semana e repetir padrões com técnica fresca. Quatro sessões de musculação também deixam espaço para cardio e recuperação."],
+        ["Por que descanso na quarta e no domingo?", "A quarta interrompe dois blocos consecutivos de treino e reduz fadiga no meio da semana. O domingo fecha o ciclo antes de reiniciar, enquanto o sábado fica disponível para cardio."],
+        ["Por que este volume?", "O volume é suficiente para criar adaptação, mas não exige muitas séries de um mesmo músculo na mesma sessão. A prioridade inicial é execução consistente, progressão gradual e tolerância ao treino."],
+        ["Por que esses exercícios?", "Foram evitados os movimentos rejeitados no questionário. Máquinas, halteres e cabos fornecem alternativas comuns e estáveis para treinar os mesmos grupos sem depender de agachamento livre, stiff/RDL, terra ou elevação pélvica."],
+        ["Como o cardio foi escolhido?", "Duas sessões preservam a pedalada já praticada e constroem base para voltar aos 5 km. A corrida deve progredir por tempo e tolerância, sem prejudicar os treinos de pernas."]
+      ]
+    },
+    igor: {
+      source: "Questionário respondido em 17/08/2026",
+      goal: "Perder gordura preservando ou ganhando massa magra.",
+      plan: "4 sessões Upper/Lower + cardio 2x • descanso de musculação quarta, sábado e domingo",
+      signals: ["intermediário/avançando", "déficit com nutricionista", "cansaço ao longo da semana", "quadríceps direito precisa recuperar força"],
+      decisions: [
+        ["Por que 4 dias, e não 5?", "Apesar da experiência, o questionário relata cansaço acumulado. Quatro sessões mantêm volume produtivo e duas exposições por grupo, com mais oportunidades de recuperação durante o déficit calórico."],
+        ["Por que Upper/Lower?", "A divisão treina superiores e inferiores duas vezes por semana, distribui melhor as séries e permite atenção recorrente ao quadríceps sem concentrar tudo em um único dia."],
+        ["Por que descansar quarta, sábado e domingo?", "A quarta separa os pares segunda/terça e quinta/sexta. O fim de semana sem musculação ajuda a dissipar fadiga; os cardios curtos entram conforme a recuperação, sem virar mais dois treinos pesados."],
+        ["Como a assimetria foi considerada?", "Exercícios guiados e trabalho unilateral controlado permitem acompanhar o lado direito. A carga deve ser limitada pela técnica e capacidade do lado mais fraco; dor ou piora de força exige avaliação profissional."],
+        ["Por que RIR e progressão gradual?", "Treinar próximo da falha gera estímulo, mas falhar em toda série aumentaria a fadiga. A progressão acontece quando a faixa de repetições é concluída com execução estável e o RIR planejado."]
+      ]
+    }
+  };
+
+  const SCIENCE_REFERENCES = [
+    ["Diretrizes ACSM 2026", "Personalização, consistência, múltiplas séries e volume semanal orientado ao objetivo.", "https://acsm.org/resistance-training-guidelines-update-2026/"],
+    ["Currier et al., 2023", "Treinos resistidos com múltiplas séries promovem força e hipertrofia em diferentes combinações de carga e frequência.", "https://pubmed.ncbi.nlm.nih.gov/37414459/"],
+    ["Ramos-Campo et al., 2024", "Split e Full Body produzem resultados semelhantes quando o volume é igualado; a divisão deve servir à rotina e à distribuição do volume.", "https://pubmed.ncbi.nlm.nih.gov/38595233/"],
+    ["Robinson et al., 2024", "Para hipertrofia, séries mais próximas da falha tendem a ser mais estimulantes, sem exigir falha em todas as séries.", "https://pubmed.ncbi.nlm.nih.gov/38970765/"],
+    ["Binmahfoz et al., 2025", "Durante perda de peso, exercício resistido ajuda a proteger massa livre de gordura e favorece a redução de gordura.", "https://pubmed.ncbi.nlm.nih.gov/40909191/"]
+  ];
+
   function getSettings() {
     try {
       return { notifications: true, autoRest: true, sound: false, ...JSON.parse(localStorage.getItem(settingsKey)) };
@@ -186,13 +301,19 @@
     const search = Object.keys(profiles).length > 5
       ? `<input class="profile-search" id="profileSearch" type="search" placeholder="Buscar usuário" value="${escapeHtml(query)}" autocomplete="off" aria-label="Buscar usuário">`
       : "";
+    const requestCard = `<div class="new-user-divider"><span>NOVO NO FITPLAN?</span></div>
+      <button class="new-user-request" type="button">
+        <span class="new-user-request-icon" aria-hidden="true">＋</span>
+        <span><strong>Solicitar novo treino</strong><small>Responda ao questionário pelo app</small></span>
+        <span class="new-user-request-arrow" aria-hidden="true">›</span>
+      </button>`;
     list.innerHTML = search + (cards.length ? cards.map(([id]) => {
       const hasPin = !!localStorage.getItem(profilePinKey(id));
       return `<button class="profile-card" type="button" data-profile="${id}" style="--profile-color:${profiles[id].accent}">
         <span class="profile-avatar" data-avatar-profile="${id}">${initialsFor(id)}</span>
         <span class="profile-info"><span class="profile-name">${escapeHtml(profileName(id))}</span><span class="profile-meta">${hasPin ? escapeHtml(lastProfileActivity(id)) : "Configurar PIN"}</span></span>
       </button>`;
-    }).join("") : `<div class="empty-search">Nenhum usuário encontrado.</div>`);
+    }).join("") : `<div class="empty-search">Nenhum usuário encontrado.</div>`) + requestCard;
     list.querySelector("#profileSearch")?.addEventListener("input", (event) => {
       const cursor = event.target.selectionStart;
       renderProfileCards(event.target.value);
@@ -201,14 +322,224 @@
       next?.setSelectionRange(cursor, cursor);
     });
     list.querySelectorAll(".profile-card").forEach((card) => card.addEventListener("click", () => openPinScreen(card.dataset.profile)));
+    list.querySelector(".new-user-request")?.addEventListener("click", openTrainingQuestionnaire);
     hydrateProfileAvatars(list);
   }
 
   renderProfilePicker = function () {
     document.querySelector("#screen-picker .lock-title").textContent = "Quem está treinando?";
-    document.querySelector("#screen-picker .lock-subtitle").textContent = "Selecione seu perfil para acessar seus dados.";
+    document.querySelector("#screen-picker .lock-subtitle").textContent = "Entre no seu perfil ou solicite um novo treino.";
     renderProfileCards();
   };
+
+  const questionnaireDays = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
+  const questionnaireMuscles = ["Peitoral", "Costas/dorsais", "Ombros", "Trapézio", "Bíceps", "Tríceps", "Antebraços", "Quadríceps", "Posterior de coxa", "Glúteos", "Panturrilhas", "Abdômen/core"];
+
+  function choiceMarkup(name, values) {
+    return values.map((value) => `<label class="questionnaire-choice"><input type="checkbox" name="${name}" value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`).join("");
+  }
+
+  function questionnaireField(name, label, placeholder, options = {}) {
+    const { type = "textarea", required = true, inputMode = "", autocomplete = "", min = "", suffix = "" } = options;
+    const requiredAttr = required ? " required" : "";
+    if (type === "select") {
+      return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><select name="${name}"${requiredAttr}><option value="">Selecione</option>${options.values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("")}</select></label>`;
+    }
+    if (type !== "textarea") {
+      return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><span class="questionnaire-input-wrap"><input type="${type}" name="${name}" placeholder="${placeholder}"${requiredAttr}${inputMode ? ` inputmode="${inputMode}"` : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${min ? ` min="${min}"` : ""}>${suffix ? `<small>${suffix}</small>` : ""}</span></label>`;
+    }
+    return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><textarea name="${name}" rows="4" placeholder="${placeholder}"${requiredAttr}></textarea></label>`;
+  }
+
+  function showQuestionnaireSuccess(isLocalPreview = false) {
+    showOverlay(`<div class="overlay-page questionnaire-success">
+      <div class="questionnaire-success-icon" aria-hidden="true">✓</div>
+      <p class="eyebrow">${isLocalPreview ? "PRÉVIA LOCAL" : "QUESTIONÁRIO ENVIADO"}</p>
+      <h2>${isLocalPreview ? "Fluxo validado" : "Solicitação recebida"}</h2>
+      <p>${isLocalPreview ? "Nenhum dado foi enviado neste teste local. Em produção, a resposta ficará registrada no Netlify e poderá gerar uma notificação." : "Suas respostas foram enviadas ao responsável pelo FitPlan. Ele vai analisar o questionário antes de montar e liberar o seu treino."}</p>
+      <button class="primary-button questionnaire-done" type="button">Voltar aos perfis</button>
+    </div>`);
+    overlay.querySelector(".questionnaire-done")?.addEventListener("click", closeOverlay);
+  }
+
+  function openTrainingQuestionnaire() {
+    const steps = [
+      `<section class="questionnaire-step" data-questionnaire-step="0">
+        <div class="questionnaire-step-heading"><span>01</span><div><h3>Vamos conhecer você</h3><p>Use seus dados atuais. Eles ajudam a dimensionar o treino com segurança.</p></div></div>
+        <div class="questionnaire-grid questionnaire-grid-two">
+          ${questionnaireField("nome", "Nome completo", "Seu nome", { type: "text", autocomplete: "name" })}
+          ${questionnaireField("email", "E-mail", "voce@exemplo.com", { type: "email", required: false, autocomplete: "email" })}
+          ${questionnaireField("whatsapp", "WhatsApp", "(00) 00000-0000", { type: "tel", required: false, inputMode: "tel", autocomplete: "tel" })}
+          ${questionnaireField("idade", "Idade", "00", { type: "number", inputMode: "numeric", min: "12", suffix: "anos" })}
+          ${questionnaireField("altura_cm", "Altura", "000", { type: "number", inputMode: "decimal", min: "100", suffix: "cm" })}
+          ${questionnaireField("peso_kg", "Peso atual", "00,0", { type: "number", inputMode: "decimal", min: "30", suffix: "kg" })}
+          ${questionnaireField("sexo", "Sexo", "", { type: "select", values: ["Feminino", "Masculino", "Intersexo", "Prefiro não informar"] })}
+        </div>
+        <p class="questionnaire-note">Informe pelo menos um contato: e-mail ou WhatsApp.</p>
+      </section>`,
+      `<section class="questionnaire-step" data-questionnaire-step="1" hidden>
+        <div class="questionnaire-step-heading"><span>02</span><div><h3>Rotina e objetivo</h3><p>Conte como o treino precisa caber na sua vida.</p></div></div>
+        <div class="questionnaire-grid">
+          ${questionnaireField("rotina", "Rotina", "Profissão, jornada, horário em que costuma treinar e nível de energia no dia.")}
+          ${questionnaireField("objetivo", "Objetivo principal e prazo", "Ganho de massa, perda de gordura, recomposição, força, saúde, condicionamento ou uma data específica.")}
+          ${questionnaireField("experiencia", "Experiência com musculação", "Tempo de treino, nível atual e experiência com progressão de carga e execução controlada.")}
+        </div>
+      </section>`,
+      `<section class="questionnaire-step" data-questionnaire-step="2" hidden>
+        <div class="questionnaire-step-heading"><span>03</span><div><h3>Disponibilidade e preferências</h3><p>A divisão do treino nasce daqui.</p></div></div>
+        <fieldset class="questionnaire-fieldset" data-required-group="dias_disponiveis"><legend>Quais dias você pode treinar? *</legend><div class="questionnaire-choices questionnaire-days">${choiceMarkup("dias_disponiveis", questionnaireDays)}</div></fieldset>
+        <div class="questionnaire-grid">
+          ${questionnaireField("equipamentos_indisponiveis", "Equipamentos que você não tem acesso", "Liste máquinas, barras, halteres, cabos ou aparelhos que faltam. Se tiver tudo, escreva “Nenhum”.")}
+        </div>
+        <fieldset class="questionnaire-fieldset" data-required-group="prioridades"><legend>Grupos musculares prioritários ou pontos fracos *</legend><div class="questionnaire-choices">${choiceMarkup("prioridades", questionnaireMuscles)}</div></fieldset>
+        <div class="questionnaire-grid">
+          ${questionnaireField("exercicios_evitar", "Exercícios que não gosta ou prefere evitar", "Se não houver, escreva “Nenhum”.")}
+        </div>
+      </section>`,
+      `<section class="questionnaire-step" data-questionnaire-step="3" hidden>
+        <div class="questionnaire-step-heading"><span>04</span><div><h3>Saúde e recuperação</h3><p>Essas respostas evitam escolhas incompatíveis com sua realidade.</p></div></div>
+        <div class="questionnaire-grid">
+          ${questionnaireField("lesoes_limitacoes", "Lesões, dores e limitações", "Inclua lesões atuais ou antigas, dores por região/exercício e restrições médicas ou fisioterapêuticas. Se não houver, escreva “Nenhuma”.")}
+          ${questionnaireField("cardio", "Cardio", "Tipo, frequência semanal, duração, intensidade e qualquer limitação para correr, caminhar, pedalar ou fazer escada.")}
+          ${questionnaireField("recuperacao", "Recuperação", "Horas e qualidade do sono, estresse, fadiga entre treinos e dor muscular após treinar.")}
+          ${questionnaireField("alimentacao", "Alimentação", "Dieta atual, acompanhamento nutricional, déficit/manutenção/superávit, proteína e suplementos.")}
+          ${questionnaireField("saude_medicacoes", "Saúde e medicações", "Medicações relevantes para peso, apetite, hormônios ou saúde e qualquer cuidado importante. Se não houver, escreva “Nenhuma”.")}
+        </div>
+      </section>`,
+      `<section class="questionnaire-step" data-questionnaire-step="4" hidden>
+        <div class="questionnaire-step-heading"><span>05</span><div><h3>O que seria sucesso?</h3><p>Última etapa: defina o resultado que espera alcançar.</p></div></div>
+        <div class="questionnaire-grid">
+          ${questionnaireField("expectativas", "Expectativas para os próximos 3 meses", "O que espera, o que seria sucesso e qualquer observação adicional.")}
+        </div>
+        <label class="questionnaire-consent"><input type="checkbox" name="consentimento" value="Autorizado" required><span>Autorizo o envio destas respostas, incluindo informações de saúde, ao responsável pelo FitPlan para elaboração do treino.</span></label>
+        <div class="questionnaire-privacy"><strong>Seus dados não ficam públicos.</strong><span>Eles serão usados apenas para analisar a solicitação e montar o seu treino.</span></div>
+      </section>`
+    ];
+
+    showOverlay(`<div class="overlay-page questionnaire-page">
+      <header class="overlay-header questionnaire-header"><button class="overlay-close questionnaire-close" type="button" aria-label="Fechar questionário">×</button><h2>Novo treino</h2><span></span></header>
+      <div class="questionnaire-progress"><div><span class="questionnaire-progress-label">ETAPA 1 DE ${steps.length}</span><small class="questionnaire-progress-percent">20%</small></div><span class="questionnaire-progress-track"><span class="questionnaire-progress-fill"></span></span></div>
+      <form class="questionnaire-form" id="trainingQuestionnaire" name="fitplan-questionario" novalidate>
+        <input type="hidden" name="form-name" value="fitplan-questionario">
+        <input type="hidden" name="subject" value="Nova solicitação de treino — FitPlan">
+        <label class="questionnaire-honeypot" aria-hidden="true">Não preencha<input name="bot-field" tabindex="-1" autocomplete="off"></label>
+        ${steps.join("")}
+        <p class="questionnaire-status" role="status" aria-live="polite"></p>
+        <div class="questionnaire-actions"><button class="secondary-button questionnaire-back" type="button">Voltar</button><button class="primary-button questionnaire-next" type="button">Continuar</button><button class="primary-button questionnaire-submit" type="submit" hidden>Enviar questionário</button></div>
+      </form>
+    </div>`);
+
+    const form = overlay.querySelector("#trainingQuestionnaire");
+    const status = form.querySelector(".questionnaire-status");
+    const back = form.querySelector(".questionnaire-back");
+    const next = form.querySelector(".questionnaire-next");
+    const submit = form.querySelector(".questionnaire-submit");
+    let currentStep = 0;
+
+    function setStatus(message = "") {
+      status.textContent = message;
+      status.classList.toggle("is-error", !!message);
+    }
+
+    function renderQuestionnaireStep() {
+      form.querySelectorAll("[data-questionnaire-step]").forEach((panel, index) => { panel.hidden = index !== currentStep; });
+      const percent = Math.round(((currentStep + 1) / steps.length) * 100);
+      overlay.querySelector(".questionnaire-progress-label").textContent = `ETAPA ${currentStep + 1} DE ${steps.length}`;
+      overlay.querySelector(".questionnaire-progress-percent").textContent = `${percent}%`;
+      overlay.querySelector(".questionnaire-progress-fill").style.width = `${percent}%`;
+      back.hidden = currentStep === 0;
+      next.hidden = currentStep === steps.length - 1;
+      submit.hidden = currentStep !== steps.length - 1;
+      setStatus();
+      overlay.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function validateQuestionnaireStep(index, focusInvalid = true) {
+      const panel = form.querySelector(`[data-questionnaire-step="${index}"]`);
+      const invalidControl = [...panel.querySelectorAll("input, textarea, select")].find((control) => !control.checkValidity());
+      if (invalidControl) {
+        setStatus("Preencha os campos obrigatórios para continuar.");
+        if (focusInvalid) {
+          invalidControl.reportValidity();
+          invalidControl.focus({ preventScroll: true });
+          invalidControl.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+        return false;
+      }
+      if (index === 0 && !form.elements.email.value.trim() && !form.elements.whatsapp.value.trim()) {
+        setStatus("Informe um e-mail ou WhatsApp para receber o retorno.");
+        if (focusInvalid) form.elements.email.focus();
+        return false;
+      }
+      const missingGroup = [...panel.querySelectorAll("[data-required-group]")].find((group) => !group.querySelector("input:checked"));
+      if (missingGroup) {
+        setStatus("Selecione ao menos uma opção neste bloco.");
+        if (focusInvalid) {
+          missingGroup.scrollIntoView({ block: "center", behavior: "smooth" });
+          missingGroup.querySelector("input")?.focus({ preventScroll: true });
+        }
+        return false;
+      }
+      setStatus();
+      return true;
+    }
+
+    overlay.querySelector(".questionnaire-close")?.addEventListener("click", closeOverlay);
+    back.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep -= 1;
+        renderQuestionnaireStep();
+      }
+    });
+    next.addEventListener("click", () => {
+      if (!validateQuestionnaireStep(currentStep)) return;
+      currentStep += 1;
+      renderQuestionnaireStep();
+    });
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const invalidIndex = steps.findIndex((_, index) => !validateQuestionnaireStep(index, false));
+      if (invalidIndex >= 0) {
+        currentStep = invalidIndex;
+        renderQuestionnaireStep();
+        validateQuestionnaireStep(invalidIndex, true);
+        return;
+      }
+      if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+        showQuestionnaireSuccess(true);
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = "Enviando…";
+      setStatus();
+      const formData = new FormData(form);
+      const payload = new URLSearchParams(formData);
+      ["dias_disponiveis", "prioridades"].forEach((name) => {
+        const selected = formData.getAll(name).map(String).filter(Boolean);
+        payload.delete(name);
+        payload.set(name, selected.join("; "));
+      });
+      payload.set("subject", `Nova solicitação de treino — ${form.elements.nome.value.trim()}`);
+      payload.set("enviado_em", new Date().toISOString());
+      payload.set("origem", window.location.href);
+      try {
+        const response = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: payload.toString()
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        showQuestionnaireSuccess(false);
+      } catch (error) {
+        console.error("Falha ao enviar questionário", error);
+        setStatus("Não foi possível enviar agora. Confira sua conexão e tente novamente.");
+        submit.disabled = false;
+        submit.textContent = "Enviar questionário";
+      }
+    });
+
+    renderQuestionnaireStep();
+  }
 
   const originalRenderPinScreen = renderPinScreen;
   renderPinScreen = function () {
@@ -310,7 +641,10 @@
     const variants = getExerciseVariants(exercise);
     if (variants.length <= 1) return "";
     const selected = getSelectedVariant(exercise);
-    return `<div class="active-tags" aria-label="Escolha a variação">${variants.map((variant) => `<button class="pill-button variant-choice" type="button" data-variant="${escapeHtml(variant.key)}" style="${variant.key === selected.key ? "outline:2px solid var(--fit-lime);color:var(--fit-lime)" : ""}">${escapeHtml(variant.label)}</button>`).join("")}</div>`;
+    return `<div class="active-tags variant-picker" role="group" aria-label="Escolha a variação">${variants.map((variant) => {
+      const isSelected = variant.key === selected.key;
+      return `<button class="pill-button variant-choice ${isSelected ? "is-selected" : ""}" type="button" data-variant="${escapeHtml(variant.key)}" aria-pressed="${isSelected}">${escapeHtml(variant.label)}</button>`;
+    }).join("")}</div>`;
   }
 
   function openExerciseDetail(exercise, index) {
@@ -320,10 +654,11 @@
     const prep = getPrepMeta(exercise);
     const history = getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load));
     const last = history.at(-1)?.load;
-    showOverlay(`<div class="overlay-page detail-page">
+    const variantMarkup = variantButtons(exercise);
+    showOverlay(`<div class="overlay-page detail-page ${variantMarkup ? "has-variants" : "no-variants"}">
       <header class="overlay-header"><button class="overlay-close" type="button" aria-label="Voltar">←</button><h2>${escapeHtml(variant.displayName || variant.label || exercise.name)}</h2><button class="overlay-more" type="button" aria-label="Mais opções">⋮</button></header>
       <div class="exercise-media">${media ? `<img class="detail-media-image" src="${media.src}" alt="Demonstração de ${escapeHtml(exercise.name)}" referrerpolicy="no-referrer" decoding="async">` : `<div class="exercise-media-empty">Demonstração não disponível</div>`}<button class="play-fab" type="button" aria-label="Iniciar exercício">▶</button></div>
-      ${variantButtons(exercise)}
+      ${variantMarkup}
       <div class="detail-metrics"><div class="detail-metric"><small>${icon("target")} MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></div><div class="detail-metric"><small>${icon("equipment")} EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></div></div>
       <section class="guide-card"><h3><span style="color:var(--fit-lime)">▤</span> Guia de execução</h3><ol class="guide-list"><li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li><li>${escapeHtml(exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li><li>Finalize cada repetição sem perder a técnica e respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li></ol></section>
       <div class="history-strip"><div><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${formatLoad(last)} kg` : "Sem registro"}</strong></div><button class="text-button detail-history" type="button">Histórico</button></div>
@@ -567,7 +902,8 @@
     const view = document.querySelector("#view-profile");
     if (!view || !currentProfile) return;
     const settings = getSettings();
-    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><p>${escapeHtml(profiles[currentProfile].subtitle)}</p><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="switch"><span class="row-icon">♙</span><span>Trocar usuário<small>Selecionar outro perfil</small></span><span class="chevron">›</span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair do perfil</span><span class="chevron">›</span></button></div></section></div>`;
+    const science = SCIENCE_BASE[currentProfile];
+    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="switch"><span class="row-icon">♙</span><span>Trocar usuário<small>Selecionar outro perfil</small></span><span class="chevron">›</span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair do perfil</span><span class="chevron">›</span></button></div></section></div>`;
     hydrateProfileAvatars(view);
     view.querySelectorAll(".toggle-setting").forEach((button) => button.addEventListener("click", () => {
       const next = getSettings();
@@ -575,11 +911,43 @@
       saveSettings(next);
       renderProfileView();
     }));
+    view.querySelector("[data-action='science']")?.addEventListener("click", openScienceBase);
     view.querySelector("[data-action='switch']")?.addEventListener("click", openUserSwitcher);
     view.querySelector("[data-action='data']")?.addEventListener("click", openDataManagement);
     view.querySelector("[data-action='reset']")?.addEventListener("click", () => document.querySelector("#resetDay").click());
     view.querySelector("[data-action='logout']")?.addEventListener("click", logout);
     view.querySelector(".edit-profile")?.addEventListener("click", openEditProfile);
+  }
+
+  function openScienceBase() {
+    const science = SCIENCE_BASE[currentProfile];
+    if (!science) return;
+    const hasQuestionnaire = science.source.startsWith("Questionário respondido");
+    showOverlay(`<div class="overlay-page science-page">
+      <header class="overlay-header"><button class="overlay-close" type="button" aria-label="Voltar">←</button><h2>Science Base</h2><span></span></header>
+      <section class="science-hero">
+        <div class="science-kicker"><span>⌬</span> DECISÕES DO PLANO</div>
+        <h1>Por que este treino foi escolhido para ${escapeHtml(profileName(currentProfile))}?</h1>
+        <p>${escapeHtml(science.goal)}</p>
+        <div class="science-source ${hasQuestionnaire ? "is-questionnaire" : "is-profile"}"><span>${hasQuestionnaire ? "✓" : "!"}</span><div><strong>${hasQuestionnaire ? "Base individual confirmada" : "Base individual parcial"}</strong><small>${escapeHtml(science.source)}</small></div></div>
+      </section>
+      <section class="science-plan" aria-label="Estrutura do plano"><small>ESTRUTURA ATUAL</small><strong>${escapeHtml(science.plan)}</strong></section>
+      <section class="science-section">
+        <div class="science-section-head"><span>01</span><div><small>ENTRADAS</small><h2>O que orientou a prescrição</h2></div></div>
+        <div class="science-signals">${science.signals.map((signal) => `<span>${escapeHtml(signal)}</span>`).join("")}</div>
+      </section>
+      <section class="science-section">
+        <div class="science-section-head"><span>02</span><div><small>RACIOCÍNIO</small><h2>Da resposta para o treino</h2></div></div>
+        <div class="science-decisions">${science.decisions.map(([title, body]) => `<article><i aria-hidden="true"></i><div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p></div></article>`).join("")}</div>
+      </section>
+      <section class="science-section science-evidence">
+        <div class="science-section-head"><span>03</span><div><small>EVIDÊNCIA</small><h2>Princípios científicos usados</h2></div></div>
+        <p class="science-evidence-intro">A literatura orienta os princípios; as respostas do usuário definem como eles são aplicados. Nenhum estudo determina sozinho uma rotina individual.</p>
+        <div class="science-references">${SCIENCE_REFERENCES.map(([title, summary, url]) => `<a href="${url}" target="_blank" rel="noopener noreferrer"><span>↗</span><div><strong>${escapeHtml(title)}</strong><small>${escapeHtml(summary)}</small></div></a>`).join("")}</div>
+      </section>
+      <aside class="science-review"><strong>Plano vivo, não receita imutável</strong><p>Volume, exercícios e frequência devem ser revistos com desempenho, recuperação, adesão e sintomas. Dor persistente, perda de força, formigamento ou restrição clínica pedem avaliação de um profissional habilitado.</p></aside>
+    </div>`);
+    overlay.querySelector(".overlay-close")?.addEventListener("click", closeOverlay);
   }
 
   function openUserSwitcher() {
