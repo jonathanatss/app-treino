@@ -26,8 +26,8 @@ git add -A
 
 echo. >> %LOG%
 echo === git commit === >> %LOG%
-git -c user.email=jonathanatss@gmail.com -c user.name=Jonathan commit -m "Adiciona login com PIN e perfil da Sara (Full Body 3x + opcional)" >> %LOG% 2>&1
-git -c user.email=jonathanatss@gmail.com -c user.name=Jonathan commit -m "Adiciona login com PIN e perfil da Sara (Full Body 3x + opcional)"
+git commit -m "Adiciona login com PIN e perfil da Sara (Full Body 3x + opcional)" >> %LOG% 2>&1
+git commit -m "Adiciona login com PIN e perfil da Sara (Full Body 3x + opcional)"
 
 echo. >> %LOG%
 echo === git push === >> %LOG%

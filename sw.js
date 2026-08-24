@@ -1,19 +1,40 @@
-const CACHE_NAME = "fitplan-v6";
-const RUNTIME_CACHE = "fitplan-runtime-v6";
+const CACHE_NAME = "fitplan-v45";
+const RUNTIME_CACHE = "fitplan-runtime-v45";
 
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./stitch-ui.css",
+  "./supabase-client.js",
+  "./legacy-cloud-migration.js",
+  "./stitch-ui.js",
   "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./apple-touch-icon.png",
-  "./favicon-32.png"
+  "./logo-mark.svg",
+  "./icon-192-v2.png",
+  "./icon-512-v2.png",
+  "./icon-maskable-512-v2.png",
+  "./apple-touch-icon-v2.png",
+  "./favicon-32-v2.png",
+  "./assets/exercises/10286.gif",
+  "./assets/exercises/10472.gif",
+  "./assets/exercises/14457.gif",
+  "./assets/exercises/29539.gif",
+  "./assets/exercises/33854.gif",
+  "./assets/exercises/4888.gif",
+  "./assets/exercises/5356.gif",
+  "./assets/exercises/5606.gif",
+  "./assets/exercises/5923.gif",
+  "./assets/exercises/6614.gif",
+  "./assets/exercises/7552.gif",
+  "./assets/exercises/lever-seated-crunch.gif",
+  "./assets/exercises/sled-hack-squat.webp"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(
+      APP_SHELL.map((asset) => new Request(asset, { cache: "reload" }))
+    ))
   );
   self.skipWaiting();
 });
@@ -53,7 +74,7 @@ self.addEventListener("fetch", (event) => {
 
   if (isSameOrigin || isImage) {
     event.respondWith(
-      caches.match(request).then((cached) => {
+      caches.match(request, { ignoreSearch: isSameOrigin }).then((cached) => {
         if (cached) return cached;
         return fetch(request).then((response) => {
           if (!response || (response.status !== 200 && response.type !== "opaque")) return response;

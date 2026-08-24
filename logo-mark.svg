@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">FitPlan</title>
+  <desc id="desc">Monograma FP com um check verde-limão</desc>
+  <rect width="512" height="512" fill="#101010"/>
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="none" stroke="#30382a" stroke-width="8"/>
+  <path fill="#f5f5f3" d="M92 138h139v46h-88v42h76v45h-76v64H92V138Z"/>
+  <path fill="#f5f5f3" fill-rule="evenodd" d="M255 138h89c52 0 83 27 83 71 0 45-31 72-83 72h-38v54h-51V138Zm51 43v57h34c23 0 36-10 36-29 0-18-13-28-36-28h-34Z"/>
+  <path d="m118 335 94 75 184-175" fill="none" stroke="#b7ff00" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
