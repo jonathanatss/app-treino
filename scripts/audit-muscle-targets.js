@@ -27,8 +27,12 @@ const names = new Set(
   [...html.matchAll(/\{\s*id:\s*"[^"]+",\s*name:\s*"([^"]+)"/g)]
     .map((match) => match[1])
 );
+const variantNames = new Set(
+  [...html.matchAll(/displayName:\s*"([^"]+)"/g)]
+    .map((match) => match[1])
+);
 
-const candidates = new Set(names);
+const candidates = new Set([...names, ...variantNames]);
 for (const name of names) {
   const variants = name.split(/\sou\s/i).map((part) => part.trim());
   if (variants.length <= 1) continue;
@@ -46,7 +50,13 @@ const expected = new Map([
   ["Elevação lateral na polia", "Deltoide lateral • supraespinhal"],
   ["Tríceps francês na polia", "Tríceps braquial (ênfase na cabeça longa)"],
   ["Rosca martelo com halteres", "Braquial • braquiorradial • bíceps braquial"],
-  ["Abdominal na máquina", "Reto abdominal • oblíquos"]
+  ["Abdominal na máquina", "Reto abdominal • oblíquos"],
+  ["Supino inclinado no Smith", "Peitoral maior (porção clavicular) • deltoide anterior"],
+  ["Agachamento no Smith", "Quadríceps femoral • glúteo máximo • adutor magno"],
+  ["Elevação pélvica no Smith", "Glúteo máximo"],
+  ["Remada baixa na máquina", "Latíssimo do dorso (grande dorsal) • trapézio médio/inferior • romboides • deltoide posterior"],
+  ["Puxada alta supinada", "Latíssimo do dorso (grande dorsal) • redondo maior • bíceps braquial"],
+  ["Rosca direta na polia", "Bíceps braquial • braquial"]
 ]);
 
 const failures = [];
@@ -70,6 +80,7 @@ if (failures.length) {
 
 console.log(JSON.stringify({
   exerciseNames: names.size,
+  explicitVariantNames: variantNames.size,
   namesAndVariantsAudited: candidates.size,
   targetClassifications: new Set([...candidates].map(sandbox.targetForName)).size,
   fallback: 0
