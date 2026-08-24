@@ -43,6 +43,8 @@ for (const name of names) {
 
 const expected = new Map([
   ["Remada baixa no cabo", "Latíssimo do dorso (grande dorsal) • trapézio médio/inferior • romboides • deltoide posterior"],
+  ["Remada máquina com peito apoiado", "Latíssimo do dorso (grande dorsal) • trapézio médio/inferior • romboides • deltoide posterior"],
+  ["Remada T com apoio no peito", "Latíssimo do dorso (grande dorsal) • trapézio médio/inferior • romboides • deltoide posterior"],
   ["Puxada alta pegada neutra", "Latíssimo do dorso (grande dorsal) • redondo maior • bíceps braquial"],
   ["Face pull na corda", "Deltoide posterior • infraespinhal • redondo menor • trapézio médio • romboides"],
   ["RDL (stiff com joelhos levemente flexionados)", "Isquiotibiais: bíceps femoral, semitendíneo e semimembranáceo • glúteo máximo"],
