@@ -502,11 +502,21 @@ button { touch-action: manipulation; }
   overscroll-behavior: contain;
   background: var(--fit-bg);
 }
-.overlay-page { width: min(100%, 720px); min-height: 100svh; margin: 0 auto; padding: 18px 20px calc(34px + var(--safe-bottom)); }
+.overlay-page {
+  width: min(100%, 720px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding:
+    calc(14px + var(--safe-top))
+    max(20px, calc(14px + env(safe-area-inset-right, 0px)))
+    calc(34px + var(--safe-bottom))
+    max(20px, calc(14px + env(safe-area-inset-left, 0px)));
+}
 .overlay-header {
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
   align-items: center;
+  gap: 4px;
   margin: 0 0 20px;
   padding: 0;
   border: 0;
@@ -515,8 +525,31 @@ button { touch-action: manipulation; }
   box-shadow: none;
   backdrop-filter: none;
 }
-.overlay-header h2 { margin: 0; text-align: center; font-size: 24px; letter-spacing: -.035em; }
-.overlay-close, .overlay-more { display: grid; width: 44px; height: 44px; place-items: center; border: 0; background: transparent; color: var(--fit-muted); font-size: 31px; cursor: pointer; }
+.overlay-header h2 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #f4f4f2;
+  font-size: clamp(19px, 5.5vw, 24px);
+  letter-spacing: -.035em;
+  line-height: 1.15;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.overlay-close, .overlay-more {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fit-muted);
+  font-size: 31px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
 .exercise-media {
   position: relative;
   display: grid;
@@ -828,7 +861,13 @@ button { touch-action: manipulation; }
   .tabs-shell { width: calc(100% + 32px); margin-right: -16px; margin-left: -16px; padding-right: 16px; padding-left: 16px; }
   .home-greeting .subtitle { display: none; }
   .exercise-count { font-size: 44px; }
-  .overlay-page { padding: 14px 16px calc(28px + var(--safe-bottom)); }
+  .overlay-page {
+    padding:
+      calc(12px + var(--safe-top))
+      max(16px, calc(12px + env(safe-area-inset-right, 0px)))
+      calc(28px + var(--safe-bottom))
+      max(16px, calc(12px + env(safe-area-inset-left, 0px)));
+  }
   .overlay-header { margin-bottom: 14px; }
   .overlay-header h2 { overflow: hidden; font-size: 21px; text-overflow: ellipsis; white-space: nowrap; }
   .questionnaire-page { padding-inline: 14px; }
