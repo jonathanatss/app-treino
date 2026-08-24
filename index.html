@@ -1550,8 +1550,8 @@
     <div class="lock-screen">
       <div class="lock-header">
         <img class="lock-logo" src="logo-mark.svg" alt="" aria-hidden="true">
-        <h1 class="lock-title">FitPlan</h1>
-        <p class="lock-subtitle">Quem está treinando?</p>
+        <h1 class="lock-title">Acesse o FitPlan</h1>
+        <p class="lock-subtitle">Entre com seu e-mail para carregar o seu treino.</p>
       </div>
       <div class="profile-list" id="profileList"></div>
     </div>
@@ -1594,7 +1594,7 @@
 
   <div class="app-shell" id="screen-app" hidden>
     <header class="fit-topbar">
-      <button class="avatar-button" id="profileSwitcher" type="button" aria-label="Trocar usuário"><span id="topAvatar">FP</span></button>
+      <button class="avatar-button" id="profileSwitcher" type="button" aria-label="Abrir conta online"><span id="topAvatar">FP</span></button>
       <a class="fit-brand" href="#treino" aria-label="FitPlan — início"><img src="logo-mark.svg" alt=""><span>FitPlan</span></a>
       <button class="top-icon-button" id="settingsButton" type="button" aria-label="Configurações">⚙</button>
     </header>
@@ -1650,7 +1650,7 @@
       <button id="todayWorkout" type="button">Treino de hoje</button>
       <button id="compactMode" type="button">Modo compacto</button>
       <button id="exportData" type="button">Exportar dados</button>
-      <button id="logoutBtn" type="button">Trocar usuário</button>
+      <button id="logoutBtn" type="button">Sair da conta</button>
       <input id="importData" type="file" accept="application/json">
     </div>
   </div>
@@ -3705,24 +3705,7 @@
     /* === Profile picker === */
     function renderProfilePicker() {
       const list = document.querySelector("#profileList");
-      list.innerHTML = "";
-      Object.entries(profiles).forEach(([id, profile]) => {
-        const card = document.createElement("button");
-        card.className = "profile-card";
-        card.type = "button";
-        card.style.setProperty("--profile-color", profile.accent);
-        card.dataset.profile = id;
-        const hasPin = !!localStorage.getItem(profilePinKey(id));
-        card.innerHTML = `
-          <span class="profile-avatar">${profile.initials}</span>
-          <span class="profile-info">
-            <span class="profile-name">${profile.name}</span>
-            <span class="profile-meta">${hasPin ? "Toque para entrar" : "Configurar PIN"}</span>
-          </span>
-        `;
-        card.addEventListener("click", () => openPinScreen(id));
-        list.appendChild(card);
-      });
+      list.innerHTML = `<div class="auth-gate-loading" role="status">Conectando à sua conta…</div>`;
     }
 
     /* === PIN screen === */
@@ -4726,18 +4709,13 @@
     /* === Init === */
     (function init() {
       recoverJonathanFromTestProfile();
-      const active = localStorage.getItem(ACTIVE_KEY);
-      if (active && profiles[active] && localStorage.getItem(profilePinKey(active))) {
-        enterApp(active);
-      } else {
-        renderProfilePicker();
-        showScreen("picker");
-      }
+      renderProfilePicker();
+      showScreen("picker");
     })();
   </script>
-  <link rel="stylesheet" href="stitch-ui.css?v=27">
+  <link rel="stylesheet" href="stitch-ui.css?v=28">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-client.js?v=1"></script>
-  <script src="stitch-ui.js?v=22"></script>
+  <script src="supabase-client.js?v=2"></script>
+  <script src="stitch-ui.js?v=24"></script>
 </body>
 </html>

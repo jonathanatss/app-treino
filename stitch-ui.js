@@ -338,7 +338,7 @@
 
   function cloudAccountLabel(snapshot = cloudSnapshot()) {
     if (!snapshot.ready) return "Conectando ao Supabase…";
-    if (!snapshot.user) return snapshot.error ? "Modo local disponível" : "Sincronize seus dados com segurança";
+    if (!snapshot.user) return snapshot.error ? "Conexão online indisponível" : "Acesse seu treino com segurança";
     const linkedId = snapshot.profile?.legacy_profile_key;
     if (linkedId && profiles[linkedId]) return `Vinculada ao perfil ${profileName(linkedId)}`;
     return "Conta conectada • vínculo de perfil pendente";
@@ -362,7 +362,7 @@
     if (cloud.user) {
       const linkedId = cloud.profile?.legacy_profile_key;
       const linkedText = linkedId && profiles[linkedId]
-        ? `Acesso liberado ao perfil ${profileName(linkedId)} sem pedir o PIN deste aparelho.`
+        ? `Acesso liberado ao treino de ${profileName(linkedId)}.`
         : "A conta está autenticada, mas ainda precisa ser vinculada pelo administrador a um perfil de treino.";
       const sheet = showActionSheet("Conta online", `<div class="cloud-account-summary">
         <span class="cloud-account-check" aria-hidden="true">✓</span>
@@ -370,7 +370,7 @@
       </div>
       <p class="cloud-link-note ${linkedId ? "is-linked" : ""}">${escapeHtml(linkedText)}</p>
       <button class="secondary-button cloud-signout" type="button">Sair da conta online</button>
-      <p class="cloud-auth-help">Sair da conta online não apaga os treinos salvos neste aparelho.</p>`);
+      <p class="cloud-auth-help">Ao sair, será necessário usar um novo link de acesso para entrar novamente.</p>`);
       sheet.querySelector(".cloud-signout")?.addEventListener("click", async (event) => {
         const button = event.currentTarget;
         button.disabled = true;
@@ -391,10 +391,9 @@
     }
 
     const sheet = showActionSheet("Entrar com e-mail", `<form class="cloud-auth-form">
-      <div class="cloud-auth-intro"><span aria-hidden="true">↗</span><div><strong>Sem senha para decorar</strong><p>Você receberá um link seguro para entrar. Seus perfis locais e PINs continuam funcionando.</p></div></div>
+      <div class="cloud-auth-intro"><span aria-hidden="true">↗</span><div><strong>Sem senha para decorar</strong><p>Você receberá um link seguro para acessar somente o seu treino.</p></div></div>
       <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
-      <label><span>NOME <small>(somente na primeira entrada)</small></span><input name="displayName" type="text" autocomplete="name" maxlength="80" placeholder="Como quer ser chamado"></label>
-      <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : "O link expira e só funciona para o endereço informado."}</p>
+      <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : "Use o e-mail que recebeu o convite do FitPlan."}</p>
       <button class="primary-button" type="submit">Enviar link de acesso</button>
     </form>`);
     const form = sheet.querySelector(".cloud-auth-form");
@@ -408,8 +407,7 @@
       status.classList.remove("is-error", "is-success");
       try {
         const result = await window.fitplanCloud.signInWithEmail({
-          email: data.get("email"),
-          displayName: data.get("displayName")
+          email: data.get("email")
         });
         status.textContent = `Link enviado para ${result.email}. Abra o e-mail neste dispositivo para concluir.`;
         status.classList.add("is-success");
@@ -424,54 +422,38 @@
     });
   }
 
-  function renderProfileCards(query = "") {
+  function renderProfileCards() {
     const list = document.querySelector("#profileList");
     if (!list) return;
-    const normalized = String(query).trim() ? slugify(query) : "";
-    const cards = Object.entries(profiles)
-      .filter(([id]) => !normalized || slugify(profileName(id)).includes(normalized))
-      .sort(([a], [b]) => profileName(a).localeCompare(profileName(b), "pt-BR"));
-    const search = Object.keys(profiles).length > 5
-      ? `<input class="profile-search" id="profileSearch" type="search" placeholder="Buscar usuário" value="${escapeHtml(query)}" autocomplete="off" aria-label="Buscar usuário">`
-      : "";
-    const requestCard = `<div class="new-user-divider"><span>NOVO NO FITPLAN?</span></div>
-      <button class="new-user-request" type="button">
-        <span class="new-user-request-icon" aria-hidden="true">＋</span>
-        <span><strong>Solicitar novo treino</strong><small>Responda ao questionário pelo app</small></span>
-        <span class="new-user-request-arrow" aria-hidden="true">›</span>
-      </button>`;
-    list.innerHTML = search + cloudAccessMarkup() + (cards.length ? cards.map(([id]) => {
-      const hasPin = !!localStorage.getItem(profilePinKey(id));
-      return `<button class="profile-card" type="button" data-profile="${id}" style="--profile-color:${profiles[id].accent}">
-        <span class="profile-avatar" data-avatar-profile="${id}">${initialsFor(id)}</span>
-        <span class="profile-info"><span class="profile-name">${escapeHtml(profileName(id))}</span><span class="profile-meta">${hasPin ? escapeHtml(lastProfileActivity(id)) : "Configurar PIN"}</span></span>
-      </button>`;
-    }).join("") : `<div class="empty-search">Nenhum usuário encontrado.</div>`) + requestCard;
-    list.querySelector("#profileSearch")?.addEventListener("input", (event) => {
-      const cursor = event.target.selectionStart;
-      renderProfileCards(event.target.value);
-      const next = document.querySelector("#profileSearch");
-      next?.focus();
-      next?.setSelectionRange(cursor, cursor);
-    });
+    list.innerHTML = `${cloudAccessMarkup()}
+      <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Seus dados ficam privados</strong>O e-mail identifica qual treino será carregado. Nenhum nome de usuário é exibido nesta tela.</p></div>`;
     list.querySelector(".cloud-access-card")?.addEventListener("click", openCloudAuthSheet);
-    list.querySelectorAll(".profile-card").forEach((card) => card.addEventListener("click", () => {
-      const cloud = cloudSnapshot();
-      const isLinkedAccount = cloud.user
-        && cloud.profile?.active !== false
-        && cloud.profile?.legacy_profile_key === card.dataset.profile;
-      if (isLinkedAccount) enterApp(card.dataset.profile);
-      else openPinScreen(card.dataset.profile);
-    }));
-    list.querySelector(".new-user-request")?.addEventListener("click", openTrainingQuestionnaire);
-    hydrateProfileAvatars(list);
   }
 
   renderProfilePicker = function () {
-    document.querySelector("#screen-picker .lock-title").textContent = "Quem está treinando?";
-    document.querySelector("#screen-picker .lock-subtitle").textContent = "Entre no seu perfil ou solicite um novo treino.";
+    document.querySelector("#screen-picker .lock-title").textContent = "Acesse o FitPlan";
+    document.querySelector("#screen-picker .lock-subtitle").textContent = "Entre com seu e-mail para carregar o seu treino.";
     renderProfileCards();
   };
+
+  function linkedCloudProfileId(cloud = cloudSnapshot()) {
+    const linkedId = cloud.profile?.legacy_profile_key;
+    if (!cloud.ready || !cloud.user || cloud.profile?.active === false) return null;
+    return linkedId && profiles[linkedId] ? linkedId : null;
+  }
+
+  function applyCloudAuthGate(cloud = cloudSnapshot()) {
+    const linkedId = linkedCloudProfileId(cloud);
+    if (linkedId) {
+      if (currentProfile !== linkedId || screenApp.hidden) enterApp(linkedId);
+      return;
+    }
+    if (currentProfile) logout();
+    else {
+      renderProfilePicker();
+      showScreen("picker");
+    }
+  }
 
   const questionnaireDays = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
   const questionnaireMuscles = ["Peitoral", "Costas/dorsais", "Ombros", "Trapézio", "Bíceps", "Tríceps", "Antebraços", "Quadríceps", "Posterior de coxa", "Glúteos", "Panturrilhas", "Abdômen/core"];
@@ -1271,7 +1253,7 @@
     if (!view || !currentProfile) return;
     const settings = getSettings();
     const science = SCIENCE_BASE[currentProfile];
-    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="switch"><span class="row-icon">♙</span><span>Trocar usuário<small>Selecionar outro perfil</small></span><span class="chevron">›</span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button><button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair do perfil</span><span class="chevron">›</span></button></div></section></div>`;
+    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button><button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
     hydrateProfileAvatars(view);
     view.querySelectorAll(".toggle-setting").forEach((button) => button.addEventListener("click", () => {
       const next = getSettings();
@@ -1280,12 +1262,20 @@
       renderProfileView();
     }));
     view.querySelector("[data-action='science']")?.addEventListener("click", openScienceBase);
-    view.querySelector("[data-action='switch']")?.addEventListener("click", openUserSwitcher);
     view.querySelector("[data-action='cloud']")?.addEventListener("click", openCloudAuthSheet);
     view.querySelector("[data-action='data']")?.addEventListener("click", openDataManagement);
     view.querySelector("[data-action='reset']")?.addEventListener("click", () => document.querySelector("#resetDay").click());
-    view.querySelector("[data-action='logout']")?.addEventListener("click", logout);
+    view.querySelector("[data-action='logout']")?.addEventListener("click", logoutCloudAccount);
     view.querySelector(".edit-profile")?.addEventListener("click", openEditProfile);
+  }
+
+  async function logoutCloudAccount() {
+    try {
+      if (cloudSnapshot().user) await window.fitplanCloud.signOut();
+      else logout();
+    } catch (error) {
+      window.alert(`Não foi possível sair da conta: ${error.message}`);
+    }
   }
 
   function openScienceBase() {
@@ -1317,29 +1307,6 @@
       <aside class="science-review"><strong>Plano vivo, não receita imutável</strong><p>Volume, exercícios e frequência devem ser revistos com desempenho, recuperação, adesão e sintomas. Dor persistente, perda de força, formigamento ou restrição clínica pedem avaliação de um profissional habilitado.</p></aside>
     </div>`);
     overlay.querySelector(".overlay-close")?.addEventListener("click", closeOverlay);
-  }
-
-  function openUserSwitcher() {
-    const sheet = document.createElement("div");
-    sheet.className = "sheet-backdrop";
-    sheet.innerHTML = `<div class="bottom-sheet"><div class="sheet-handle"></div><div class="sheet-header"><h2>Trocar usuário</h2><button class="sheet-close" type="button">×</button></div><div class="switch-list">${Object.keys(profiles).sort((a,b)=>profileName(a).localeCompare(profileName(b),"pt-BR")).map((id)=>`<button class="switch-user ${id === currentProfile ? "is-current" : ""}" type="button" data-profile="${id}"><span class="switch-avatar" data-avatar-profile="${id}">${initialsFor(id)}</span><span><strong>${escapeHtml(profileName(id))}</strong><small>${id === currentProfile ? "Sessão atual" : lastProfileActivity(id)}</small></span><span class="current-check">${id === currentProfile ? "✓" : ""}</span></button>`).join("")}</div><button class="secondary-button sheet-cancel" type="button" style="margin-top:24px">Cancelar</button></div>`;
-    document.body.appendChild(sheet);
-    hydrateProfileAvatars(sheet);
-    const close = () => sheet.remove();
-    sheet.querySelector(".sheet-close").addEventListener("click", close);
-    sheet.querySelector(".sheet-cancel").addEventListener("click", close);
-    sheet.addEventListener("click", (event) => { if (event.target === sheet) close(); });
-    sheet.querySelectorAll(".switch-user").forEach((button) => button.addEventListener("click", () => {
-      close();
-      if (button.dataset.profile === currentProfile) return;
-      saveProfileState();
-      stopRest();
-      localStorage.removeItem(ACTIVE_KEY);
-      currentProfile = null;
-      state = null;
-      activeTab = null;
-      openPinScreen(button.dataset.profile);
-    }));
   }
 
   function openDataManagement() {
@@ -1823,7 +1790,7 @@
   }
 
   routeButtons.forEach((button) => button.addEventListener("click", () => navigate(button.dataset.route)));
-  document.querySelector("#profileSwitcher").addEventListener("click", openUserSwitcher);
+  document.querySelector("#profileSwitcher").addEventListener("click", openCloudAuthSheet);
   document.querySelector("#settingsButton").addEventListener("click", () => navigate("profile"));
   document.querySelector(".fit-brand").addEventListener("click", (event) => { event.preventDefault(); navigate("workout"); });
   document.addEventListener("keydown", (event) => {
@@ -1831,13 +1798,10 @@
     if (activeSheet) closeActionSheet();
     else if (!overlay.hidden) closeOverlay();
   });
-  window.addEventListener("fitplan:cloud-auth", () => {
-    if (!screenPicker.hidden) {
-      renderProfileCards(document.querySelector("#profileSearch")?.value || "");
-    }
+  window.addEventListener("fitplan:cloud-auth", (event) => {
+    applyCloudAuthGate(event.detail);
     if (currentProfile && currentRoute === "profile") renderProfileView();
   });
 
-  if (currentProfile && state) renderApp();
-  else renderProfilePicker();
+  applyCloudAuthGate();
 })();

@@ -22,15 +22,17 @@ O frontend deverá utilizar apenas a URL pública do projeto e a chave `publisha
 
 ## Transição do frontend
 
-O `supabase-client.js` adiciona autenticação por link mágico sem interromper os perfis locais existentes. Nesta fase:
+O `supabase-client.js` adiciona autenticação por link mágico para contas previamente convidadas. Nesta fase:
 
-- o e-mail autentica a conta e cria o registro em `profiles` pelo trigger do banco;
+- somente e-mails provisionados pelo administrador podem autenticar; o frontend não cria contas novas;
 - treinos, cargas e fotos continuam locais até a etapa de sincronização;
-- o PIN local continua disponível como acesso alternativo;
+- os PINs locais permanecem armazenados somente para rollback durante a migração, mas não aparecem como opção de entrada;
 - `legacy_profile_key` só pode ser definido por um administrador e associa a conta autenticada a um perfil estático existente;
 - uma conta vinculada pode abrir somente o seu perfil sem repetir o PIN.
 
 Os redirects autorizados são a URL de produção e as URLs locais em `127.0.0.1:4173` e `localhost:4173`.
+
+O plano de conversão dos oito perfis estáticos está em [`PROFILE_MIGRATION.md`](PROFILE_MIGRATION.md).
 
 ## Verificação
 

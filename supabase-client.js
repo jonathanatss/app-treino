@@ -65,7 +65,7 @@
     return snapshot();
   }
 
-  async function signInWithEmail({ email, displayName = "" }) {
+  async function signInWithEmail({ email }) {
     if (!client) throw new Error("A conexão online está indisponível neste momento.");
     const normalizedEmail = String(email || "").trim().toLowerCase();
     if (!normalizedEmail) throw new Error("Informe seu e-mail.");
@@ -74,8 +74,7 @@
       email: normalizedEmail,
       options: {
         emailRedirectTo: redirectUrl,
-        shouldCreateUser: true,
-        data: displayName.trim() ? { display_name: displayName.trim() } : {}
+        shouldCreateUser: false
       }
     });
     if (result.error) throw new Error(friendlyError(result.error));
