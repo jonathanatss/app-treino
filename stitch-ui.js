@@ -205,8 +205,9 @@
     };
   }
 
-  function getEquipment(exercise) {
-    const text = slugify(exercise.name);
+  function getEquipment(exercise, variant = getSelectedVariant(exercise)) {
+    if (variant?.equipment) return variant.equipment;
+    const text = slugify(variant?.displayName || variant?.label || exercise.name);
     if (text.includes("halter")) return "Halteres";
     if (text.includes("barra")) return "Barra";
     if (text.includes("polia") || text.includes("cabo") || text.includes("pulley")) return "Polia";
@@ -235,6 +236,10 @@
   function defaultReps(exercise) {
     const numbers = String(exercise.reps || "10").match(/\d+/g);
     return numbers?.length ? Number(numbers[numbers.length - 1]) : 10;
+  }
+
+  function variantReps(exercise, variant = getSelectedVariant(exercise)) {
+    return variant?.reps || exercise.reps;
   }
 
   function seriesText(value) {
@@ -616,7 +621,7 @@
         ${index === firstPending && !done ? `<button class="exercise-play" type="button" aria-label="Iniciar ${escapeHtml(displayName)}">▶</button>` : `<span class="exercise-number">${done ? "✓" : index + 1}</span>`}
         <div class="exercise-main">
           <h2 class="exercise-title">${escapeHtml(displayName)}</h2>
-          <div class="compact-meta"><strong>${seriesText(exercise.sets)}</strong><span>•</span><span>${escapeHtml(repsText(exercise.reps))}</span>${weight ? `<span>•</span><span>${escapeHtml(weight)} kg</span>` : ""}</div>
+          <div class="compact-meta"><strong>${seriesText(exercise.sets)}</strong><span>•</span><span>${escapeHtml(repsText(variantReps(exercise, variant)))}</span>${variants.length > 1 ? `<span>•</span><span>${variants.length} opções</span>` : ""}${weight ? `<span>•</span><span>${escapeHtml(weight)} kg</span>` : ""}</div>
         </div>
         <button class="exercise-menu" type="button" aria-label="Detalhes de ${escapeHtml(displayName)}">⋮</button>`;
       article.addEventListener("click", (event) => {
@@ -641,10 +646,14 @@
     const variants = getExerciseVariants(exercise);
     if (variants.length <= 1) return "";
     const selected = getSelectedVariant(exercise);
-    return `<div class="active-tags variant-picker" role="group" aria-label="Escolha a variação">${variants.map((variant) => {
+    const targetGroup = getPrepMeta(exercise).group;
+    return `<section class="exercise-alternatives" aria-labelledby="alternatives-title-${escapeHtml(exercise.id)}">
+      <div class="alternatives-heading"><div><small>ALTERNATIVAS PARA</small><strong id="alternatives-title-${escapeHtml(exercise.id)}">${escapeHtml(targetGroup)}</strong></div><span>${variants.length} opções</span></div>
+      <p>Escolha conforme o equipamento disponível. As séries e o esforço prescritos permanecem.</p>
+      <div class="variant-picker" role="group" aria-label="Alternativas de exercício">${variants.map((variant) => {
       const isSelected = variant.key === selected.key;
       return `<button class="pill-button variant-choice ${isSelected ? "is-selected" : ""}" type="button" data-variant="${escapeHtml(variant.key)}" aria-pressed="${isSelected}">${escapeHtml(variant.label)}</button>`;
-    }).join("")}</div>`;
+    }).join("")}</div></section>`;
   }
 
   function openExerciseDetail(exercise, index) {
@@ -661,7 +670,7 @@
       <div class="exercise-media">${media ? `<img class="detail-media-image" src="${media.src}" alt="Demonstração de ${escapeHtml(exercise.name)}" referrerpolicy="no-referrer" decoding="async">` : `<div class="exercise-media-empty">Demonstração não disponível</div>`}<button class="play-fab" type="button" aria-label="Iniciar exercício">▶</button></div>
       ${variantMarkup}
       <div class="detail-metrics"><div class="detail-metric"><small>${icon("target")} MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></div><div class="detail-metric"><small>${icon("equipment")} EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></div></div>
-      <section class="guide-card"><h3><span style="color:var(--fit-lime)">▤</span> Guia de execução</h3><ol class="guide-list"><li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li><li>${escapeHtml(exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li><li>Finalize cada repetição sem perder a técnica e respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li></ol></section>
+      <section class="guide-card"><h3><span style="color:var(--fit-lime)">▤</span> Guia de execução</h3><ol class="guide-list"><li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li><li>${escapeHtml(variant.note || exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li><li>Finalize cada repetição sem perder a técnica e respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li></ol></section>
       <div class="history-strip"><div><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${formatLoad(last)} kg` : "Sem registro"}</strong></div><button class="text-button detail-history" type="button">Histórico</button></div>
       <button class="primary-button detail-start" type="button">${isDone ? "✓ &nbsp; VER SÉRIES / CORRIGIR" : "▶ &nbsp; INICIAR EXERCÍCIO"}</button>
     </div>`);
@@ -702,7 +711,7 @@
     const totalSets = parseSets(exercise);
     const isFinished = series.length >= totalSets;
     const load = parseLoad(state.weights[key]) || 0;
-    const reps = defaultReps(exercise);
+    const reps = defaultReps({ ...exercise, reps: variantReps(exercise, variant) });
     showOverlay(`<div class="overlay-page active-page">
       <header class="overlay-header"><button class="overlay-close" type="button" aria-label="Fechar">×</button><h2 style="color:var(--fit-lime)">FitPlan</h2><span></span></header>
       <span class="set-chip">${isFinished ? `${totalSets} de ${totalSets} séries concluídas` : `Série ${series.length + 1} de ${totalSets}`}</span>

@@ -612,7 +612,14 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
 .active-title { margin: 16px auto 10px; max-width: 520px; font-size: clamp(26px,7vw,36px); line-height: 1.08; letter-spacing: -.04em; }
 .active-tags { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
 .active-tags span { padding: 7px 13px; border: 1px solid #41413f; border-radius: 999px; background: #292929; color: #e8e8e5; font-size: 11px; font-weight: 750; }
-.variant-picker { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 14px 0 24px; padding: 2px; }
+.exercise-alternatives { margin: 14px 0 24px; padding: 16px; border: 1px solid #34382e; border-radius: 14px; background: linear-gradient(145deg, #191b17, #141414); text-align: left; }
+.alternatives-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.alternatives-heading small, .alternatives-heading strong { display: block; }
+.alternatives-heading small { margin-bottom: 4px; color: var(--fit-muted); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.alternatives-heading strong { color: var(--fit-lime); font-size: 18px; text-transform: capitalize; }
+.alternatives-heading > span { flex: 0 0 auto; padding: 6px 9px; border: 1px solid #44532d; border-radius: 999px; color: #dfffa0; background: #202719; font-size: 11px; font-weight: 800; }
+.exercise-alternatives > p { margin: 9px 0 0; color: var(--fit-muted); font-size: 12px; line-height: 1.45; }
+.variant-picker { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 12px 0 0; padding: 0; }
 .variant-picker .variant-choice { box-sizing: border-box; min-width: 0; max-width: 100%; min-height: 44px; flex: 1 1 140px; padding: 8px 18px; border: 2px solid transparent; line-height: 1.25; overflow-wrap: anywhere; white-space: normal; }
 .variant-picker .variant-choice.is-selected { border-color: var(--fit-lime); color: var(--fit-lime); }
 .variant-picker .variant-choice:focus-visible { outline: 2px solid #f4ffd4; outline-offset: 2px; }
@@ -851,7 +858,7 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
   }
   .detail-page > .overlay-header { grid-area: header; margin-bottom: 0; }
   .detail-page > .exercise-media { grid-area: media; aspect-ratio: 4 / 3; max-height: 410px; }
-  .detail-page > .variant-picker { grid-area: variants; margin: 0; justify-content: flex-start; }
+  .detail-page > .exercise-alternatives { grid-area: variants; margin: 0; }
   .detail-page > .detail-metrics { grid-area: metrics; margin-top: 0; }
   .detail-page > .guide-card { grid-area: guide; height: 100%; margin-top: 0; padding: 20px; }
   .detail-page > .history-strip { grid-area: history; align-self: stretch; margin: 0; }
@@ -903,7 +910,7 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
   .new-user-request-icon { width: 44px; height: 44px; }
   .exercise-media { aspect-ratio: 4 / 3; max-height: 42svh; border-radius: 16px; }
   .play-fab { bottom: 12px; left: 12px; width: 54px; height: 54px; }
-  .variant-picker { margin-top: 12px; }
+  .exercise-alternatives { margin-top: 12px; padding: 14px; }
   .detail-metrics { gap: 9px; margin-top: 14px; }
   .detail-metric { min-height: 112px; padding: 16px; }
   .detail-metric strong { font-size: 18px; }

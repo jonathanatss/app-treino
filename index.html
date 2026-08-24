@@ -2845,6 +2845,192 @@
       ]
     };
 
+    const PROFILE_EXERCISE_VARIANTS = {
+      jonathan: {
+        "upper-a-row": [
+          { key: "maquina-apoiada", label: "Máquina com apoio", displayName: "Remada máquina com peito apoiado", equipment: "Máquina", media: EXERCISE_MEDIA["upper-a-row"] },
+          { key: "remada-t-apoiada", label: "Remada T apoiada", displayName: "Remada T com apoio no peito", equipment: "Máquina", media: { id: "aaXr7ld", label: "Lever T-bar row" } },
+          { key: "polia-triangulo", label: "Polia com triângulo", displayName: "Remada baixa na polia com triângulo", equipment: "Polia", media: EXERCISE_MEDIA["full-body-row"] }
+        ],
+        "upper-a-pulldown": [
+          { key: "neutra", label: "Pegada neutra", displayName: "Puxada alta neutra", equipment: "Polia", media: EXERCISE_MEDIA["upper-a-pulldown"] },
+          { key: "supinada", label: "Pegada supinada", displayName: "Puxada alta supinada", equipment: "Máquina", media: { id: "ky8FLU8", label: "Lever reverse grip lateral pulldown" } },
+          { key: "pronada-media", label: "Pronada média", displayName: "Puxada alta pronada pegada média", equipment: "Polia", media: EXERCISE_MEDIA["eduarda-ba-pulldown-wide"] }
+        ],
+        "upper-b-unilateral-row": [
+          { key: "articulada", label: "Máquina articulada", displayName: "Remada unilateral articulada", equipment: "Máquina", media: EXERCISE_MEDIA["upper-b-unilateral-row"] },
+          { key: "halter-apoiado", label: "Halter apoiado", displayName: "Remada unilateral com halter apoiado", equipment: "Halteres", media: { id: "C0MA9bC", label: "Dumbbell one arm bent-over row" } }
+        ],
+        "full-body-straight-arm-pulldown": [
+          { key: "polia", label: "Pulldown na polia", displayName: "Pulldown com braços estendidos na polia", equipment: "Polia", media: EXERCISE_MEDIA["full-body-straight-arm-pulldown"] },
+          { key: "pullover-maquina", label: "Pullover máquina", displayName: "Pullover na máquina", equipment: "Máquina", media: { id: "4U7iLb5", label: "Lever pullover" } }
+        ],
+        "upper-b-face-pull": [
+          { key: "face-pull", label: "Face pull", displayName: "Face pull na corda", equipment: "Polia", media: EXERCISE_MEDIA["upper-b-face-pull"] },
+          { key: "peck-deck-inverso", label: "Peck deck inverso", displayName: "Crucifixo inverso no peck deck", equipment: "Máquina", media: EXERCISE_MEDIA["igor-ub-rear-delt"] }
+        ],
+        "upper-a-curl": [
+          { key: "barra-ez", label: "Barra EZ", displayName: "Rosca direta com barra EZ", equipment: "Barra EZ", media: { id: "6TG6x2w", label: "EZ barbell curl" } },
+          { key: "polia", label: "Polia", displayName: "Rosca direta na polia", equipment: "Polia", media: EXERCISE_MEDIA["full-body-cable-curl"] },
+          { key: "halteres", label: "Halteres", displayName: "Rosca direta com halteres", equipment: "Halteres", media: { id: "3s4NnTh", label: "Dumbbell standing biceps curl" } }
+        ],
+        "upper-b-incline-curl": [
+          { key: "inclinada", label: "Banco inclinado", displayName: "Rosca inclinada com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["upper-b-incline-curl"] },
+          { key: "scott-maquina", label: "Scott máquina", displayName: "Rosca Scott na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["eduarda-up-scott"] },
+          { key: "polia", label: "Polia", displayName: "Rosca direta na polia", equipment: "Polia", media: EXERCISE_MEDIA["full-body-cable-curl"] }
+        ],
+        "upper-b-hammer": [
+          { key: "halteres", label: "Halteres", displayName: "Rosca martelo com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["upper-b-hammer"] },
+          { key: "corda", label: "Corda na polia", displayName: "Rosca martelo com corda", equipment: "Polia", media: EXERCISE_MEDIA["eduarda-bb-hammer"] }
+        ],
+        "upper-a-incline-db": [
+          { key: "halteres-neutra", label: "Halteres neutros", displayName: "Supino inclinado com halteres — pegada neutra", equipment: "Halteres", media: EXERCISE_MEDIA["upper-a-incline-db"] },
+          { key: "maquina", label: "Máquina inclinada", displayName: "Supino inclinado na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["igor-ub-incline-machine"] },
+          { key: "smith", label: "Smith inclinado", displayName: "Supino inclinado no Smith", equipment: "Smith", media: { id: "5v7KYld", label: "Smith incline bench press" } }
+        ],
+        "upper-b-chest-machine": [
+          { key: "convergente", label: "Máquina convergente", displayName: "Supino reto máquina convergente", equipment: "Máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] },
+          { key: "halteres", label: "Halteres", displayName: "Supino reto com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["sara-ua-bench"] },
+          { key: "declinado", label: "Supino declinado", displayName: "Supino declinado com halteres", equipment: "Halteres", media: { id: "1qrWgZ2", label: "Dumbbell decline hammer press" } }
+        ],
+        "upper-a-fly": [
+          { key: "crossover-alto-baixo", label: "Crossover alto → baixo", displayName: "Crossover de cima para baixo", equipment: "Polia", media: EXERCISE_MEDIA["upper-a-fly"] },
+          { key: "peck-deck", label: "Peck deck", displayName: "Crucifixo no peck deck", equipment: "Máquina", media: EXERCISE_MEDIA["pablo-ub-fly"] },
+          { key: "crossover-medio", label: "Crossover médio", displayName: "Crossover na linha do peito", equipment: "Polia", media: { id: "0CXGHya", label: "Cable cross-over variation" } }
+        ],
+        "full-body-shoulder-press": [
+          { key: "maquina-neutra", label: "Máquina neutra", displayName: "Desenvolvimento máquina pegada neutra", equipment: "Máquina", media: EXERCISE_MEDIA["full-body-shoulder-press"] },
+          { key: "halteres", label: "Halteres", displayName: "Desenvolvimento sentado com halteres", equipment: "Halteres", media: { id: "znQUdHY", label: "Dumbbell seated shoulder press" } }
+        ],
+        "upper-a-lateral": [
+          { key: "halteres", label: "Halteres", displayName: "Elevação lateral com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["upper-a-lateral"] },
+          { key: "polia", label: "Polia", displayName: "Elevação lateral na polia", equipment: "Polia", media: EXERCISE_MEDIA["igor-ua-lateral"] }
+        ],
+        "fernando-ub-lateral": [
+          { key: "halteres", label: "Halteres", displayName: "Elevação lateral com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["fernando-ub-lateral"] },
+          { key: "polia", label: "Polia", displayName: "Elevação lateral na polia", equipment: "Polia", media: EXERCISE_MEDIA["igor-ua-lateral"] }
+        ],
+        "upper-a-triceps": [
+          { key: "frances-cabo", label: "Francês no cabo", displayName: "Tríceps francês no cabo", equipment: "Polia", media: EXERCISE_MEDIA["upper-a-triceps"] },
+          { key: "frances-ez", label: "Francês com EZ", displayName: "Tríceps francês com barra EZ", equipment: "Barra EZ", media: EXERCISE_MEDIA["sara-ub-tricep-testa"] },
+          { key: "testa-cabo", label: "Testa no cabo", displayName: "Tríceps testa no cabo", equipment: "Polia", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp", label: "Cable lying triceps extension" } }
+        ],
+        "upper-b-triceps-rope": [
+          { key: "corda", label: "Corda", displayName: "Tríceps na polia com corda", equipment: "Polia", media: EXERCISE_MEDIA["upper-b-triceps-rope"] },
+          { key: "barra-v", label: "Barra V", displayName: "Tríceps na polia com barra V", equipment: "Polia", media: MEDIA_ALIASES.vBarPushdown }
+        ],
+        "lower-a-squat": [
+          { key: "hack", label: "Hack squat", displayName: "Hack squat", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-squat"] },
+          { key: "smith", label: "Smith", displayName: "Agachamento no Smith", equipment: "Smith", media: EXERCISE_MEDIA["fernando-la-smith-squat"] },
+          { key: "leg-press", label: "Leg press 45°", displayName: "Leg press 45° — pés médios", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-leg-press"] }
+        ],
+        "lower-a-leg-press": [
+          { key: "45-graus", label: "45°", displayName: "Leg press 45°", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-leg-press"] },
+          { key: "horizontal", label: "Horizontal", displayName: "Leg press horizontal", equipment: "Máquina", media: EXERCISE_MEDIA["full-body-horizontal-leg-press"] }
+        ],
+        "fernando-la-smith-squat": [
+          { key: "smith", label: "Smith", displayName: "Agachamento no Smith", equipment: "Smith", media: EXERCISE_MEDIA["fernando-la-smith-squat"] },
+          { key: "hack", label: "Hack squat", displayName: "Hack squat", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-squat"] }
+        ],
+        "lower-a-ext": [
+          { key: "bilateral", label: "Bilateral", displayName: "Cadeira extensora bilateral", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-ext"] },
+          { key: "unilateral", label: "Unilateral", displayName: "Cadeira extensora unilateral", equipment: "Máquina", reps: "10–15 cada lado", media: EXERCISE_MEDIA["lower-a-ext"] }
+        ],
+        "lower-b-hamstring": [
+          { key: "sentada", label: "Cadeira flexora", displayName: "Cadeira flexora", equipment: "Máquina", media: EXERCISE_MEDIA["lower-b-hamstring"] },
+          { key: "deitada", label: "Mesa flexora", displayName: "Mesa flexora", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-curl"] }
+        ],
+        "lower-a-calf": [
+          { key: "em-pe", label: "Em pé", displayName: "Panturrilha em pé na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-calf"] },
+          { key: "sentada", label: "Sentada", displayName: "Panturrilha sentada", equipment: "Máquina", media: EXERCISE_MEDIA["lower-b-seated-calf"] }
+        ],
+        "eduarda-ba-pulldown-wide": [
+          { key: "aberta", label: "Pronada aberta", displayName: "Puxada alta pronada aberta", equipment: "Polia", media: EXERCISE_MEDIA["eduarda-ba-pulldown-wide"] },
+          { key: "neutra", label: "Pegada neutra", displayName: "Puxada alta neutra", equipment: "Polia", media: EXERCISE_MEDIA["upper-a-pulldown"] },
+          { key: "supinada", label: "Pegada supinada", displayName: "Puxada alta supinada", equipment: "Máquina", media: { id: "ky8FLU8", label: "Lever reverse grip lateral pulldown" } }
+        ],
+        "fernando-ua-row-low": [
+          { key: "polia-triangulo", label: "Polia com triângulo", displayName: "Remada baixa com triângulo", equipment: "Polia", media: EXERCISE_MEDIA["fernando-ua-row-low"] },
+          { key: "maquina-bilateral", label: "Máquina bilateral", displayName: "Remada baixa na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["igor-ua-row"] },
+          { key: "maquina-unilateral", label: "Máquina unilateral", displayName: "Remada baixa unilateral na máquina", equipment: "Máquina", reps: "8–12 cada lado", media: MEDIA_ALIASES.singleArmMachineRow }
+        ],
+        "jonathan-pull-b-unilateral-row": [
+          { key: "articulada", label: "Máquina articulada", displayName: "Remada máquina articulada unilateral", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-pull-b-unilateral-row"] },
+          { key: "halter-apoiado", label: "Halter apoiado", displayName: "Remada unilateral com halter apoiado", equipment: "Halteres", media: { id: "C0MA9bC", label: "Dumbbell one arm bent-over row" } }
+        ],
+        "sara-ub-incline": [
+          { key: "maquina", label: "Máquina inclinada", displayName: "Supino inclinado na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["igor-ub-incline-machine"] },
+          { key: "halteres", label: "Halteres", displayName: "Supino inclinado com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["sara-ub-incline"] },
+          { key: "smith", label: "Smith inclinado", displayName: "Supino inclinado no Smith", equipment: "Smith", media: { id: "5v7KYld", label: "Smith incline bench press" } }
+        ],
+        "jonathan-push-b-chest": [
+          { key: "unilateral", label: "Chest press unilateral", displayName: "Chest press unilateral", equipment: "Máquina", reps: "10–12 cada lado", media: EXERCISE_MEDIA["jonathan-push-b-chest"] },
+          { key: "convergente", label: "Supino convergente", displayName: "Supino reto máquina convergente", equipment: "Máquina", media: EXERCISE_MEDIA["upper-b-chest-machine"] },
+          { key: "halteres", label: "Halteres", displayName: "Supino reto com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["sara-ua-bench"] }
+        ],
+        "full-body-cable-curl": [
+          { key: "polia", label: "Polia", displayName: "Rosca direta na polia", equipment: "Polia", media: EXERCISE_MEDIA["full-body-cable-curl"] },
+          { key: "halteres", label: "Halteres", displayName: "Rosca direta com halteres", equipment: "Halteres", media: { id: "3s4NnTh", label: "Dumbbell standing biceps curl" } },
+          { key: "barra-ez", label: "Barra EZ", displayName: "Rosca direta com barra EZ", equipment: "Barra EZ", media: { id: "6TG6x2w", label: "EZ barbell curl" } }
+        ],
+        "fernando-fb-scott": [
+          { key: "maquina", label: "Scott máquina", displayName: "Rosca Scott na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["eduarda-up-scott"] },
+          { key: "halter", label: "Scott unilateral", displayName: "Rosca Scott unilateral com halter", equipment: "Halteres", reps: "10–12 cada lado", media: { id: "7D5bgLT", label: "Dumbbell seated preacher curl" } }
+        ],
+        "eduarda-bb-hammer": [
+          { key: "corda", label: "Corda na polia", displayName: "Rosca martelo com corda", equipment: "Polia", media: EXERCISE_MEDIA["eduarda-bb-hammer"] },
+          { key: "halteres", label: "Halteres", displayName: "Rosca martelo com halteres", equipment: "Halteres", media: EXERCISE_MEDIA["upper-b-hammer"] }
+        ],
+        "fernando-ub-triceps-french": [
+          { key: "frances-cabo", label: "Francês no cabo", displayName: "Tríceps francês no cabo", equipment: "Polia", media: EXERCISE_MEDIA["fernando-ub-triceps-french"] },
+          { key: "testa-cabo", label: "Testa no cabo", displayName: "Tríceps testa no cabo", equipment: "Polia", media: { url: "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp", label: "Cable lying triceps extension" } },
+          { key: "frances-ez", label: "Francês com EZ", displayName: "Tríceps francês com barra EZ", equipment: "Barra EZ", media: EXERCISE_MEDIA["sara-ub-tricep-testa"] }
+        ],
+        "full-body-triceps": [
+          { key: "unilateral", label: "Unilateral", displayName: "Tríceps unilateral no cabo", equipment: "Polia", media: EXERCISE_MEDIA["full-body-triceps"] },
+          { key: "corda", label: "Corda", displayName: "Tríceps na polia com corda", equipment: "Polia", reps: "12–15", media: EXERCISE_MEDIA["upper-b-triceps-rope"] },
+          { key: "barra-v", label: "Barra V", displayName: "Tríceps na polia com barra V", equipment: "Polia", reps: "12–15", media: MEDIA_ALIASES.vBarPushdown }
+        ],
+        "full-body-horizontal-leg-press": [
+          { key: "horizontal", label: "Horizontal", displayName: "Leg press horizontal", equipment: "Máquina", media: EXERCISE_MEDIA["full-body-horizontal-leg-press"] },
+          { key: "45-graus", label: "45°", displayName: "Leg press 45°", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-leg-press"] }
+        ],
+        "jonathan-legs-b-hack": [
+          { key: "hack", label: "Hack squat", displayName: "Hack squat com pés mais baixos", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-legs-b-hack"] },
+          { key: "smith", label: "Smith", displayName: "Agachamento no Smith com calcanhares elevados", equipment: "Smith", media: EXERCISE_MEDIA["fernando-la-smith-squat"] }
+        ],
+        "jonathan-legs-b-ext": [
+          { key: "unilateral", label: "Unilateral", displayName: "Cadeira extensora unilateral", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-legs-b-ext"] },
+          { key: "bilateral", label: "Bilateral", displayName: "Cadeira extensora bilateral", equipment: "Máquina", reps: "12–15", media: EXERCISE_MEDIA["jonathan-legs-b-ext"] }
+        ],
+        "lower-b-hip-thrust": [
+          { key: "barra", label: "Barra", displayName: "Elevação pélvica com barra", equipment: "Barra", media: EXERCISE_MEDIA["lower-b-hip-thrust"] },
+          { key: "smith", label: "Smith", displayName: "Elevação pélvica no Smith", equipment: "Smith", media: MEDIA_ALIASES.smithHipThrust }
+        ],
+        "jonathan-legs-b-curl": [
+          { key: "sentada", label: "Cadeira flexora", displayName: "Cadeira flexora", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-legs-b-curl"] },
+          { key: "deitada", label: "Mesa flexora", displayName: "Mesa flexora", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-legs-b-lying-curl"] }
+        ],
+        "jonathan-legs-b-lying-curl": [
+          { key: "deitada", label: "Mesa flexora", displayName: "Mesa flexora", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-legs-b-lying-curl"] },
+          { key: "sentada", label: "Cadeira flexora", displayName: "Cadeira flexora", equipment: "Máquina", media: EXERCISE_MEDIA["jonathan-legs-b-curl"] }
+        ],
+        "lower-b-abductor": [
+          { key: "maquina", label: "Máquina abdutora", displayName: "Abdução de quadril na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["lower-b-abductor"] },
+          { key: "polia", label: "Polia", displayName: "Abdução de quadril na polia", equipment: "Polia", reps: "15–20 cada lado", media: MEDIA_ALIASES.cableHipAbduction }
+        ],
+        "lower-b-seated-calf": [
+          { key: "sentada", label: "Sentada", displayName: "Panturrilha sentada", equipment: "Máquina", media: EXERCISE_MEDIA["lower-b-seated-calf"] },
+          { key: "em-pe", label: "Em pé", displayName: "Panturrilha em pé na máquina", equipment: "Máquina", media: EXERCISE_MEDIA["lower-a-calf"] }
+        ],
+        "eduarda-la-bike": [
+          { key: "bike", label: "Bike", displayName: "Cardio zona 2 na bike", equipment: "Bike", media: EXERCISE_MEDIA["eduarda-la-bike"] },
+          { key: "esteira", label: "Esteira inclinada", displayName: "Cardio zona 2 na esteira inclinada", equipment: "Esteira", media: MEDIA_ALIASES.treadmillWalk },
+          { key: "eliptico", label: "Elíptico", displayName: "Cardio zona 2 no elíptico", equipment: "Elíptico", media: EXERCISE_MEDIA["fernanda-opt-cardio"] }
+        ]
+      }
+    };
+
     const AUTO_VARIANT_MEDIA = {
       "lower-a-squat": {
         "hack-squat": MEDIA_ALIASES.sledHackSquat,
@@ -3107,6 +3293,8 @@
     }
 
     function getExerciseVariants(exercise) {
+      const profileVariants = PROFILE_EXERCISE_VARIANTS[currentProfile]?.[exercise.id];
+      if (profileVariants) return profileVariants.map((variant) => withVariantMedia(exercise.id, variant));
       if (EXERCISE_VARIANTS[exercise.id]) return EXERCISE_VARIANTS[exercise.id].map((variant) => withVariantMedia(exercise.id, variant));
       if (!/\sou\s/i.test(exercise.name)) return [{ key: "base", label: exercise.name }];
       return exercise.name.split(/\sou\s/i).map((label) => {
@@ -3490,7 +3678,8 @@
     function selectedExerciseName(exercise) {
       const variants = getExerciseVariants(exercise);
       const selected = getSelectedVariant(exercise);
-      if (!selected || variants.length <= 1 || selected.key === variants[0].key) return selected?.label || exercise.name;
+      if (!selected || variants.length <= 1 || selected.key === variants[0].key) return selected?.displayName || selected?.label || exercise.name;
+      if (selected.displayName) return selected.displayName;
       const movementRoot = exercise.name
         .split(/\sou\s/i)[0]
         .trim()
@@ -4276,7 +4465,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="stitch-ui.css?v=22">
-  <script src="stitch-ui.js?v=18"></script>
+  <link rel="stylesheet" href="stitch-ui.css?v=23">
+  <script src="stitch-ui.js?v=19"></script>
 </body>
 </html>
