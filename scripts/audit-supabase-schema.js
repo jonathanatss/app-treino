@@ -28,7 +28,9 @@ const checks = [
   ["bucket privado de evolução", /\('progress-photos', 'progress-photos', false/],
   ["mensagens habilitadas no Realtime", /alter publication supabase_realtime add table public\.messages/],
   ["check-ins habilitados no Realtime", /alter publication supabase_realtime add table public\.workout_checkins/],
-  ["notificações habilitadas no Realtime", /alter publication supabase_realtime add table public\.notifications/]
+  ["notificações habilitadas no Realtime", /alter publication supabase_realtime add table public\.notifications/],
+  ["vínculo temporário com perfil local", /add column legacy_profile_key text unique/],
+  ["vínculo não editável pelo próprio usuário", /grant update \(display_name, avatar_url, bio, notifications_enabled, updated_at\) on public\.profiles/]
 ];
 
 for (const [label, pattern] of checks) if (!pattern.test(sql)) failures.push(label);

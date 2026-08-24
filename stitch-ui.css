@@ -115,6 +115,32 @@ button { touch-action: manipulation; }
 }
 .profile-card:hover { border-color: #576331; background: #20211e; }
 .profile-card::after { content: "›"; margin-left: auto; color: var(--fit-muted); font-size: 42px; font-weight: 300; }
+.cloud-access-card {
+  display: grid;
+  width: 100%;
+  min-height: 94px;
+  grid-template-columns: 50px minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+  padding: 15px 17px;
+  border: 1px solid #435226;
+  border-radius: 18px;
+  background: radial-gradient(circle at 100% 0, rgba(183,255,0,.12), transparent 44%), #171a14;
+  color: #f7f8f3;
+  text-align: left;
+  cursor: pointer;
+}
+.cloud-access-card:hover { border-color: var(--fit-lime); background-color: #1b2015; }
+.cloud-access-card:disabled { cursor: wait; opacity: .72; }
+.cloud-access-icon { display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid #52672d; border-radius: 50%; background: rgba(183,255,0,.08); color: var(--fit-lime); font-size: 21px; font-weight: 900; }
+.cloud-access-card.is-signed-in .cloud-access-icon { border-color: var(--fit-lime); background: var(--fit-lime); color: #192100; }
+.cloud-access-copy { display: grid; min-width: 0; gap: 2px; }
+.cloud-access-copy small { color: var(--fit-lime); font-size: 9px; font-weight: 850; letter-spacing: .12em; }
+.cloud-access-copy strong { overflow: hidden; font-size: 16px; text-overflow: ellipsis; white-space: nowrap; }
+.cloud-access-copy > span { overflow: hidden; color: #aeb69f; font-size: 12px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.cloud-status-dot { width: 10px; height: 10px; justify-self: end; border: 2px solid #7c8173; border-radius: 50%; background: transparent; box-shadow: 0 0 0 3px rgba(124,129,115,.08); }
+.cloud-status-dot.is-online { border-color: var(--fit-lime); background: var(--fit-lime); box-shadow: 0 0 0 4px rgba(183,255,0,.1); }
 .new-user-divider { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; color: #8d9285; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
 .new-user-divider::before, .new-user-divider::after { content: ""; height: 1px; flex: 1; background: #2b2e28; }
 .new-user-request {
@@ -461,6 +487,7 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
 .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #111; transition: .2s; }
 .toggle.on { background: var(--fit-lime); }
 .toggle.on::after { left: 23px; }
+.cloud-settings-row .cloud-status-dot { margin-right: 4px; }
 .science-settings-label { color: #dffb93; }
 .science-entry-group { overflow: hidden; border-color: #4b5d27; background: radial-gradient(circle at 100% 0, rgba(183,255,0,.12), transparent 42%), #171a13; }
 .science-entry { min-height: 86px; }
@@ -678,6 +705,27 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
 .sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
 .sheet-header h2 { margin: 0; font-size: 25px; }
 .sheet-close { width: 44px; height: 44px; border: 0; background: transparent; color: var(--fit-muted); font-size: 28px; cursor: pointer; }
+.cloud-auth-form { display: grid; gap: 15px; padding-bottom: var(--safe-bottom); }
+.cloud-auth-intro { display: grid; grid-template-columns: 46px minmax(0, 1fr); align-items: start; gap: 12px; margin-bottom: 2px; padding: 15px; border: 1px solid #3d472b; border-radius: 13px; background: #181c14; }
+.cloud-auth-intro > span { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(183,255,0,.1); color: var(--fit-lime); font-size: 20px; font-weight: 900; }
+.cloud-auth-intro strong { display: block; color: #f6f7f2; }
+.cloud-auth-intro p { margin: 4px 0 0; color: #b0b8a2; font-size: 12px; line-height: 1.45; }
+.cloud-auth-form label { display: grid; gap: 7px; color: var(--fit-muted); font-size: 11px; font-weight: 800; letter-spacing: .06em; }
+.cloud-auth-form label small { color: var(--fit-dim); font-size: 10px; font-weight: 650; letter-spacing: 0; }
+.cloud-auth-form input { width: 100%; min-height: 54px; padding: 0 14px; border: 1px solid #383b33; border-radius: 10px; outline: none; background: #111; color: #fff; font-size: 16px; }
+.cloud-auth-form input:focus { border-color: var(--fit-lime); box-shadow: 0 0 0 3px rgba(183,255,0,.09); }
+.cloud-auth-status, .cloud-auth-help { min-height: 20px; margin: 0; color: #aeb5a2; font-size: 12px; line-height: 1.45; }
+.cloud-auth-status.is-success { color: var(--fit-lime); }
+.cloud-auth-status.is-error, .cloud-auth-help.is-error { color: var(--fit-danger); }
+.cloud-account-summary { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 13px; padding: 17px; border: 1px solid #435328; border-radius: 14px; background: #181c14; }
+.cloud-account-check { display: grid; width: 50px; height: 50px; place-items: center; border-radius: 50%; background: var(--fit-lime); color: #182000; font-size: 22px; font-weight: 900; }
+.cloud-account-summary small, .cloud-account-summary strong, .cloud-account-summary div > span { display: block; }
+.cloud-account-summary small { color: var(--fit-lime); font-size: 10px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.cloud-account-summary strong { margin-top: 2px; font-size: 18px; }
+.cloud-account-summary div > span { overflow: hidden; margin-top: 3px; color: var(--fit-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.cloud-link-note { margin: 13px 0 18px; padding: 12px 14px; border: 1px solid #3b3d37; border-radius: 10px; background: #1c1c1c; color: #bdc1b6; font-size: 13px; line-height: 1.5; }
+.cloud-link-note.is-linked { border-color: #4b5d2c; color: #dbe9ba; }
+.cloud-signout { margin-bottom: 10px; }
 .exercise-action-sheet { padding-bottom: calc(24px + var(--safe-bottom)); }
 .exercise-sheet-intro { margin: -8px 0 18px; color: var(--fit-muted); font-size: 13px; line-height: 1.5; }
 .exercise-sheet-exercise { margin: -9px 0 17px; color: var(--fit-lime); font-size: 14px; font-weight: 800; line-height: 1.35; }

@@ -1,10 +1,11 @@
-const CACHE_NAME = "fitplan-v33";
-const RUNTIME_CACHE = "fitplan-runtime-v33";
+const CACHE_NAME = "fitplan-v34";
+const RUNTIME_CACHE = "fitplan-runtime-v34";
 
 const APP_SHELL = [
   "./",
   "./index.html",
   "./stitch-ui.css",
+  "./supabase-client.js",
   "./stitch-ui.js",
   "./manifest.webmanifest",
   "./logo-mark.svg",
@@ -70,7 +71,7 @@ self.addEventListener("fetch", (event) => {
 
   if (isSameOrigin || isImage) {
     event.respondWith(
-      caches.match(request).then((cached) => {
+      caches.match(request, { ignoreSearch: isSameOrigin }).then((cached) => {
         if (cached) return cached;
         return fetch(request).then((response) => {
           if (!response || (response.status !== 200 && response.type !== "opaque")) return response;

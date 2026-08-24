@@ -20,10 +20,23 @@ As migrações em `migrations/` criam:
 
 O frontend deverá utilizar apenas a URL pública do projeto e a chave `publishable`/`anon`. A chave `service_role` nunca deve ser incluída no navegador, no repositório ou no Netlify.
 
+## Transição do frontend
+
+O `supabase-client.js` adiciona autenticação por link mágico sem interromper os perfis locais existentes. Nesta fase:
+
+- o e-mail autentica a conta e cria o registro em `profiles` pelo trigger do banco;
+- treinos, cargas e fotos continuam locais até a etapa de sincronização;
+- o PIN local continua disponível como acesso alternativo;
+- `legacy_profile_key` só pode ser definido por um administrador e associa a conta autenticada a um perfil estático existente;
+- uma conta vinculada pode abrir somente o seu perfil sem repetir o PIN.
+
+Os redirects autorizados são a URL de produção e as URLs locais em `127.0.0.1:4173` e `localhost:4173`.
+
 ## Verificação
 
 ```powershell
 node scripts/audit-supabase-schema.js
+node scripts/audit-supabase-client.js
 ```
 
 As migrações iniciais foram aplicadas pelo SQL Editor em 24/08/2026. Antes de adotar o Supabase CLI para novos deploys, registre essas versões como já aplicadas com o fluxo oficial de `migration repair`, evitando uma reaplicação da base inicial.
