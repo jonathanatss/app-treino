@@ -19,6 +19,8 @@ const checks = [
   ["persistência da observação", /exerciseNotes: parsed\.exerciseNotes \|\| \{\}/],
   ["estilos do menu", /\.exercise-action-list\s*\{/],
   ["estilos do histórico", /\.exercise-history-list\s*\{/],
+  ["menu acima do overlay de detalhes", /\.sheet-backdrop\s*\{[^}]*z-index:\s*120/],
+  ["área de toque dos três pontos ativa", /\.overlay-close, \.overlay-more\s*\{[^}]*pointer-events:\s*auto/],
   ["safe area do menu móvel", /padding-bottom: calc\(24px \+ var\(--safe-bottom\)\)/]
 ];
 
