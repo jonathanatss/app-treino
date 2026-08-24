@@ -15,6 +15,8 @@
 - Security Advisor conferido com 0 erros; o único aviso é proteção de senha vazada, não usada no fluxo passwordless atual.
 - Entrada de novos usuários conectada à função `submit-questionnaire`, que grava no Supabase sem expor a chave administrativa.
 - Aviso de novo questionário preparado pelo Resend sem incluir respostas de saúde no e-mail.
+- Área administrativa para revisar o questionário completo, aprovar e convidar o usuário ou rejeitar com observação.
+- Aprovação cria a conta por convite, vincula a solicitação e abre automaticamente um plano inicial em rascunho.
 
 ## Antes do deploy público
 
@@ -23,7 +25,7 @@
 3. Fazer um dump do banco e documentar o procedimento de restauração.
 4. Validar login, saída, link expirado e isolamento entre duas contas de teste.
 5. Executar teste físico no iPhone somente depois de existir uma URL de preview/produção.
-6. Configurar e testar as variáveis do questionário no Netlify antes de liberar o formulário em produção.
+6. Testar o convite e a decisão com uma segunda conta real após configurar o remetente próprio.
 
 ## Variáveis e segredos
 
@@ -35,5 +37,6 @@
 - `RESEND_API_KEY`: chave da conta Resend para enviar o aviso.
 - `RESEND_FROM_EMAIL`: remetente verificado no Resend, por exemplo `FitPlan <notificacoes@seudominio.com>`.
 - `QUESTIONNAIRE_NOTIFICATION_EMAIL`: destinatário dos avisos, configurado somente no ambiente do Netlify.
+- `FITPLAN_SITE_URL`: URL pública usada nos links de análise e de retorno após o convite.
 
 As variáveis acima devem existir somente no painel do Netlify. A chave `service_role` e a chave do Resend não podem ser adicionadas ao repositório nem ao frontend.

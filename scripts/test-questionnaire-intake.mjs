@@ -64,7 +64,9 @@ try {
   assert.deepEqual(databaseBody.answers.days_available, validPayload.daysAvailable);
   const emailBody = requests[1].options.body;
   assert.doesNotMatch(emailBody, /Nenhuma\.|Caminhada três/);
-  assert.match(emailBody, /Consulte as respostas completas somente na área administrativa/);
+  assert.match(emailBody, /Analisar solicitação/);
+  assert.match(emailBody, /admin=requests/);
+  assert.match(emailBody, /somente após autenticação administrativa/);
 
   requests = [];
   const bot = await handler(event({ ...validPayload, botField: "spam" }));

@@ -83,11 +83,16 @@
     if (!normalizedEmail) throw new Error("Informe seu e-mail.");
     callbackFailure = null;
     error = null;
-    const redirectUrl = new URL(window.location.pathname, window.location.origin).toString();
+    const redirectUrl = new URL(window.location.pathname, window.location.origin);
+    const currentQuery = new URLSearchParams(window.location.search);
+    ["admin", "request"].forEach((key) => {
+      const value = currentQuery.get(key);
+      if (value) redirectUrl.searchParams.set(key, value);
+    });
     const result = await client.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: redirectUrl,
+        emailRedirectTo: redirectUrl.toString(),
         shouldCreateUser: false
       }
     });

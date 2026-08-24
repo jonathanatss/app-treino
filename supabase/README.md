@@ -25,6 +25,7 @@ O frontend deverá utilizar apenas a URL pública do projeto e a chave `publisha
 O `supabase-client.js` adiciona autenticação por link mágico para contas previamente convidadas. Nesta fase:
 
 - somente e-mails provisionados pelo administrador podem autenticar; o frontend não cria contas novas;
+- novos interessados enviam o questionário sem criar uma sessão; um administrador autenticado revisa a solicitação e, ao aprová-la, o backend envia o convite e cria um plano em rascunho;
 - treinos, cargas e fotos continuam locais até a etapa de sincronização;
 - os PINs locais permanecem armazenados somente para rollback durante a migração, mas não aparecem como opção de entrada;
 - `legacy_profile_key` só pode ser definido por um administrador e associa a conta autenticada a um perfil estático existente;

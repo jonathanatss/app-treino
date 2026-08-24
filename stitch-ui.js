@@ -13,6 +13,7 @@
   let activeExercise = null;
   let activeExerciseIndex = -1;
   let activeSheet = null;
+  let adminRouteHandled = false;
 
   const localMediaByUrl = {
     "https://gymvisual.com/img/p/4/8/8/8/4888.gif": "assets/exercises/4888.gif",
@@ -341,7 +342,8 @@
     if (!snapshot.user) return snapshot.error ? "Acesso não concluído • tente novamente" : "Acesse seu treino com segurança";
     const linkedId = snapshot.profile?.legacy_profile_key;
     if (linkedId && profiles[linkedId]) return `Vinculada ao perfil ${profileName(linkedId)}`;
-    return "Conta conectada • vínculo de perfil pendente";
+    if (snapshot.profile?.role === "admin") return "Conta administrativa conectada";
+    return "Cadastro aprovado • treino em elaboração";
   }
 
   function cloudAccessMarkup() {
@@ -476,6 +478,16 @@
   function renderProfileCards() {
     const list = document.querySelector("#profileList");
     if (!list) return;
+    const cloud = cloudSnapshot();
+    if (cloud.user && cloud.profile && !linkedCloudProfileId(cloud)) {
+      const isAdmin = cloud.profile.role === "admin";
+      list.innerHTML = `${cloudAccessMarkup()}
+        ${isAdmin ? `<button class="new-user-request admin-login-entry" type="button"><span class="new-user-request-icon" aria-hidden="true">⌁</span><span><strong>Solicitações de cadastro</strong><small>Analisar, aprovar ou recusar novos usuários</small></span><span class="new-user-request-arrow" aria-hidden="true">›</span></button>` : `<div class="approved-waiting-card"><span aria-hidden="true">✓</span><div><strong>Cadastro aprovado</strong><p>Seu acesso está ativo. O treino aparecerá aqui assim que a prescrição for concluída.</p></div></div>`}
+        <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Conta protegida</strong>Você entrou como ${escapeHtml(cloud.profile.display_name || cloud.user.email || "usuário FitPlan")}.</p></div>`;
+      list.querySelector(".cloud-access-card")?.addEventListener("click", openCloudAuthSheet);
+      list.querySelector(".admin-login-entry")?.addEventListener("click", () => openAdminQuestionnaires());
+      return;
+    }
     list.innerHTML = `${cloudAccessMarkup()}
       <div class="new-user-divider" aria-hidden="true">OU</div>
       <button class="new-user-request" type="button" aria-label="Sou novo, responder questionário e solicitar cadastro">
@@ -1323,12 +1335,199 @@
     view.querySelector(".chart-reset")?.addEventListener("click", (event) => resetWeightHistory(event.currentTarget));
   }
 
+  const ADMIN_STATUS_LABELS = {
+    pending: "Pendente",
+    reviewing: "Em análise",
+    approved: "Aprovado",
+    rejected: "Recusado",
+    archived: "Arquivado"
+  };
+
+  const ADMIN_ANSWER_LABELS = [
+    ["age", "Idade"],
+    ["height_cm", "Altura"],
+    ["weight_kg", "Peso"],
+    ["sex", "Sexo"],
+    ["routine", "Rotina"],
+    ["goal", "Objetivo"],
+    ["experience", "Experiência"],
+    ["days_available", "Dias disponíveis"],
+    ["unavailable_equipment", "Equipamentos indisponíveis"],
+    ["priorities", "Prioridades musculares"],
+    ["avoid_exercises", "Exercícios a evitar"],
+    ["limitations", "Lesões, dores e limitações"],
+    ["cardio", "Cardio"],
+    ["recovery", "Recuperação"],
+    ["nutrition", "Alimentação"],
+    ["health_medications", "Saúde e medicações"],
+    ["expectations", "Expectativas"],
+    ["source", "Origem"]
+  ];
+
+  function adminDate(value) {
+    if (!value) return "—";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+  }
+
+  function adminAnswerValue(key, value) {
+    if (Array.isArray(value)) return value.join(", ");
+    if (key === "height_cm" && value !== undefined && value !== null) return `${value} cm`;
+    if (key === "weight_kg" && value !== undefined && value !== null) return `${value} kg`;
+    if (key === "age" && value !== undefined && value !== null) return `${value} anos`;
+    return String(value ?? "—");
+  }
+
+  async function adminQuestionnaireRequest(options = {}) {
+    const cloud = cloudSnapshot();
+    const token = cloud.session?.access_token;
+    if (!token || cloud.profile?.role !== "admin") throw new Error("Entre com a conta administrativa para continuar.");
+    const result = await fetch("/.netlify/functions/admin-questionnaires", {
+      method: options.method || "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        ...(options.body ? { "Content-Type": "application/json" } : {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined
+    });
+    let payload = {};
+    try { payload = await result.json(); } catch { payload = {}; }
+    if (!result.ok) throw new Error(payload.error || "Não foi possível concluir a operação.");
+    return payload;
+  }
+
+  function adminSubmissionMarkup(submission, focusId) {
+    const answers = submission.answers || {};
+    const status = ADMIN_STATUS_LABELS[submission.status] || submission.status;
+    const open = submission.id === focusId ? " open" : "";
+    const canApprove = Boolean(submission.email) && submission.status !== "approved";
+    const canReject = !["approved", "rejected", "archived"].includes(submission.status);
+    const contact = [submission.email, submission.whatsapp].filter(Boolean).join(" • ") || "Sem contato";
+    const answerRows = ADMIN_ANSWER_LABELS
+      .filter(([key]) => answers[key] !== undefined && answers[key] !== null && String(answers[key]).length)
+      .map(([key, label]) => `<div class="admin-answer-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(adminAnswerValue(key, answers[key]))}</dd></div>`)
+      .join("");
+    return `<details class="admin-request-card" data-request-id="${escapeHtml(submission.id)}" data-status="${escapeHtml(submission.status)}"${open}>
+      <summary>
+        <span class="admin-request-avatar" aria-hidden="true">${escapeHtml(String(submission.full_name || "?").trim().charAt(0).toUpperCase())}</span>
+        <span class="admin-request-summary"><strong>${escapeHtml(submission.full_name)}</strong><small>${escapeHtml(contact)}</small><small>Recebida em ${escapeHtml(adminDate(submission.created_at))}</small></span>
+        <span class="admin-status-chip is-${escapeHtml(submission.status)}">${escapeHtml(status)}</span>
+      </summary>
+      <div class="admin-request-detail">
+        <div class="admin-request-meta"><span><small>CONSENTIMENTO</small><strong>${escapeHtml(adminDate(submission.consent_at))}</strong></span><span><small>IDENTIFICADOR</small><strong>${escapeHtml(submission.id.slice(0, 8))}</strong></span></div>
+        <dl class="admin-answer-list">${answerRows}</dl>
+        ${submission.review_note ? `<div class="admin-review-note"><small>OBSERVAÇÃO DA REVISÃO</small><p>${escapeHtml(submission.review_note)}</p></div>` : ""}
+        <div class="admin-request-actions">
+          ${submission.status === "approved" ? `<div class="admin-approved-note">✓ Conta vinculada${submission.invitation_sent_at ? ` • convite enviado em ${escapeHtml(adminDate(submission.invitation_sent_at))}` : ""}</div>` : `<button class="primary-button admin-approve" type="button" ${canApprove ? "" : "disabled"}>${submission.status === "reviewing" ? "Tentar aprovação novamente" : "Aprovar e convidar"}</button>`}
+          ${canReject ? `<button class="secondary-button admin-reject" type="button">Recusar</button>` : ""}
+        </div>
+        ${!submission.email && submission.status !== "approved" ? `<p class="admin-action-hint">A aprovação automática exige um e-mail. Entre em contato pelo WhatsApp e atualize a solicitação antes de aprovar.</p>` : ""}
+        <p class="admin-card-status" role="status" aria-live="polite"></p>
+      </div>
+    </details>`;
+  }
+
+  function wireAdminSubmissionActions(container, submissions) {
+    container.querySelectorAll(".admin-request-card").forEach((card) => {
+      const submission = submissions.find((item) => item.id === card.dataset.requestId);
+      if (!submission) return;
+      const status = card.querySelector(".admin-card-status");
+      card.querySelector(".admin-approve")?.addEventListener("click", async () => {
+        if (!window.confirm(`Aprovar ${submission.full_name} e enviar o convite de acesso?`)) return;
+        const buttons = card.querySelectorAll("button");
+        buttons.forEach((button) => { button.disabled = true; });
+        status.textContent = "Criando a conta, vinculando o questionário e abrindo o plano em rascunho…";
+        status.className = "admin-card-status";
+        try {
+          const result = await adminQuestionnaireRequest({ method: "POST", body: { action: "approve", id: submission.id } });
+          status.textContent = result.invited ? "Cadastro aprovado e convite enviado." : "Cadastro aprovado e vinculado a uma conta existente.";
+          status.classList.add("is-success");
+          window.setTimeout(() => openAdminQuestionnaires(submission.id), 700);
+        } catch (error) {
+          status.textContent = error.message;
+          status.classList.add("is-error");
+          buttons.forEach((button) => { button.disabled = false; });
+        }
+      });
+      card.querySelector(".admin-reject")?.addEventListener("click", async () => {
+        const note = window.prompt(`Motivo interno para recusar a solicitação de ${submission.full_name}:`, "");
+        if (note === null) return;
+        if (!window.confirm("Confirmar a recusa desta solicitação?")) return;
+        const buttons = card.querySelectorAll("button");
+        buttons.forEach((button) => { button.disabled = true; });
+        status.textContent = "Registrando a decisão…";
+        status.className = "admin-card-status";
+        try {
+          await adminQuestionnaireRequest({ method: "POST", body: { action: "reject", id: submission.id, note } });
+          status.textContent = "Solicitação recusada.";
+          status.classList.add("is-success");
+          window.setTimeout(() => openAdminQuestionnaires(submission.id), 700);
+        } catch (error) {
+          status.textContent = error.message;
+          status.classList.add("is-error");
+          buttons.forEach((button) => { button.disabled = false; });
+        }
+      });
+    });
+  }
+
+  function renderAdminQuestionnaires(container, submissions, focusId = "") {
+    const counts = submissions.reduce((result, item) => ({ ...result, [item.status]: (result[item.status] || 0) + 1 }), {});
+    container.innerHTML = `<div class="admin-filter-bar" role="group" aria-label="Filtrar solicitações">
+      <button class="admin-filter is-active" type="button" data-filter="all">Todas <span>${submissions.length}</span></button>
+      <button class="admin-filter" type="button" data-filter="pending">Pendentes <span>${counts.pending || 0}</span></button>
+      <button class="admin-filter" type="button" data-filter="approved">Aprovadas <span>${counts.approved || 0}</span></button>
+      <button class="admin-filter" type="button" data-filter="rejected">Recusadas <span>${counts.rejected || 0}</span></button>
+    </div>
+    <p class="admin-page-status" role="status" aria-live="polite">${submissions.length ? `${submissions.length} solicitação(ões) encontrada(s).` : "Nenhuma solicitação recebida."}</p>
+    <div class="admin-request-list">${submissions.map((submission) => adminSubmissionMarkup(submission, focusId)).join("") || `<div class="admin-empty-state"><span>✓</span><strong>Nenhuma solicitação por aqui</strong><p>Novos questionários aparecerão automaticamente.</p></div>`}</div>`;
+    container.querySelectorAll(".admin-filter").forEach((button) => button.addEventListener("click", () => {
+      const filter = button.dataset.filter;
+      container.querySelectorAll(".admin-filter").forEach((item) => item.classList.toggle("is-active", item === button));
+      container.querySelectorAll(".admin-request-card").forEach((card) => { card.hidden = filter !== "all" && card.dataset.status !== filter; });
+    }));
+    wireAdminSubmissionActions(container, submissions);
+    if (focusId) container.querySelector(`[data-request-id="${CSS.escape(focusId)}"]`)?.scrollIntoView({ block: "start" });
+  }
+
+  async function openAdminQuestionnaires(focusId = "") {
+    showOverlay(`<div class="overlay-page admin-questionnaires-page"><header class="overlay-header"><button class="overlay-close" type="button" aria-label="Voltar">←</button><h2>Administração</h2><button class="admin-refresh" type="button" aria-label="Atualizar solicitações">↻</button></header><div class="screen-heading"><p class="eyebrow">NOVOS USUÁRIOS</p><h2>Solicitações de cadastro</h2><p>Revise o questionário. A aprovação cria a conta, vincula os dados e abre um plano em rascunho.</p></div><div class="admin-questionnaires-content"><div class="admin-loading"><span></span><p>Carregando solicitações…</p></div></div></div>`);
+    overlay.querySelector(".overlay-close")?.addEventListener("click", closeOverlay);
+    const content = overlay.querySelector(".admin-questionnaires-content");
+    const load = async () => {
+      content.innerHTML = `<div class="admin-loading"><span></span><p>Carregando solicitações…</p></div>`;
+      try {
+        const result = await adminQuestionnaireRequest();
+        renderAdminQuestionnaires(content, result.submissions || [], focusId);
+      } catch (error) {
+        content.innerHTML = `<div class="admin-empty-state is-error"><span>!</span><strong>Não foi possível carregar</strong><p>${escapeHtml(error.message)}</p><button class="secondary-button admin-retry" type="button">Tentar novamente</button></div>`;
+        content.querySelector(".admin-retry")?.addEventListener("click", load);
+      }
+    };
+    overlay.querySelector(".admin-refresh")?.addEventListener("click", load);
+    await load();
+  }
+
+  function maybeOpenRequestedAdminRequest(cloud = cloudSnapshot()) {
+    if (adminRouteHandled || !cloud.ready || !cloud.user || cloud.profile?.role !== "admin") return;
+    const query = new URLSearchParams(window.location.search);
+    if (query.get("admin") !== "requests") return;
+    adminRouteHandled = true;
+    const requestId = query.get("request") || "";
+    window.setTimeout(() => openAdminQuestionnaires(requestId), 0);
+    query.delete("admin");
+    query.delete("request");
+    const nextUrl = `${window.location.pathname}${query.toString() ? `?${query}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+  }
+
   function renderProfileView() {
     const view = document.querySelector("#view-profile");
     if (!view || !currentProfile) return;
     const settings = getSettings();
     const science = SCIENCE_BASE[currentProfile];
-    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
+    const adminSection = cloudSnapshot().profile?.role === "admin" ? `<p class="settings-label admin-settings-label">ADMINISTRAÇÃO</p><div class="settings-group admin-entry-group"><button class="settings-row admin-entry" type="button" data-action="admin-requests"><span class="row-icon">⌁</span><span><strong>Solicitações de cadastro</strong><small>Analisar questionários e liberar acessos</small></span><span class="chevron">›</span></button></div>` : "";
+    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section>${adminSection}<p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
     hydrateProfileAvatars(view);
     view.querySelectorAll(".toggle-setting").forEach((button) => button.addEventListener("click", () => {
       const next = getSettings();
@@ -1337,6 +1536,7 @@
       renderProfileView();
     }));
     view.querySelector("[data-action='science']")?.addEventListener("click", openScienceBase);
+    view.querySelector("[data-action='admin-requests']")?.addEventListener("click", () => openAdminQuestionnaires());
     view.querySelector("[data-action='cloud']")?.addEventListener("click", openCloudAuthSheet);
     view.querySelector("[data-action='legacy-migration']")?.addEventListener("click", openLegacyMigrationSheet);
     view.querySelector("[data-action='data']")?.addEventListener("click", openDataManagement);
@@ -1877,7 +2077,9 @@
   window.addEventListener("fitplan:cloud-auth", (event) => {
     applyCloudAuthGate(event.detail);
     if (currentProfile && currentRoute === "profile") renderProfileView();
+    maybeOpenRequestedAdminRequest(event.detail);
   });
 
   applyCloudAuthGate();
+  maybeOpenRequestedAdminRequest();
 })();

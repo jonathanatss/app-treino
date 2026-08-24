@@ -37,6 +37,21 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function adminReviewUrl(submissionId, env) {
+  const candidate = text(env.FITPLAN_SITE_URL || env.URL || "https://app-treino-jonathan.netlify.app", 500);
+  try {
+    const url = new URL(candidate);
+    url.pathname = "/";
+    url.search = "";
+    url.hash = "";
+    url.searchParams.set("admin", "requests");
+    url.searchParams.set("request", submissionId);
+    return url.toString();
+  } catch {
+    return `https://app-treino-jonathan.netlify.app/?admin=requests&request=${encodeURIComponent(submissionId)}`;
+  }
+}
+
 function parseSubmission(raw) {
   const allowedDays = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
   const allowedMuscles = ["Peitoral", "Costas/dorsais", "Ombros", "Trapézio", "Bíceps", "Tríceps", "Antebraços", "Quadríceps", "Posterior de coxa", "Glúteos", "Panturrilhas", "Abdômen/core"];
@@ -132,6 +147,7 @@ async function sendNotification(submission, inserted, env) {
   const to = text(env.QUESTIONNAIRE_NOTIFICATION_EMAIL, 254);
   if (!apiKey || !from || !to) return false;
   const createdAt = inserted.created_at || submission.consent_at;
+  const reviewUrl = adminReviewUrl(inserted.id, env);
   const result = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -142,7 +158,7 @@ async function sendNotification(submission, inserted, env) {
       from,
       to: [to],
       subject: "Nova solicitação de cadastro — FitPlan",
-      html: `<h1>Nova solicitação no FitPlan</h1><p><strong>${escapeHtml(submission.full_name)}</strong> respondeu ao questionário.</p><p>Recebida em ${escapeHtml(new Date(createdAt).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }))}.</p><p>Identificador: <code>${escapeHtml(inserted.id)}</code></p><p>Consulte as respostas completas somente na área administrativa.</p>`
+      html: `<h1>Nova solicitação no FitPlan</h1><p><strong>${escapeHtml(submission.full_name)}</strong> respondeu ao questionário.</p><p>Recebida em ${escapeHtml(new Date(createdAt).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }))}.</p><p>Identificador: <code>${escapeHtml(inserted.id)}</code></p><p><a href="${escapeHtml(reviewUrl)}" style="display:inline-block;padding:12px 18px;border-radius:8px;background:#b7ff00;color:#101010;font-weight:700;text-decoration:none">Analisar solicitação</a></p><p>As respostas completas ficam disponíveis somente após autenticação administrativa.</p>`
     })
   });
   if (!result.ok) {
