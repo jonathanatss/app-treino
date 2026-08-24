@@ -521,13 +521,13 @@
   }
 
   function questionnaireField(name, label, placeholder, options = {}) {
-    const { type = "textarea", required = true, inputMode = "", autocomplete = "", min = "", suffix = "" } = options;
+    const { type = "textarea", required = true, inputMode = "", autocomplete = "", min = "", step = "", suffix = "" } = options;
     const requiredAttr = required ? " required" : "";
     if (type === "select") {
       return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><select name="${name}"${requiredAttr}><option value="">Selecione</option>${options.values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("")}</select></label>`;
     }
     if (type !== "textarea") {
-      return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><span class="questionnaire-input-wrap"><input type="${type}" name="${name}" placeholder="${placeholder}"${requiredAttr}${inputMode ? ` inputmode="${inputMode}"` : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${min ? ` min="${min}"` : ""}>${suffix ? `<small>${suffix}</small>` : ""}</span></label>`;
+      return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><span class="questionnaire-input-wrap"><input type="${type}" name="${name}" placeholder="${placeholder}"${requiredAttr}${inputMode ? ` inputmode="${inputMode}"` : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${min ? ` min="${min}"` : ""}${step ? ` step="${step}"` : ""}>${suffix ? `<small>${suffix}</small>` : ""}</span></label>`;
     }
     return `<label class="questionnaire-field"><span>${label}${required ? " *" : ""}</span><textarea name="${name}" rows="4" placeholder="${placeholder}"${requiredAttr}></textarea></label>`;
   }
@@ -537,7 +537,7 @@
       <div class="questionnaire-success-icon" aria-hidden="true">✓</div>
       <p class="eyebrow">${isLocalPreview ? "PRÉVIA LOCAL" : "QUESTIONÁRIO ENVIADO"}</p>
       <h2>${isLocalPreview ? "Fluxo validado" : "Solicitação recebida"}</h2>
-      <p>${isLocalPreview ? "Nenhum dado foi enviado neste teste local. Em produção, a resposta ficará registrada no Netlify e poderá gerar uma notificação." : "Suas respostas foram enviadas ao responsável pelo FitPlan. Ele vai analisar o questionário antes de montar e liberar o seu treino."}</p>
+      <p>${isLocalPreview ? "Nenhum dado foi enviado neste teste local. Em produção, a resposta será gravada com segurança no Supabase e poderá gerar a notificação configurada." : "Suas respostas foram registradas e enviadas ao responsável pelo FitPlan. Ele vai analisar o questionário antes de montar e liberar o seu treino."}</p>
       <button class="primary-button questionnaire-done" type="button">Voltar aos perfis</button>
     </div>`);
     overlay.querySelector(".questionnaire-done")?.addEventListener("click", closeOverlay);
@@ -552,8 +552,8 @@
           ${questionnaireField("email", "E-mail", "voce@exemplo.com", { type: "email", required: false, autocomplete: "email" })}
           ${questionnaireField("whatsapp", "WhatsApp", "(00) 00000-0000", { type: "tel", required: false, inputMode: "tel", autocomplete: "tel" })}
           ${questionnaireField("idade", "Idade", "00", { type: "number", inputMode: "numeric", min: "12", suffix: "anos" })}
-          ${questionnaireField("altura_cm", "Altura", "000", { type: "number", inputMode: "decimal", min: "100", suffix: "cm" })}
-          ${questionnaireField("peso_kg", "Peso atual", "00,0", { type: "number", inputMode: "decimal", min: "30", suffix: "kg" })}
+          ${questionnaireField("altura_cm", "Altura", "000", { type: "number", inputMode: "decimal", min: "100", step: "0.1", suffix: "cm" })}
+          ${questionnaireField("peso_kg", "Peso atual", "00,0", { type: "number", inputMode: "decimal", min: "30", step: "0.1", suffix: "kg" })}
           ${questionnaireField("sexo", "Sexo", "", { type: "select", values: ["Feminino", "Masculino", "Intersexo", "Prefiro não informar"] })}
         </div>
         <p class="questionnaire-note">Informe pelo menos um contato: e-mail ou WhatsApp.</p>
@@ -694,26 +694,43 @@
       submit.textContent = "Enviando…";
       setStatus();
       const formData = new FormData(form);
-      const payload = new URLSearchParams(formData);
-      ["dias_disponiveis", "prioridades"].forEach((name) => {
-        const selected = formData.getAll(name).map(String).filter(Boolean);
-        payload.delete(name);
-        payload.set(name, selected.join("; "));
-      });
-      payload.set("subject", `Nova solicitação de treino — ${form.elements.nome.value.trim()}`);
-      payload.set("enviado_em", new Date().toISOString());
-      payload.set("origem", window.location.href);
+      const payload = {
+        fullName: form.elements.nome.value.trim(),
+        email: form.elements.email.value.trim(),
+        whatsapp: form.elements.whatsapp.value.trim(),
+        age: form.elements.idade.value,
+        heightCm: form.elements.altura_cm.value,
+        weightKg: form.elements.peso_kg.value,
+        sex: form.elements.sexo.value,
+        routine: form.elements.rotina.value.trim(),
+        goal: form.elements.objetivo.value.trim(),
+        experience: form.elements.experiencia.value.trim(),
+        daysAvailable: formData.getAll("dias_disponiveis").map(String),
+        unavailableEquipment: form.elements.equipamentos_indisponiveis.value.trim(),
+        priorities: formData.getAll("prioridades").map(String),
+        avoidExercises: form.elements.exercicios_evitar.value.trim(),
+        limitations: form.elements.lesoes_limitacoes.value.trim(),
+        cardio: form.elements.cardio.value.trim(),
+        recovery: form.elements.recuperacao.value.trim(),
+        nutrition: form.elements.alimentacao.value.trim(),
+        healthMedications: form.elements.saude_medicacoes.value.trim(),
+        expectations: form.elements.expectativas.value.trim(),
+        consent: form.elements.consentimento.checked,
+        botField: form.elements["bot-field"].value,
+        source: window.location.origin
+      };
       try {
-        const response = await fetch("/", {
+        const response = await fetch("/.netlify/functions/submit-questionnaire", {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: payload.toString()
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
         showQuestionnaireSuccess(false);
       } catch (error) {
         console.error("Falha ao enviar questionário", error);
-        setStatus("Não foi possível enviar agora. Confira sua conexão e tente novamente.");
+        setStatus(error.message || "Não foi possível enviar agora. Confira sua conexão e tente novamente.");
         submit.disabled = false;
         submit.textContent = "Enviar questionário";
       }
