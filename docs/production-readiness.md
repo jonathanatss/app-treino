@@ -34,6 +34,6 @@
 - `SUPABASE_SERVICE_ROLE_KEY`: chave administrativa usada somente pela função do Netlify.
 - `RESEND_API_KEY`: chave da conta Resend para enviar o aviso.
 - `RESEND_FROM_EMAIL`: remetente verificado no Resend, por exemplo `FitPlan <notificacoes@seudominio.com>`.
-- `QUESTIONNAIRE_NOTIFICATION_EMAIL`: destinatário dos avisos (`jonathanatss@gmail.com`).
+- `QUESTIONNAIRE_NOTIFICATION_EMAIL`: destinatário dos avisos, configurado somente no ambiente do Netlify.
 
 As variáveis acima devem existir somente no painel do Netlify. A chave `service_role` e a chave do Resend não podem ser adicionadas ao repositório nem ao frontend.
