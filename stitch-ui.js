@@ -650,6 +650,7 @@
   function openExerciseDetail(exercise, index) {
     const variant = getSelectedVariant(exercise);
     const stateKey = exerciseStateKey(exercise, variant);
+    const isDone = !!state.done[stateKey];
     const media = mediaFor(exercise);
     const prep = getPrepMeta(exercise);
     const history = getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load));
@@ -662,7 +663,7 @@
       <div class="detail-metrics"><div class="detail-metric"><small>${icon("target")} MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></div><div class="detail-metric"><small>${icon("equipment")} EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></div></div>
       <section class="guide-card"><h3><span style="color:var(--fit-lime)">▤</span> Guia de execução</h3><ol class="guide-list"><li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li><li>${escapeHtml(exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li><li>Finalize cada repetição sem perder a técnica e respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li></ol></section>
       <div class="history-strip"><div><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${formatLoad(last)} kg` : "Sem registro"}</strong></div><button class="text-button detail-history" type="button">Histórico</button></div>
-      <button class="primary-button detail-start" type="button">▶ &nbsp; INICIAR EXERCÍCIO</button>
+      <button class="primary-button detail-start" type="button">${isDone ? "✓ &nbsp; VER SÉRIES / CORRIGIR" : "▶ &nbsp; INICIAR EXERCÍCIO"}</button>
     </div>`);
     overlay.querySelector(".overlay-close").addEventListener("click", closeOverlay);
     const detailImage = overlay.querySelector(".detail-media-image");
@@ -699,16 +700,20 @@
     const key = exerciseStateKey(exercise, variant);
     const series = activeSeriesFor(key);
     const totalSets = parseSets(exercise);
+    const isFinished = series.length >= totalSets;
     const load = parseLoad(state.weights[key]) || 0;
     const reps = defaultReps(exercise);
     showOverlay(`<div class="overlay-page active-page">
       <header class="overlay-header"><button class="overlay-close" type="button" aria-label="Fechar">×</button><h2 style="color:var(--fit-lime)">FitPlan</h2><span></span></header>
-      <span class="set-chip">Série ${Math.min(series.length + 1, totalSets)} de ${totalSets}</span>
+      <span class="set-chip">${isFinished ? `${totalSets} de ${totalSets} séries concluídas` : `Série ${series.length + 1} de ${totalSets}`}</span>
       <h1 class="active-title">${escapeHtml(variant.displayName || variant.label || exercise.name)}</h1>
       <div class="active-tags"><span>${escapeHtml(getPrepMeta(exercise).group)}</span><span>${escapeHtml(getEquipment(exercise))}</span></div>
       <div class="stepper-card load-card"><small>CARGA (KG)</small><div class="stepper"><button type="button" data-adjust="load:-1" aria-label="Diminuir carga">−</button><input id="activeLoad" type="number" inputmode="decimal" min="0" step="0.5" value="${load}" aria-label="Carga em quilogramas"><button type="button" data-adjust="load:1" aria-label="Aumentar carga">+</button></div><div class="quick-adjust" aria-label="Ajustes rápidos de carga"><button type="button" data-quick-load="-10">−10</button><button type="button" data-quick-load="2.5">+2,5</button><button type="button" data-quick-load="5">+5</button><button type="button" data-quick-load="10">+10</button></div></div>
       <div class="stepper-card"><small>REPS</small><div class="stepper"><button type="button" data-adjust="reps:-1" aria-label="Diminuir repetições">−</button><input id="activeReps" type="number" inputmode="numeric" min="0" step="1" value="${reps}" aria-label="Número de repetições"><button type="button" data-adjust="reps:1" aria-label="Aumentar repetições">+</button></div></div>
-      <button class="primary-button complete-set" type="button">Concluir série &nbsp; ✓</button>
+      <div class="active-set-actions">
+        ${isFinished ? `<p class="active-complete-note">Exercício concluído. Você pode desfazer a última série para corrigir carga ou repetições.</p>` : `<button class="primary-button complete-set" type="button">Concluir série &nbsp; ✓</button>`}
+        ${series.length ? `<button class="secondary-button undo-last-set" type="button">↶ &nbsp; Desfazer última série</button>` : ""}
+      </div>
       <section class="sets-history"><h3>Histórico de séries</h3><div id="activeSetRows">${renderSetRows(series)}</div></section>
     </div>`);
     overlay.querySelector(".overlay-close").addEventListener("click", () => { closeOverlay(); renderWorkout(); });
@@ -723,7 +728,8 @@
       input.value = String(Math.max(0, Number(input.value || 0) + Number(button.dataset.quickLoad)));
       input.focus({ preventScroll: true });
     }));
-    overlay.querySelector(".complete-set").addEventListener("click", completeActiveSet);
+    overlay.querySelector(".complete-set")?.addEventListener("click", completeActiveSet);
+    overlay.querySelector(".undo-last-set")?.addEventListener("click", undoLastActiveSet);
   }
 
   function renderSetRows(series) {
@@ -757,6 +763,38 @@
       if (allDone) showWorkoutSummary();
       return;
     }
+    openActiveExercise(exercise, activeExerciseIndex);
+  }
+
+  function removeCurrentExerciseHistory(key) {
+    if (!state.history?.[key]) return;
+    state.history[key] = state.history[key].filter((entry) => !(entry.date === todayKey && entry.tab === activeTab));
+    if (!state.history[key].length) delete state.history[key];
+  }
+
+  function undoLastActiveSet() {
+    if (!activeExercise) return;
+    const exercise = activeExercise;
+    const variant = getSelectedVariant(exercise);
+    const key = exerciseStateKey(exercise, variant);
+    const series = activeSeriesFor(key);
+    if (!series.length) return;
+    series.pop();
+    state.seriesProgress[key] = series;
+    const totalSets = parseSets(exercise);
+    const remainsFinished = series.length >= totalSets;
+    if (remainsFinished) {
+      state.done[key] = true;
+      const latestLoad = series.at(-1)?.load;
+      if (Number.isFinite(latestLoad)) recordExerciseHistory(exercise, variant, latestLoad);
+    } else {
+      delete state.done[key];
+      removeCurrentExerciseHistory(key);
+      state.sessions = (state.sessions || []).filter((session) => !(session.date === todayKey && session.tab === activeTab));
+    }
+    const latestSet = series.at(-1);
+    if (latestSet && Number.isFinite(latestSet.load)) state.weights[key] = String(latestSet.load);
+    saveProfileState();
     openActiveExercise(exercise, activeExerciseIndex);
   }
 
