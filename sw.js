@@ -1,11 +1,12 @@
-const CACHE_NAME = "fitplan-v36";
-const RUNTIME_CACHE = "fitplan-runtime-v36";
+const CACHE_NAME = "fitplan-v40";
+const RUNTIME_CACHE = "fitplan-runtime-v40";
 
 const APP_SHELL = [
   "./",
   "./index.html",
   "./stitch-ui.css",
   "./supabase-client.js",
+  "./legacy-cloud-migration.js",
   "./stitch-ui.js",
   "./manifest.webmanifest",
   "./logo-mark.svg",
@@ -31,7 +32,9 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(
+      APP_SHELL.map((asset) => new Request(asset, { cache: "reload" }))
+    ))
   );
   self.skipWaiting();
 });

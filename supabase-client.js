@@ -8,6 +8,7 @@
   let session = null;
   let profile = null;
   let error = null;
+  let callbackFailure = null;
   let ready = false;
 
   const snapshot = () => ({
@@ -27,10 +28,19 @@
 
   function friendlyError(value) {
     if (!value) return null;
-    const message = String(value.message || value);
+    const message = String(value.message || value).replace(/\+/g, " ");
     if (/rate limit/i.test(message)) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
     if (/invalid.*email/i.test(message)) return "Digite um endereço de e-mail válido.";
+    if (/signups? not allowed|user not found/i.test(message)) return "Este e-mail ainda não foi convidado para o FitPlan.";
+    if (/expired|invalid.*token|otp.*invalid/i.test(message)) return "Este link expirou ou já foi usado. Solicite um novo link de acesso.";
+    if (/failed to fetch|network|offline/i.test(message)) return "Não foi possível conectar. Confira sua internet e tente novamente.";
     return message;
+  }
+
+  function callbackError() {
+    const search = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    return search.get("error_description") || hash.get("error_description") || search.get("error") || hash.get("error");
   }
 
   async function loadProfile(nextSession = session) {
@@ -45,13 +55,15 @@
       .maybeSingle();
     if (result.error) throw result.error;
     profile = result.data || null;
+    if (!profile) error = "Conta autenticada, mas o perfil ainda não foi liberado pelo administrador.";
+    else if (profile.active === false) error = "Este acesso está temporariamente desativado. Fale com o responsável pelo treino.";
     return profile;
   }
 
-  async function refreshSession() {
+  async function refreshSession(preservedError = null) {
     if (!client) return snapshot();
     try {
-      error = null;
+      error = preservedError;
       const result = await client.auth.getSession();
       if (result.error) throw result.error;
       session = result.data.session;
@@ -69,6 +81,8 @@
     if (!client) throw new Error("A conexão online está indisponível neste momento.");
     const normalizedEmail = String(email || "").trim().toLowerCase();
     if (!normalizedEmail) throw new Error("Informe seu e-mail.");
+    callbackFailure = null;
+    error = null;
     const redirectUrl = new URL(window.location.pathname, window.location.origin).toString();
     const result = await client.auth.signInWithOtp({
       email: normalizedEmail,
@@ -121,7 +135,7 @@
       session = nextSession;
       window.setTimeout(async () => {
         try {
-          error = null;
+          error = callbackFailure;
           await loadProfile(nextSession);
         } catch (nextError) {
           error = friendlyError(nextError);
@@ -131,7 +145,9 @@
         }
       }, 0);
     });
-    refreshSession();
+    callbackFailure = friendlyError(callbackError());
+    error = callbackFailure;
+    refreshSession(error);
   } catch (nextError) {
     error = friendlyError(nextError);
     ready = true;

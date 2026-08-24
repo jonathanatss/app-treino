@@ -30,7 +30,8 @@ const checks = [
   ["check-ins habilitados no Realtime", /alter publication supabase_realtime add table public\.workout_checkins/],
   ["notificações habilitadas no Realtime", /alter publication supabase_realtime add table public\.notifications/],
   ["vínculo temporário com perfil local", /add column legacy_profile_key text unique/],
-  ["vínculo não editável pelo próprio usuário", /grant update \(display_name, avatar_url, bio, notifications_enabled, updated_at\) on public\.profiles/]
+  ["vínculo não editável pelo próprio usuário", /grant update \(display_name, avatar_url, bio, notifications_enabled, updated_at\) on public\.profiles/],
+  ["perfis visíveis apenas por relação", /create policy profiles_select_related[\s\S]*using \(private\.can_manage_athlete\(id\)\)/]
 ];
 
 for (const [label, pattern] of checks) if (!pattern.test(sql)) failures.push(label);

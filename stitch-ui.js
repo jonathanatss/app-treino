@@ -338,7 +338,7 @@
 
   function cloudAccountLabel(snapshot = cloudSnapshot()) {
     if (!snapshot.ready) return "Conectando ao Supabase…";
-    if (!snapshot.user) return snapshot.error ? "Conexão online indisponível" : "Acesse seu treino com segurança";
+    if (!snapshot.user) return snapshot.error ? "Acesso não concluído • tente novamente" : "Acesse seu treino com segurança";
     const linkedId = snapshot.profile?.legacy_profile_key;
     if (linkedId && profiles[linkedId]) return `Vinculada ao perfil ${profileName(linkedId)}`;
     return "Conta conectada • vínculo de perfil pendente";
@@ -418,6 +418,57 @@
         submit.textContent = "Tentar novamente";
       } finally {
         submit.disabled = false;
+      }
+    });
+  }
+
+  function legacyMigrationPreview() {
+    if (!currentProfile || !window.fitplanLegacyMigration) return null;
+    try { return window.fitplanLegacyMigration.preview(currentProfile); }
+    catch { return null; }
+  }
+
+  function legacyMigrationButtonMarkup() {
+    const preview = legacyMigrationPreview();
+    if (!cloudSnapshot().user || !preview?.hasData) return "";
+    const migrated = window.fitplanLegacyMigration.status(currentProfile).migrated;
+    return `<button class="settings-row" type="button" data-action="legacy-migration"><span class="row-icon">↥</span><span><strong>${migrated ? "Dados locais sincronizados" : "Migrar dados deste aparelho"}</strong><small>${preview.sessions} treinos • ${preview.exerciseLoads} cargas • ${preview.measurements} medidas</small></span><span class="chevron">›</span></button>`;
+  }
+
+  function openLegacyMigrationSheet() {
+    const preview = legacyMigrationPreview();
+    if (!preview) return;
+    const migrationStatus = window.fitplanLegacyMigration.status(currentProfile);
+    const sheet = showActionSheet("Migrar dados locais", `<div class="legacy-migration-summary">
+      <p>Esta ação envia para a sua conta privada no Supabase os registros encontrados neste aparelho.</p>
+      <div><span><strong>${preview.sessions}</strong><small>treinos</small></span><span><strong>${preview.exerciseLoads}</strong><small>cargas</small></span><span><strong>${preview.measurements}</strong><small>medidas</small></span></div>
+      <p class="cloud-auth-help">Fotos de evolução e foto de perfil continuam somente neste dispositivo e não fazem parte desta migração.</p>
+      ${migrationStatus.migrated ? `<p class="cloud-link-note is-linked">Última sincronização concluída. Repetir a ação atualiza os mesmos registros sem duplicá-los.</p>` : ""}
+      <label class="legacy-migration-consent"><input type="checkbox"><span>Entendo que esses dados serão enviados para minha conta FitPlan.</span></label>
+      <button class="primary-button legacy-migration-start" type="button" disabled>${migrationStatus.migrated ? "Sincronizar novamente" : "Migrar para a conta"}</button>
+      <p class="cloud-auth-status" role="status" aria-live="polite"></p>
+    </div>`);
+    const consent = sheet.querySelector(".legacy-migration-consent input");
+    const button = sheet.querySelector(".legacy-migration-start");
+    const status = sheet.querySelector(".cloud-auth-status");
+    consent.addEventListener("change", () => { button.disabled = !consent.checked; });
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      consent.disabled = true;
+      button.textContent = "Migrando…";
+      status.classList.remove("is-error", "is-success");
+      try {
+        const result = await window.fitplanLegacyMigration.migrate(currentProfile);
+        status.textContent = `Concluído: ${result.sessions} treinos, ${result.exerciseLoads} cargas e ${result.measurements} medidas. ${result.skippedExerciseLoads ? `${result.skippedExerciseLoads} cargas antigas não correspondiam ao plano ativo.` : ""}`.trim();
+        status.classList.add("is-success");
+        button.textContent = "Sincronização concluída";
+        renderProfileView();
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add("is-error");
+        button.textContent = "Tentar novamente";
+        button.disabled = false;
+        consent.disabled = false;
       }
     });
   }
@@ -1253,7 +1304,7 @@
     if (!view || !currentProfile) return;
     const settings = getSettings();
     const science = SCIENCE_BASE[currentProfile];
-    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button><button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
+    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section><p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
     hydrateProfileAvatars(view);
     view.querySelectorAll(".toggle-setting").forEach((button) => button.addEventListener("click", () => {
       const next = getSettings();
@@ -1263,6 +1314,7 @@
     }));
     view.querySelector("[data-action='science']")?.addEventListener("click", openScienceBase);
     view.querySelector("[data-action='cloud']")?.addEventListener("click", openCloudAuthSheet);
+    view.querySelector("[data-action='legacy-migration']")?.addEventListener("click", openLegacyMigrationSheet);
     view.querySelector("[data-action='data']")?.addEventListener("click", openDataManagement);
     view.querySelector("[data-action='reset']")?.addEventListener("click", () => document.querySelector("#resetDay").click());
     view.querySelector("[data-action='logout']")?.addEventListener("click", logoutCloudAccount);

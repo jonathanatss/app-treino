@@ -730,6 +730,14 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
 .cloud-account-summary div > span { overflow: hidden; margin-top: 3px; color: var(--fit-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .cloud-link-note { margin: 13px 0 18px; padding: 12px 14px; border: 1px solid #3b3d37; border-radius: 10px; background: #1c1c1c; color: #bdc1b6; font-size: 13px; line-height: 1.5; }
 .cloud-link-note.is-linked { border-color: #4b5d2c; color: #dbe9ba; }
+.legacy-migration-summary { display: grid; gap: 14px; padding-bottom: var(--safe-bottom); }
+.legacy-migration-summary > p { margin: 0; color: #c4c8bd; font-size: 13px; line-height: 1.5; }
+.legacy-migration-summary > div { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.legacy-migration-summary > div > span { display: grid; min-height: 76px; place-content: center; gap: 3px; border: 1px solid #3b3d37; border-radius: 12px; background: #171717; text-align: center; }
+.legacy-migration-summary > div strong { color: var(--fit-lime); font-size: 22px; }
+.legacy-migration-summary > div small { color: var(--fit-muted); font-size: 11px; }
+.legacy-migration-consent { display: grid; grid-template-columns: 20px minmax(0, 1fr); align-items: start; gap: 10px; padding: 13px; border: 1px solid #3b3d37; border-radius: 10px; color: #d5d8cf; font-size: 13px; line-height: 1.4; cursor: pointer; }
+.legacy-migration-consent input { width: 18px; height: 18px; margin: 0; accent-color: var(--fit-lime); }
 .cloud-signout { margin-bottom: 10px; }
 .exercise-action-sheet { padding-bottom: calc(24px + var(--safe-bottom)); }
 .exercise-sheet-intro { margin: -8px 0 18px; color: var(--fit-muted); font-size: 13px; line-height: 1.5; }
