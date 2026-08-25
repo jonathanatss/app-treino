@@ -521,8 +521,12 @@
       if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
       // Already on the PIN screen — do nothing (avoid re-opening PIN while user is typing)
       if (screenPin && !screenPin.hidden) return;
-      // Go through the PIN screen (setup on first use, enter on subsequent uses)
-      openPinScreen(linkedId);
+      // Go through the PIN screen if available (app.js loaded), otherwise enter directly
+      if (typeof openPinScreen === "function") {
+        openPinScreen(linkedId);
+      } else {
+        enterApp(linkedId);
+      }
       return;
     }
     if (currentProfile) logout();
@@ -2089,4 +2093,44 @@
 
   applyCloudAuthGate();
   maybeOpenRequestedAdminRequest();
+
+  // ── iOS Safari bridge ──────────────────────────────────────────────────────
+  // On iOS, magic links open in Safari (isolated from the installed PWA).
+  // After successful auth in Safari, we show a banner to open the PWA with
+  // the session tokens in the URL so the PWA can authenticate too.
+  (function iosOpenInPwaBanner() {
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.navigator.standalone === true;
+    if (!isIos || isStandalone) return; // already inside PWA or not iOS
+
+    // Only show after Supabase auth callback (tokens in URL hash)
+    const hash = window.location.hash;
+    const hasTokens = hash.includes("access_token=") || hash.includes("error_description=");
+    if (!hasTokens) return;
+
+    // Wait until cloud auth resolves
+    const unsubscribe = window.fitplanCloud?.subscribe?.((snap) => {
+      if (!snap.ready) return;
+      unsubscribe?.();
+
+      if (!snap.user) return; // auth failed, no banner needed
+
+      // Build the PWA URL preserving the auth hash so the PWA can pick it up
+      const pwaUrl = window.location.origin + window.location.pathname + window.location.search + window.location.hash;
+
+      const banner = document.createElement("div");
+      banner.id = "ios-pwa-banner";
+      banner.innerHTML = `
+        <div style="position:fixed;inset:0;z-index:9999;background:rgba(11,15,20,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px;text-align:center">
+          <img src="logo-mark.svg" style="width:72px;height:72px;border-radius:22px">
+          <h2 style="margin:0;color:#F4F7FA;font-size:22px;font-weight:800">Login realizado!</h2>
+          <p style="margin:0;color:#9AA7B2;font-size:15px;line-height:1.5">Para usar o FitPlan salvo na sua tela inicial, toque no botão abaixo.</p>
+          <a href="${pwaUrl}" style="display:block;width:100%;max-width:320px;padding:16px;background:linear-gradient(135deg,#8BEA7C,#4DA3FF);color:#0B0F14;font-weight:800;font-size:16px;border-radius:16px;text-decoration:none;text-align:center">
+            Abrir no FitPlan App
+          </a>
+          <p style="margin:0;color:#667481;font-size:12px">Ou continue usando pelo Safari normalmente.</p>
+        </div>`;
+      document.body.appendChild(banner);
+    });
+  })();
 })();
