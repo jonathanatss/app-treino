@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run Tests Before Push",
+      "trigger": "PreToolUse",
+      "description": "Runs all vitest unit tests before any git push. Blocks the push if tests fail (exit 2).",
+      "matcher": "execute_pwsh",
+      "action": {
+        "type": "command",
+        "command": "$input = $null; try { $input = $args[0] | ConvertFrom-Json } catch {}; $cmd = $input?.tool_input?.command; if ($cmd -match \"git push\") { $nodeDir = \"C:\\Users\\jonathan.tsilva\\AppData\\Local\\nvm\\v18.20.8\"; $env:PATH = \"$nodeDir;$env:PATH\"; Push-Location \"c:\\Users\\jonathan.tsilva\\Documents\\Projetos\\FitPlan App\\app-treino\"; $result = & \"$nodeDir\\npx.cmd\" vitest run 2>&1; Pop-Location; if ($LASTEXITCODE -ne 0) { Write-Error \"Tests failed. Fix before pushing.`n$result\"; exit 2 } }",
+        "timeout": 120
+      }
+    }
+  ]
+}
