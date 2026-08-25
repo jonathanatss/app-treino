@@ -1,0 +1,17 @@
+{
+  "name": "fitplan-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3",
+    "netlify-cli": "^17.38.1",
+    "vitest": "^2.1.9"
+  }
+}
