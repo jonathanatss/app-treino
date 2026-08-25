@@ -351,7 +351,7 @@
     const signedIn = Boolean(cloud.user);
     const title = signedIn
       ? (cloud.profile?.display_name || cloud.user.email || "Conta online")
-      : "Entrar com e-mail";
+      : "Entrar no FitPlan";
     return `<button class="cloud-access-card ${signedIn ? "is-signed-in" : ""}" type="button" ${!cloud.ready ? "disabled" : ""}>
       <span class="cloud-access-icon" aria-hidden="true">${signedIn ? "✓" : "↗"}</span>
       <span class="cloud-access-copy"><small>CONTA ONLINE</small><strong>${escapeHtml(title)}</strong><span>${escapeHtml(cloudAccountLabel(cloud))}</span></span>
@@ -392,14 +392,8 @@
       return;
     }
 
-    // ── Login form with two tabs: password | magic link ──────────────────────
+    // ── Login form: email + password only ────────────────────────────────────
     const sheet = showActionSheet("Entrar no FitPlan", `
-      <div class="auth-tabs">
-        <button class="auth-tab is-active" type="button" data-tab="password">Senha</button>
-        <button class="auth-tab" type="button" data-tab="magic">Link mágico</button>
-      </div>
-
-      <!-- Password login -->
       <form class="cloud-auth-form auth-panel" data-panel="password">
         <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
         <label><span>SENHA</span><input name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required></label>
@@ -407,24 +401,7 @@
         <button class="primary-button" type="submit">Entrar</button>
         <button class="auth-forgot-btn" type="button">Esqueci minha senha</button>
       </form>
-
-      <!-- Magic link -->
-      <form class="cloud-auth-form auth-panel" data-panel="magic" hidden>
-        <div class="cloud-auth-intro"><span aria-hidden="true">↗</span><div><strong>Link de acesso por e-mail</strong><p>Você receberá um link seguro para acessar o seu treino.</p></div></div>
-        <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
-        <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : "Use o e-mail que recebeu o convite do FitPlan."}</p>
-        <button class="primary-button" type="submit">Enviar link de acesso</button>
-      </form>
     `);
-
-    // Tab switching
-    sheet.querySelectorAll(".auth-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        sheet.querySelectorAll(".auth-tab").forEach((t) => t.classList.toggle("is-active", t === tab));
-        sheet.querySelectorAll(".auth-panel").forEach((p) => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
-        sheet.querySelector(`.auth-panel[data-panel="${tab.dataset.tab}"] input`)?.focus();
-      });
-    });
 
     // Password login submit
     const passwordForm = sheet.querySelector('[data-panel="password"]');
@@ -454,30 +431,6 @@
     passwordForm?.querySelector(".auth-forgot-btn")?.addEventListener("click", () => {
       const emailInput = passwordForm.querySelector("input[name='email']");
       openForgotPasswordSheet(emailInput?.value || "");
-    });
-
-    // Magic link submit
-    const magicForm = sheet.querySelector('[data-panel="magic"]');
-    magicForm?.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const submit = magicForm.querySelector("button[type='submit']");
-      const status = magicForm.querySelector(".cloud-auth-status");
-      const data = new FormData(magicForm);
-      submit.disabled = true;
-      submit.textContent = "Enviando…";
-      status.classList.remove("is-error", "is-success");
-      try {
-        const result = await window.fitplanCloud.signInWithEmail({ email: data.get("email") });
-        status.textContent = `Link enviado para ${result.email}. Abra o e-mail neste dispositivo para concluir.`;
-        status.classList.add("is-success");
-        submit.textContent = "Enviar novamente";
-      } catch (error) {
-        status.textContent = error.message;
-        status.classList.add("is-error");
-        submit.textContent = "Tentar novamente";
-      } finally {
-        submit.disabled = false;
-      }
     });
   }
 
@@ -625,7 +578,7 @@
         <span><strong>Sou novo no FitPlan</strong><small>Responder questionário e solicitar cadastro</small></span>
         <span class="new-user-request-arrow" aria-hidden="true">›</span>
       </button>
-      <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Seus dados ficam privados</strong>Quem já tem acesso entra com o e-mail convidado. Novos cadastros são liberados após a análise do questionário.</p></div>`;
+      <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Seus dados ficam privados</strong>Quem já tem acesso entra com e-mail e senha. Novos cadastros são liberados após a análise do questionário.</p></div>`;
     list.querySelector(".cloud-access-card")?.addEventListener("click", openCloudAuthSheet);
     list.querySelector(".new-user-request")?.addEventListener("click", openTrainingQuestionnaire);
   }
@@ -706,14 +659,15 @@
         <div class="questionnaire-step-heading"><span>01</span><div><h3>Vamos conhecer você</h3><p>Use seus dados atuais. Eles ajudam a dimensionar o treino com segurança.</p></div></div>
         <div class="questionnaire-grid questionnaire-grid-two">
           ${questionnaireField("nome", "Nome completo", "Seu nome", { type: "text", autocomplete: "name" })}
-          ${questionnaireField("email", "E-mail", "voce@exemplo.com", { type: "email", required: false, autocomplete: "email" })}
+          ${questionnaireField("email", "E-mail de acesso", "voce@exemplo.com", { type: "email", required: true, autocomplete: "email" })}
+          ${questionnaireField("senha", "Criar senha", "Mínimo 6 caracteres", { type: "password", required: true, autocomplete: "new-password" })}
           ${questionnaireField("whatsapp", "WhatsApp", "(00) 00000-0000", { type: "tel", required: false, inputMode: "tel", autocomplete: "tel" })}
           ${questionnaireField("idade", "Idade", "00", { type: "number", inputMode: "numeric", min: "12", suffix: "anos" })}
           ${questionnaireField("altura_cm", "Altura", "000", { type: "number", inputMode: "decimal", min: "100", step: "0.1", suffix: "cm" })}
           ${questionnaireField("peso_kg", "Peso atual", "00,0", { type: "number", inputMode: "decimal", min: "30", step: "0.1", suffix: "kg" })}
           ${questionnaireField("sexo", "Sexo", "", { type: "select", values: ["Feminino", "Masculino", "Intersexo", "Prefiro não informar"] })}
         </div>
-        <p class="questionnaire-note">Informe pelo menos um contato: e-mail ou WhatsApp.</p>
+        <p class="questionnaire-note">O e-mail e a senha serão usados para acessar o FitPlan após a aprovação do seu cadastro.</p>
       </section>`,
       `<section class="questionnaire-step" data-questionnaire-step="1" hidden>
         <div class="questionnaire-step-heading"><span>02</span><div><h3>Rotina e objetivo</h3><p>Conte como o treino precisa caber na sua vida.</p></div></div>
@@ -851,6 +805,29 @@
       submit.textContent = "Enviando…";
       setStatus();
       const formData = new FormData(form);
+
+      // Create Supabase account before submitting questionnaire
+      const emailValue = form.elements.email.value.trim();
+      const passwordValue = form.elements.senha?.value;
+      if (emailValue && passwordValue) {
+        try {
+          const { error: signUpError } = await window.fitplanCloud.client.auth.signUp({
+            email: emailValue,
+            password: passwordValue,
+            options: { emailRedirectTo: window.location.origin }
+          });
+          // Ignore "User already registered" — they may be resubmitting
+          if (signUpError && !/already registered/i.test(signUpError.message)) {
+            throw new Error(window.fitplanCloud.snapshot().error || signUpError.message);
+          }
+        } catch (err) {
+          setStatus(err.message || "Não foi possível criar a conta. Tente novamente.");
+          submit.disabled = false;
+          submit.textContent = "Enviar questionário";
+          return;
+        }
+      }
+
       const payload = {
         fullName: form.elements.nome.value.trim(),
         email: form.elements.email.value.trim(),
