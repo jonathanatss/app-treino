@@ -515,7 +515,14 @@
   function applyCloudAuthGate(cloud = cloudSnapshot()) {
     const linkedId = linkedCloudProfileId(cloud);
     if (linkedId) {
-      if (currentProfile !== linkedId || screenApp.hidden) enterApp(linkedId);
+      const screenApp = document.querySelector("#screen-app");
+      const screenPin = document.querySelector("#screen-pin");
+      // Already inside the correct app screen — do nothing
+      if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
+      // Already on the PIN screen — do nothing (avoid re-opening PIN while user is typing)
+      if (screenPin && !screenPin.hidden) return;
+      // Go through the PIN screen (setup on first use, enter on subsequent uses)
+      openPinScreen(linkedId);
       return;
     }
     if (currentProfile) logout();
