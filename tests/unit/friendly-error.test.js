@@ -153,4 +153,22 @@ describe("friendlyError", () => {
   it("returns stringified value for objects without .message", () => {
     expect(friendlyError({ code: 500 })).toBe("[object Object]");
   });
+
+  // ---------------------------------------------------------------------------
+  // Password errors (new branches)
+  // ---------------------------------------------------------------------------
+  it("maps invalid password / wrong password to friendly message", () => {
+    expect(friendlyError("invalid password")).toBe("E-mail ou senha incorretos.");
+    expect(friendlyError("wrong password")).toBe("E-mail ou senha incorretos.");
+    expect(friendlyError("Invalid login credentials")).toBe("E-mail ou senha incorretos.");
+  });
+
+  it("maps password too short to friendly message", () => {
+    expect(friendlyError("Password should be at least 6 characters")).toBe(
+      "A senha deve ter pelo menos 6 caracteres."
+    );
+    expect(friendlyError("password too short")).toBe(
+      "A senha deve ter pelo menos 6 caracteres."
+    );
+  });
 });

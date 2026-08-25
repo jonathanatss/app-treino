@@ -34,6 +34,8 @@
     if (/signups? not allowed|user not found/i.test(message)) return "Este e-mail ainda não foi convidado para o FitPlan.";
     if (/expired|invalid.*token|otp.*invalid/i.test(message)) return "Este link expirou ou já foi usado. Solicite um novo link de acesso.";
     if (/failed to fetch|network|offline/i.test(message)) return "Não foi possível conectar. Confira sua internet e tente novamente.";
+    if (/invalid.*password|wrong.*password|invalid login/i.test(message)) return "E-mail ou senha incorretos.";
+    if (/password.*short|password.*characters|should be at least/i.test(message)) return "A senha deve ter pelo menos 6 caracteres.";
     return message;
   }
 
@@ -100,6 +102,42 @@
     return { email: normalizedEmail };
   }
 
+  async function signInWithPassword({ email, password }) {
+    if (!client) throw new Error("A conexão online está indisponível neste momento.");
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    if (!normalizedEmail) throw new Error("Informe seu e-mail.");
+    if (!password) throw new Error("Informe sua senha.");
+    callbackFailure = null;
+    error = null;
+    const result = await client.auth.signInWithPassword({
+      email: normalizedEmail,
+      password
+    });
+    if (result.error) throw new Error(friendlyError(result.error));
+    return { email: normalizedEmail };
+  }
+
+  async function updatePassword(newPassword) {
+    if (!client) throw new Error("A conexão online está indisponível neste momento.");
+    if (!newPassword || newPassword.length < 6) throw new Error("A senha deve ter pelo menos 6 caracteres.");
+    const result = await client.auth.updateUser({ password: newPassword });
+    if (result.error) throw new Error(friendlyError(result.error));
+    return true;
+  }
+
+  async function resetPassword(email) {
+    if (!client) throw new Error("A conexão online está indisponível neste momento.");
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    if (!normalizedEmail) throw new Error("Informe seu e-mail.");
+    const redirectUrl = new URL(window.location.pathname, window.location.origin);
+    redirectUrl.searchParams.set("type", "recovery");
+    const result = await client.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo: redirectUrl.toString()
+    });
+    if (result.error) throw new Error(friendlyError(result.error));
+    return { email: normalizedEmail };
+  }
+
   async function signOut() {
     if (!client) return;
     const result = await client.auth.signOut();
@@ -122,6 +160,9 @@
     snapshot,
     refresh: refreshSession,
     signInWithEmail,
+    signInWithPassword,
+    updatePassword,
+    resetPassword,
     signOut,
     subscribe
   };
@@ -138,6 +179,10 @@
     });
     client.auth.onAuthStateChange((_event, nextSession) => {
       session = nextSession;
+      // Signal the UI when the user arrives via a password-recovery link
+      if (_event === "PASSWORD_RECOVERY") {
+        window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
+      }
       window.setTimeout(async () => {
         try {
           error = callbackFailure;

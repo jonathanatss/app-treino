@@ -730,6 +730,12 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
 .cloud-auth-status, .cloud-auth-help { min-height: 20px; margin: 0; color: #aeb5a2; font-size: 12px; line-height: 1.45; }
 .cloud-auth-status.is-success { color: var(--fit-lime); }
 .cloud-auth-status.is-error, .cloud-auth-help.is-error { color: var(--fit-danger); }
+/* Auth tabs */
+.auth-tabs { display: flex; gap: 4px; padding: 4px; background: rgba(255,255,255,.06); border-radius: 12px; margin-bottom: 4px; }
+.auth-tab { flex: 1; min-height: 40px; border: 0; border-radius: 9px; background: transparent; color: var(--fit-muted); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s, color .15s; }
+.auth-tab.is-active { background: rgba(183,255,0,.14); color: var(--fit-lime); }
+.auth-forgot-btn { background: none; border: none; color: var(--fit-muted); font-size: 13px; cursor: pointer; padding: 4px 0; text-align: center; }
+.auth-forgot-btn:hover { color: var(--fit-text); }
 .cloud-account-summary { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 13px; padding: 17px; border: 1px solid #435328; border-radius: 14px; background: #181c14; }
 .cloud-account-check { display: grid; width: 50px; height: 50px; place-items: center; border-radius: 50%; background: var(--fit-lime); color: #182000; font-size: 22px; font-weight: 900; }
 .cloud-account-summary small, .cloud-account-summary strong, .cloud-account-summary div > span { display: block; }

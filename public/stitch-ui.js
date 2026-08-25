@@ -372,7 +372,7 @@
       </div>
       <p class="cloud-link-note ${linkedId ? "is-linked" : ""}">${escapeHtml(linkedText)}</p>
       <button class="secondary-button cloud-signout" type="button">Sair da conta online</button>
-      <p class="cloud-auth-help">Ao sair, será necessário usar um novo link de acesso para entrar novamente.</p>`);
+      <p class="cloud-auth-help">Ao sair, será necessário fazer login novamente.</p>`);
       sheet.querySelector(".cloud-signout")?.addEventListener("click", async (event) => {
         const button = event.currentTarget;
         button.disabled = true;
@@ -392,13 +392,105 @@
       return;
     }
 
-    const sheet = showActionSheet("Entrar com e-mail", `<form class="cloud-auth-form">
-      <div class="cloud-auth-intro"><span aria-hidden="true">↗</span><div><strong>Sem senha para decorar</strong><p>Você receberá um link seguro para acessar somente o seu treino.</p></div></div>
-      <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
-      <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : "Use o e-mail que recebeu o convite do FitPlan."}</p>
-      <button class="primary-button" type="submit">Enviar link de acesso</button>
-    </form>`);
-    const form = sheet.querySelector(".cloud-auth-form");
+    // ── Login form with two tabs: password | magic link ──────────────────────
+    const sheet = showActionSheet("Entrar no FitPlan", `
+      <div class="auth-tabs">
+        <button class="auth-tab is-active" type="button" data-tab="password">Senha</button>
+        <button class="auth-tab" type="button" data-tab="magic">Link mágico</button>
+      </div>
+
+      <!-- Password login -->
+      <form class="cloud-auth-form auth-panel" data-panel="password">
+        <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
+        <label><span>SENHA</span><input name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required></label>
+        <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : ""}</p>
+        <button class="primary-button" type="submit">Entrar</button>
+        <button class="auth-forgot-btn" type="button">Esqueci minha senha</button>
+      </form>
+
+      <!-- Magic link -->
+      <form class="cloud-auth-form auth-panel" data-panel="magic" hidden>
+        <div class="cloud-auth-intro"><span aria-hidden="true">↗</span><div><strong>Link de acesso por e-mail</strong><p>Você receberá um link seguro para acessar o seu treino.</p></div></div>
+        <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
+        <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : "Use o e-mail que recebeu o convite do FitPlan."}</p>
+        <button class="primary-button" type="submit">Enviar link de acesso</button>
+      </form>
+    `);
+
+    // Tab switching
+    sheet.querySelectorAll(".auth-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        sheet.querySelectorAll(".auth-tab").forEach((t) => t.classList.toggle("is-active", t === tab));
+        sheet.querySelectorAll(".auth-panel").forEach((p) => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+        sheet.querySelector(`.auth-panel[data-panel="${tab.dataset.tab}"] input`)?.focus();
+      });
+    });
+
+    // Password login submit
+    const passwordForm = sheet.querySelector('[data-panel="password"]');
+    passwordForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const submit = passwordForm.querySelector("button[type='submit']");
+      const status = passwordForm.querySelector(".cloud-auth-status");
+      const data = new FormData(passwordForm);
+      submit.disabled = true;
+      submit.textContent = "Entrando…";
+      status.classList.remove("is-error", "is-success");
+      try {
+        await window.fitplanCloud.signInWithPassword({
+          email: data.get("email"),
+          password: data.get("password")
+        });
+        closeActionSheet();
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add("is-error");
+        submit.textContent = "Tentar novamente";
+        submit.disabled = false;
+      }
+    });
+
+    // Forgot password
+    passwordForm?.querySelector(".auth-forgot-btn")?.addEventListener("click", () => {
+      const emailInput = passwordForm.querySelector("input[name='email']");
+      openForgotPasswordSheet(emailInput?.value || "");
+    });
+
+    // Magic link submit
+    const magicForm = sheet.querySelector('[data-panel="magic"]');
+    magicForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const submit = magicForm.querySelector("button[type='submit']");
+      const status = magicForm.querySelector(".cloud-auth-status");
+      const data = new FormData(magicForm);
+      submit.disabled = true;
+      submit.textContent = "Enviando…";
+      status.classList.remove("is-error", "is-success");
+      try {
+        const result = await window.fitplanCloud.signInWithEmail({ email: data.get("email") });
+        status.textContent = `Link enviado para ${result.email}. Abra o e-mail neste dispositivo para concluir.`;
+        status.classList.add("is-success");
+        submit.textContent = "Enviar novamente";
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add("is-error");
+        submit.textContent = "Tentar novamente";
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+
+  function openForgotPasswordSheet(prefillEmail = "") {
+    const sheet = showActionSheet("Redefinir senha", `
+      <form class="cloud-auth-form forgot-form">
+        <div class="cloud-auth-intro"><span aria-hidden="true">🔑</span><div><strong>Esqueceu a senha?</strong><p>Enviaremos um link para você criar uma nova senha.</p></div></div>
+        <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" value="${escapeHtml(prefillEmail)}" required></label>
+        <p class="cloud-auth-status" role="status" aria-live="polite"></p>
+        <button class="primary-button" type="submit">Enviar link de redefinição</button>
+      </form>
+    `);
+    const form = sheet.querySelector(".forgot-form");
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
       const submit = form.querySelector("button[type='submit']");
@@ -408,10 +500,8 @@
       submit.textContent = "Enviando…";
       status.classList.remove("is-error", "is-success");
       try {
-        const result = await window.fitplanCloud.signInWithEmail({
-          email: data.get("email")
-        });
-        status.textContent = `Link enviado para ${result.email}. Abra o e-mail neste dispositivo para concluir.`;
+        const result = await window.fitplanCloud.resetPassword(data.get("email"));
+        status.textContent = `Link enviado para ${result.email}. Verifique sua caixa de entrada.`;
         status.classList.add("is-success");
         submit.textContent = "Enviar novamente";
       } catch (error) {
@@ -419,6 +509,46 @@
         status.classList.add("is-error");
         submit.textContent = "Tentar novamente";
       } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+
+  function openSetPasswordSheet() {
+    const sheet = showActionSheet("Criar senha", `
+      <form class="cloud-auth-form set-password-form">
+        <div class="cloud-auth-intro"><span aria-hidden="true">🔒</span><div><strong>Crie sua senha</strong><p>Você poderá entrar com e-mail e senha em qualquer dispositivo, inclusive no iPhone.</p></div></div>
+        <label><span>NOVA SENHA</span><input name="password" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required minlength="6"></label>
+        <label><span>CONFIRMAR SENHA</span><input name="confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" required minlength="6"></label>
+        <p class="cloud-auth-status" role="status" aria-live="polite"></p>
+        <button class="primary-button" type="submit">Salvar senha</button>
+        <button class="auth-forgot-btn" type="button">Fazer isso depois</button>
+      </form>
+    `);
+    const form = sheet.querySelector(".set-password-form");
+    form?.querySelector(".auth-forgot-btn")?.addEventListener("click", closeActionSheet);
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const submit = form.querySelector("button[type='submit']");
+      const status = form.querySelector(".cloud-auth-status");
+      const data = new FormData(form);
+      status.classList.remove("is-error", "is-success");
+      if (data.get("password") !== data.get("confirm")) {
+        status.textContent = "As senhas não coincidem.";
+        status.classList.add("is-error");
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = "Salvando…";
+      try {
+        await window.fitplanCloud.updatePassword(data.get("password"));
+        status.textContent = "Senha salva! Você já pode entrar com e-mail e senha.";
+        status.classList.add("is-success");
+        submit.textContent = "Senha salva ✓";
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add("is-error");
+        submit.textContent = "Tentar novamente";
         submit.disabled = false;
       }
     });
@@ -531,6 +661,16 @@
         openPinScreen(linkedId);
       } else {
         enterApp(linkedId);
+        // Prompt password setup if the user has never set one
+        const userId = cloud.user?.id;
+        if (userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
+          setTimeout(() => {
+            if (typeof openSetPasswordSheet === "function") {
+              localStorage.setItem(`fitplan-password-set-${userId}`, "1");
+              openSetPasswordSheet();
+            }
+          }, 1500);
+        }
       }
       return;
     }
@@ -2094,6 +2234,11 @@
     applyCloudAuthGate(event.detail);
     if (currentProfile && currentRoute === "profile") renderProfileView();
     maybeOpenRequestedAdminRequest(event.detail);
+  });
+
+  // Open set-password modal when user arrives via password-recovery link
+  window.addEventListener("fitplan:password-recovery", () => {
+    openSetPasswordSheet();
   });
 
   applyCloudAuthGate();

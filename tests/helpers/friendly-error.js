@@ -15,5 +15,9 @@ export function friendlyError(value) {
     return "Este link expirou ou já foi usado. Solicite um novo link de acesso.";
   if (/failed to fetch|network|offline/i.test(message))
     return "Não foi possível conectar. Confira sua internet e tente novamente.";
+  if (/invalid.*password|wrong.*password|invalid login/i.test(message))
+    return "E-mail ou senha incorretos.";
+  if (/password.*short|password.*characters|should be at least/i.test(message))
+    return "A senha deve ter pelo menos 6 caracteres.";
   return message;
 }
