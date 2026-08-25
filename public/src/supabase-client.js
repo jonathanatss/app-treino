@@ -183,6 +183,15 @@
       if (_event === "PASSWORD_RECOVERY") {
         window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
       }
+      // Track whether the last sign-in was via magic link (OTP) so the UI
+      // can prompt password setup only in that case
+      if (_event === "SIGNED_IN") {
+        const amr = nextSession?.user?.amr;
+        const usedOtp = Array.isArray(amr)
+          ? amr.some((a) => a.method === "otp")
+          : nextSession?.user?.app_metadata?.provider === "email";
+        api.lastSignInWasOtp = !!usedOtp;
+      }
       window.setTimeout(async () => {
         try {
           error = callbackFailure;

@@ -649,9 +649,11 @@
       // Already inside the correct app screen — do nothing
       if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
       enterApp(linkedId);
-      // Prompt password setup if the user has never set one
+      // Prompt password setup only when the user signed in via magic link (OTP),
+      // not when they already used a password.
+      const signedInViaOtp = window.fitplanCloud?.lastSignInWasOtp === true;
       const userId = cloud.user?.id;
-      if (userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
+      if (signedInViaOtp && userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
         setTimeout(() => {
           if (typeof openSetPasswordSheet === "function") {
             localStorage.setItem(`fitplan-password-set-${userId}`, "1");
