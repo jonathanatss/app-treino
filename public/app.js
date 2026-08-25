@@ -17,15 +17,7 @@ let timerId = null;
 let timerEndsAt = 0;
 let activeRest = 0;
 
-let pinScreenMode = "enter";
-let pinScreenProfile = null;
-let pinFirstAttempt = "";
-let pinBuffer = "";
-let pinResetArmed = false;
-let pinResetTimer = null;
-
 const screenPicker = document.querySelector("#screen-picker");
-const screenPin = document.querySelector("#screen-pin");
 const screenApp = document.querySelector("#screen-app");
 const workoutEl = document.querySelector("#workout");
 const timerEl = document.querySelector("#timer");
@@ -114,7 +106,6 @@ function saveProfileState() {
 
 function showScreen(name) {
   screenPicker.hidden = name !== "picker";
-  screenPin.hidden = name !== "pin";
   screenApp.hidden = name !== "app";
   window.scrollTo(0, 0);
 }
@@ -123,137 +114,6 @@ function showScreen(name) {
 function renderProfilePicker() {
   const list = document.querySelector("#profileList");
   list.innerHTML = `<div class="auth-gate-loading" role="status">Conectando à sua conta…</div>`;
-}
-
-/* === PIN screen === */
-function openPinScreen(profileId) {
-  pinScreenProfile = profileId;
-  pinBuffer = "";
-  pinFirstAttempt = "";
-  clearPinResetRequest();
-  const hasPin = !!localStorage.getItem(profilePinKey(profileId));
-  pinScreenMode = hasPin ? "enter" : "setup";
-  setPinError("");
-  renderPinScreen();
-  showScreen("pin");
-}
-
-function renderPinScreen() {
-  const profile = profiles[pinScreenProfile];
-  document.querySelector("#pinTitle").textContent = profile.name;
-  let subtitle = "Digite seu PIN";
-  if (pinScreenMode === "setup") subtitle = "Defina um PIN de 4 dígitos";
-  if (pinScreenMode === "confirm") subtitle = "Confirme o PIN";
-  document.querySelector("#pinSubtitle").textContent = subtitle;
-  document.querySelectorAll("#screen-pin .pin-dot").forEach((dot, i) => {
-    dot.classList.toggle("filled", i < pinBuffer.length);
-  });
-  renderPinResetButton();
-}
-
-function pinPress(digit) {
-  if (pinBuffer.length >= 4) return;
-  if (pinResetArmed) setPinError("");
-  clearPinResetRequest();
-  pinBuffer += digit;
-  renderPinScreen();
-  if (pinBuffer.length === 4) {
-    setTimeout(processPinSubmit, 120);
-  }
-}
-
-function pinBackspace() {
-  if (pinResetArmed) setPinError("");
-  clearPinResetRequest();
-  pinBuffer = pinBuffer.slice(0, -1);
-  renderPinScreen();
-}
-
-function clearPinResetRequest() {
-  pinResetArmed = false;
-  if (pinResetTimer) {
-    clearTimeout(pinResetTimer);
-    pinResetTimer = null;
-  }
-}
-
-function renderPinResetButton() {
-  const btn = document.querySelector("#pinReset");
-  if (!btn) return;
-  const canReset = pinScreenProfile
-    && pinScreenMode === "enter"
-    && !!localStorage.getItem(profilePinKey(pinScreenProfile));
-  btn.hidden = !canReset;
-  btn.textContent = pinResetArmed ? "Resetar PIN" : "Esqueci meu PIN";
-  btn.classList.toggle("is-armed", pinResetArmed);
-}
-
-function requestPinReset() {
-  if (!pinScreenProfile || pinScreenMode !== "enter") return;
-
-  if (!pinResetArmed) {
-    pinResetArmed = true;
-    pinBuffer = "";
-    renderPinScreen();
-    setPinError("Toque em Resetar PIN para criar um novo PIN neste aparelho.");
-    pinResetTimer = setTimeout(() => {
-      pinResetTimer = null;
-      pinResetArmed = false;
-      if (pinScreenMode === "enter") {
-        renderPinScreen();
-        setPinError("");
-      }
-    }, 6000);
-    return;
-  }
-
-  localStorage.removeItem(profilePinKey(pinScreenProfile));
-  if (localStorage.getItem(ACTIVE_KEY) === pinScreenProfile) {
-    localStorage.removeItem(ACTIVE_KEY);
-  }
-  clearPinResetRequest();
-  pinBuffer = "";
-  pinFirstAttempt = "";
-  pinScreenMode = "setup";
-  renderPinScreen();
-  setPinError("PIN removido. Defina um novo PIN.");
-}
-
-function setPinError(msg) {
-  const el = document.querySelector("#pinError");
-  if (el) el.textContent = msg;
-}
-
-function processPinSubmit() {
-  if (pinScreenMode === "enter") {
-    const stored = localStorage.getItem(profilePinKey(pinScreenProfile));
-    if (hashPin(pinBuffer) === stored) {
-      setPinError("");
-      enterApp(pinScreenProfile);
-    } else {
-      pinBuffer = "";
-      renderPinScreen();
-      setPinError("PIN incorreto. Tente de novo.");
-    }
-  } else if (pinScreenMode === "setup") {
-    pinFirstAttempt = pinBuffer;
-    pinBuffer = "";
-    pinScreenMode = "confirm";
-    setPinError("");
-    renderPinScreen();
-  } else if (pinScreenMode === "confirm") {
-    if (pinBuffer === pinFirstAttempt) {
-      localStorage.setItem(profilePinKey(pinScreenProfile), hashPin(pinBuffer));
-      setPinError("");
-      enterApp(pinScreenProfile);
-    } else {
-      pinBuffer = "";
-      pinFirstAttempt = "";
-      pinScreenMode = "setup";
-      renderPinScreen();
-      setPinError("PINs não combinaram. Crie um novo.");
-    }
-  }
 }
 
 /* === Enter / leave app === */
@@ -359,23 +219,6 @@ document.querySelector("#resetDay").addEventListener("click", () => {
 });
 
 document.querySelector("#logoutBtn").addEventListener("click", logout);
-
-document.querySelectorAll("#screen-pin .pin-key").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    if (btn.dataset.action === "back") pinBackspace();
-    else if (btn.dataset.digit) pinPress(btn.dataset.digit);
-  });
-});
-
-document.querySelector("#pinBack").addEventListener("click", () => {
-  pinBuffer = "";
-  pinFirstAttempt = "";
-  clearPinResetRequest();
-  setPinError("");
-  showScreen("picker");
-});
-
-document.querySelector("#pinReset").addEventListener("click", requestPinReset);
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

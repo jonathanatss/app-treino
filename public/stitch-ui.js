@@ -646,31 +646,18 @@
     const linkedId = linkedCloudProfileId(cloud);
     if (linkedId) {
       const screenApp = document.querySelector("#screen-app");
-      const screenPin = document.querySelector("#screen-pin");
       // Already inside the correct app screen — do nothing
       if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
-      // Already on the PIN screen — do nothing (avoid re-opening PIN while user is typing)
-      if (screenPin && !screenPin.hidden) return;
-
-      // Only require PIN on iOS PWA (standalone mode) — on regular browser the
-      // Supabase session already proves identity, so entering directly is safe.
-      const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent)
-        && window.navigator.standalone === true;
-
-      if (isIosPwa && typeof openPinScreen === "function") {
-        openPinScreen(linkedId);
-      } else {
-        enterApp(linkedId);
-        // Prompt password setup if the user has never set one
-        const userId = cloud.user?.id;
-        if (userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
-          setTimeout(() => {
-            if (typeof openSetPasswordSheet === "function") {
-              localStorage.setItem(`fitplan-password-set-${userId}`, "1");
-              openSetPasswordSheet();
-            }
-          }, 1500);
-        }
+      enterApp(linkedId);
+      // Prompt password setup if the user has never set one
+      const userId = cloud.user?.id;
+      if (userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
+        setTimeout(() => {
+          if (typeof openSetPasswordSheet === "function") {
+            localStorage.setItem(`fitplan-password-set-${userId}`, "1");
+            openSetPasswordSheet();
+          }
+        }, 1500);
       }
       return;
     }
@@ -906,16 +893,6 @@
 
     renderQuestionnaireStep();
   }
-
-  const originalRenderPinScreen = renderPinScreen;
-  renderPinScreen = function () {
-    originalRenderPinScreen();
-    const header = document.querySelector("#screen-pin .lock-header");
-    header?.setAttribute("data-initials", initialsFor(pinScreenProfile));
-    header?.setAttribute("data-avatar-profile", pinScreenProfile);
-    hydrateProfileAvatars(header?.parentElement || document);
-    document.querySelector("#pinTitle").textContent = profileName(pinScreenProfile);
-  };
 
   function renderTabsStitch() {
     const profile = profiles[currentProfile];

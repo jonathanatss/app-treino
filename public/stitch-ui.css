@@ -37,7 +37,7 @@ button { touch-action: manipulation; }
   white-space: nowrap !important;
 }
 
-#screen-picker[hidden], #screen-pin[hidden], .app-shell[hidden], .fit-overlay[hidden] { display: none !important; }
+#screen-picker[hidden], .app-shell[hidden], .fit-overlay[hidden] { display: none !important; }
 
 /* Login / profile picker */
 .lock-screen {
@@ -197,45 +197,9 @@ button { touch-action: manipulation; }
   color: transparent;
 }
 .avatar-button.has-profile-photo span { opacity: 0; }
-#screen-pin .lock-header.has-profile-photo::before {
-  content: "";
-  background-color: #202020;
-  background-image: var(--avatar-image);
-  background-position: center;
-  background-size: cover;
-}
 .profile-name { font-size: 20px; font-weight: 750; }
 .profile-meta { margin-top: 5px; color: var(--fit-muted); font-size: 13px; }
 .empty-search { padding: 28px; text-align: center; color: var(--fit-muted); }
-
-#screen-pin .lock-screen { justify-content: flex-start; }
-#screen-pin .lock-header::before {
-  content: attr(data-initials);
-  width: 96px;
-  height: 96px;
-  border: 2px solid #33382b;
-  background: #202020;
-  color: var(--fit-lime);
-  font-size: 30px;
-  font-weight: 800;
-}
-#screen-pin .lock-title { font-size: 25px; }
-#screen-pin .lock-subtitle { margin-top: -8px; font-size: 16px; }
-.pin-dots { margin: 26px 0 68px; gap: 26px; }
-.pin-dot { width: 16px; height: 16px; border-color: #343434; background: transparent; }
-.pin-dot.filled { border-color: var(--fit-lime); background: var(--fit-lime); box-shadow: 0 0 17px rgba(183,255,0,.55); }
-.pin-keypad { max-width: 390px; gap: 14px 12px; }
-.pin-key {
-  width: min(100%, 100px);
-  height: 64px;
-  border: 1px solid #414831;
-  border-radius: 999px;
-  background: transparent;
-  box-shadow: none;
-  font-size: 26px;
-  font-weight: 750;
-}
-.pin-key:active { border-color: var(--fit-lime); background: rgba(183,255,0,.08); }
 
 /* App frame */
 .app-shell {
