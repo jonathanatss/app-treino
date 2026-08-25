@@ -2101,41 +2101,45 @@
 
   // ── iOS Safari bridge ──────────────────────────────────────────────────────
   // On iOS, magic links open in Safari (isolated from the installed PWA).
-  // After successful auth in Safari, we show a banner to open the PWA with
-  // the session tokens in the URL so the PWA can authenticate too.
+  // After successful auth, show a persistent banner to redirect into the PWA.
+  // The PWA URL without a hash will trigger supabase-client to restore the
+  // session from localStorage (same origin, same storage key — iOS shares
+  // localStorage between Safari and PWA only when opened via the same URL).
   (function iosOpenInPwaBanner() {
     const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const isStandalone = window.navigator.standalone === true;
-    if (!isIos || isStandalone) return; // already inside PWA or not iOS
+    if (!isIos || isStandalone) return; // not iOS or already inside PWA
 
-    // Only show after Supabase auth callback (tokens in URL hash)
-    const hash = window.location.hash;
-    const hasTokens = hash.includes("access_token=") || hash.includes("error_description=");
-    if (!hasTokens) return;
+    // Show banner once the user is authenticated
+    function maybeShowBanner(snap) {
+      if (!snap.ready || !snap.user) return;
 
-    // Wait until cloud auth resolves
-    const unsubscribe = window.fitplanCloud?.subscribe?.((snap) => {
-      if (!snap.ready) return;
-      unsubscribe?.();
+      // Don't show again if already dismissed this session
+      if (sessionStorage.getItem("fitplan-pwa-banner-dismissed")) return;
 
-      if (!snap.user) return; // auth failed, no banner needed
+      const existing = document.getElementById("ios-pwa-banner");
+      if (existing) return;
 
-      // Build the PWA URL preserving the auth hash so the PWA can pick it up
-      const pwaUrl = window.location.origin + window.location.pathname + window.location.search + window.location.hash;
+      const pwaUrl = window.location.origin + "/";
 
       const banner = document.createElement("div");
       banner.id = "ios-pwa-banner";
       banner.innerHTML = `
-        <div style="position:fixed;inset:0;z-index:9999;background:rgba(11,15,20,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px;text-align:center">
-          <img src="logo-mark.svg" style="width:72px;height:72px;border-radius:22px">
-          <h2 style="margin:0;color:#F4F7FA;font-size:22px;font-weight:800">Login realizado!</h2>
-          <p style="margin:0;color:#9AA7B2;font-size:15px;line-height:1.5">Para usar o FitPlan salvo na sua tela inicial, toque no botão abaixo.</p>
-          <a href="${pwaUrl}" style="display:block;width:100%;max-width:320px;padding:16px;background:linear-gradient(135deg,#8BEA7C,#4DA3FF);color:#0B0F14;font-weight:800;font-size:16px;border-radius:16px;text-decoration:none;text-align:center">
+        <div style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(11,15,20,.98);border-top:1px solid rgba(139,234,124,.3);padding:20px 24px 32px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+          <p style="margin:0;color:#9AA7B2;font-size:13px;line-height:1.4">Você está no Safari. Para a melhor experiência, abra o app salvo na sua tela inicial.</p>
+          <a href="${pwaUrl}" style="display:block;width:100%;max-width:320px;padding:14px;background:linear-gradient(135deg,#8BEA7C,#4DA3FF);color:#0B0F14;font-weight:800;font-size:15px;border-radius:14px;text-decoration:none">
             Abrir no FitPlan App
           </a>
-          <p style="margin:0;color:#667481;font-size:12px">Ou continue usando pelo Safari normalmente.</p>
+          <button onclick="sessionStorage.setItem('fitplan-pwa-banner-dismissed','1');this.closest('#ios-pwa-banner').remove()" style="background:none;border:none;color:#667481;font-size:13px;cursor:pointer;padding:4px">
+            Continuar no Safari
+          </button>
         </div>`;
       document.body.appendChild(banner);
-    });
+    }
+
+    // Check immediately and also when auth state changes
+    const snap = window.fitplanCloud?.snapshot?.();
+    if (snap) maybeShowBanner(snap);
+    window.addEventListener("fitplan:cloud-auth", (e) => maybeShowBanner(e.detail));
   })();
 })();
