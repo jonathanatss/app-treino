@@ -384,8 +384,10 @@ if ("serviceWorker" in navigator) {
 }
 
 /* === Init === */
-(function init() {
+// Deferred to DOMContentLoaded so stitch-ui.js (loaded after app.js) has run
+// and renderProfilePicker has been overridden with the real implementation.
+document.addEventListener("DOMContentLoaded", function init() {
   recoverJonathanFromTestProfile();
   renderProfilePicker();
   showScreen("picker");
-})();
+});
