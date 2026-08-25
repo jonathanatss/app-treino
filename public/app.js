@@ -126,6 +126,94 @@ function enterApp(profileId) {
   activeTab = visibleTabKeys.has(state.activeTab) ? state.activeTab : profile.defaultTab;
   renderApp();
   showScreen("app");
+  // Pull history from Supabase in background after rendering
+  pullHistoryFromSupabase(profileId).catch(() => {});
+}
+
+/**
+ * Fetches exercise load history from Supabase and merges it into the local
+ * state.history. Runs in background — does not block the initial render.
+ * Only runs if the user is authenticated and has a linked profile.
+ */
+async function pullHistoryFromSupabase(profileId) {
+  const client = window.fitplanCloud?.client;
+  const userId = window.fitplanCloud?.snapshot?.().user?.id;
+  if (!client || !userId) return;
+
+  // Load the latest 16 load entries per exercise from workout_set_logs
+  const { data: rows, error } = await client
+    .from("workout_set_logs")
+    .select(`
+      load_kg,
+      completed_at,
+      workout_exercise_logs!inner(
+        exercise_id,
+        plan_exercise_id,
+        workout_sessions!inner(
+          session_date,
+          workout_days!inner(day_key)
+        )
+      )
+    `)
+    .eq("workout_exercise_logs.workout_sessions.user_id", userId)
+    .not("load_kg", "is", null)
+    .order("completed_at", { ascending: true });
+
+  if (error || !rows?.length) return;
+
+  // Build exercise_catalog slug → legacy stateKey map
+  const planExerciseIds = [...new Set(rows.map((r) => r.workout_exercise_logs?.plan_exercise_id).filter(Boolean))];
+  if (!planExerciseIds.length) return;
+
+  const { data: catalog } = await client
+    .from("plan_exercises")
+    .select("id, exercise_catalog!inner(slug)")
+    .in("id", planExerciseIds);
+
+  if (!catalog?.length) return;
+
+  const slugByPlanExerciseId = new Map(
+    catalog.map((pe) => [pe.id, pe.exercise_catalog?.slug?.replace(/^legacy-/, "") || ""])
+  );
+
+  // Merge into state.history without overwriting entries already present
+  let changed = false;
+  for (const row of rows) {
+    const log = row.workout_exercise_logs;
+    if (!log) continue;
+    const session = log.workout_sessions;
+    if (!session) continue;
+    const dayKey = session.workout_days?.day_key;
+    const date = session.session_date;
+    const load = parseLoad(row.load_kg);
+    if (!Number.isFinite(load) || !dayKey || !date) continue;
+
+    const slug = slugByPlanExerciseId.get(log.plan_exercise_id);
+    if (!slug) continue;
+
+    // Convert slug back to stateKey format used in history
+    const stateKey = slug.replace(/-/g, (_, i) => {
+      // Try to find original exercise ID — use slug as-is if not found
+      return slug.includes("::") ? slug : slug;
+    });
+
+    state.history = state.history || {};
+    const entries = state.history[stateKey] || [];
+
+    // Only add if this date+tab combo isn't already recorded
+    const alreadyHas = entries.some((e) => e.date === date && e.tab === dayKey);
+    if (!alreadyHas) {
+      entries.push({ date, tab: dayKey, exerciseId: stateKey, variant: "base", load });
+      // Keep only last 16
+      state.history[stateKey] = entries.slice(-16);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    saveProfileState();
+    renderWorkout(); // Re-render to show updated history summaries
+  }
 }
 
 function logout() {
