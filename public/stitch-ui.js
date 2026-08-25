@@ -521,8 +521,13 @@
       if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
       // Already on the PIN screen — do nothing (avoid re-opening PIN while user is typing)
       if (screenPin && !screenPin.hidden) return;
-      // Go through the PIN screen if available (app.js loaded), otherwise enter directly
-      if (typeof openPinScreen === "function") {
+
+      // Only require PIN on iOS PWA (standalone mode) — on regular browser the
+      // Supabase session already proves identity, so entering directly is safe.
+      const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent)
+        && window.navigator.standalone === true;
+
+      if (isIosPwa && typeof openPinScreen === "function") {
         openPinScreen(linkedId);
       } else {
         enterApp(linkedId);
