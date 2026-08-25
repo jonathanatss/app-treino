@@ -1,3 +1,6 @@
+[build]
+  publish = "public"
+
 [build.environment]
   # The Supabase project URL is a public browser endpoint and is intentionally
   # present in the client bundle and Content-Security-Policy.
