@@ -1,12 +1,18 @@
 const CACHE_NAME = "fitplan-v46";
-const RUNTIME_CACHE = "fitplan-runtime-v46";
+const CACHE_NAME = "fitplan-v47";
+const RUNTIME_CACHE = "fitplan-runtime-v47";
 
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./styles/main.css",
   "./stitch-ui.css",
   "./src/supabase-client.js",
   "./src/legacy-cloud-migration.js",
+  "./src/data/profiles.js",
+  "./src/data/exercise-media.js",
+  "./src/data/exercise-variants.js",
+  "./src/data/prep-meta.js",
   "./stitch-ui.js",
   "./manifest.webmanifest",
   "./logo-mark.svg",
