@@ -64,6 +64,10 @@
 
   async function refreshSession(preservedError = null) {
     if (!client) return snapshot();
+    // Safety timeout — always emit ready after 10s even if Supabase is slow
+    const safetyTimer = setTimeout(() => {
+      if (!ready) { ready = true; emit(); }
+    }, 10000);
     try {
       error = preservedError;
       const result = await client.auth.getSession();
@@ -73,6 +77,7 @@
     } catch (nextError) {
       error = friendlyError(nextError);
     } finally {
+      clearTimeout(safetyTimer);
       ready = true;
       emit();
     }
