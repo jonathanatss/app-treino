@@ -434,12 +434,12 @@
     });
   }
 
-  function openForgotPasswordSheet(prefillEmail = "") {
+  function openForgotPasswordSheet(prefillEmail = "", prefillError = "") {
     const sheet = showActionSheet("Redefinir senha", `
       <form class="cloud-auth-form forgot-form">
         <div class="cloud-auth-intro"><span aria-hidden="true">🔑</span><div><strong>Esqueceu a senha?</strong><p>Enviaremos um link para você criar uma nova senha.</p></div></div>
         <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" value="${escapeHtml(prefillEmail)}" required></label>
-        <p class="cloud-auth-status" role="status" aria-live="polite"></p>
+        <p class="cloud-auth-status${prefillError ? " is-error" : ""}" role="status" aria-live="polite">${escapeHtml(prefillError)}</p>
         <button class="primary-button" type="submit">Enviar link de redefinição</button>
       </form>
     `);
@@ -2198,6 +2198,24 @@
   window.addEventListener("fitplan:password-recovery", () => {
     openSetPasswordSheet();
   });
+
+  // When the recovery link is expired/invalid, show forgot-password sheet
+  // with an explanation instead of leaving the user on a blank screen.
+  (function handleExpiredRecoveryLink() {
+    const search = new URLSearchParams(window.location.search);
+    const isRecovery = search.get("type") === "recovery";
+    const hasError = search.get("error") || search.get("error_description");
+    if (!isRecovery || !hasError) return;
+    // Wait until the UI is ready, then open the forgot-password flow
+    function tryOpen() {
+      if (typeof openForgotPasswordSheet === "function") {
+        openForgotPasswordSheet("", "Este link de redefinição expirou ou já foi usado. Solicite um novo abaixo.");
+      } else {
+        setTimeout(tryOpen, 200);
+      }
+    }
+    setTimeout(tryOpen, 300);
+  })();
 
   applyCloudAuthGate();
   maybeOpenRequestedAdminRequest();

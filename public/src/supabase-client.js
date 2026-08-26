@@ -45,6 +45,13 @@
     return search.get("error_description") || hash.get("error_description") || search.get("error") || hash.get("error");
   }
 
+  function clearCallbackParams() {
+    // Remove error/token params from URL without reloading so the user can
+    // share or refresh without seeing the error or re-triggering auth.
+    const clean = window.location.origin + window.location.pathname;
+    if (window.history?.replaceState) window.history.replaceState({}, "", clean);
+  }
+
   async function loadProfile(nextSession = session) {
     if (!client || !nextSession?.user?.id) {
       profile = null;
@@ -211,6 +218,10 @@
     });
     callbackFailure = friendlyError(callbackError());
     error = callbackFailure;
+    // Clean error/token params from URL so refreshing doesn't re-trigger auth
+    if (callbackFailure || window.location.hash.includes("access_token")) {
+      clearCallbackParams();
+    }
     refreshSession(error);
   } catch (nextError) {
     error = friendlyError(nextError);
