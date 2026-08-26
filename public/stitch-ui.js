@@ -413,6 +413,13 @@
       submit.disabled = true;
       submit.textContent = "Entrando…";
       status.classList.remove("is-error", "is-success");
+      if (!window.fitplanCloud?.signInWithPassword) {
+        status.textContent = "Serviço indisponível. Recarregue a página e tente novamente.";
+        status.classList.add("is-error");
+        submit.disabled = false;
+        submit.textContent = "Tentar novamente";
+        return;
+      }
       try {
         await window.fitplanCloud.signInWithPassword({
           email: data.get("email"),

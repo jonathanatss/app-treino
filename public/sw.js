@@ -1,6 +1,6 @@
 const CACHE_NAME = "fitplan-v46";
-const CACHE_NAME = "fitplan-v49";
-const RUNTIME_CACHE = "fitplan-runtime-v49";
+const CACHE_NAME = "fitplan-v50";
+const RUNTIME_CACHE = "fitplan-runtime-v50";
 
 const APP_SHELL = [
   "./",
