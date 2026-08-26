@@ -98,8 +98,10 @@ function saveProfileState() {
 }
 
 function showScreen(name) {
-  screenPicker.hidden = name !== "picker";
-  screenApp.hidden = name !== "app";
+  const picker = screenPicker || document.querySelector("#screen-picker");
+  const app    = screenApp    || document.querySelector("#screen-app");
+  if (picker) picker.hidden = name !== "picker";
+  if (app)    app.hidden    = name !== "app";
   window.scrollTo(0, 0);
 }
 
