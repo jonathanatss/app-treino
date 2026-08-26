@@ -604,9 +604,12 @@
       // Already inside the correct app screen — do nothing
       if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
       enterApp(linkedId);
-      // Prompt password setup only when the user signed in via magic link (OTP),
-      // not when they already used a password.
+      // Prompt password setup only when the user JUST signed in via magic link (OTP)
+      // in this page load. Consume the flag immediately to prevent repeat prompts.
       const signedInViaOtp = window.fitplanCloud?.lastSignInWasOtp === true;
+      if (signedInViaOtp && window.fitplanCloud) {
+        window.fitplanCloud.lastSignInWasOtp = false; // consume — only prompt once
+      }
       const userId = cloud.user?.id;
       if (signedInViaOtp && userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
         setTimeout(() => {

@@ -242,14 +242,20 @@
       if (_event === "PASSWORD_RECOVERY") {
         window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
       }
-      // Track whether the last sign-in was via magic link (OTP) so the UI
-      // can prompt password setup only in that case
+      // Track whether the last sign-in was via magic link (OTP).
+      // Only true when the session was created in THIS page load from a magic link
+      // URL (access_token in hash). Never true for password logins or restored sessions.
       if (_event === "SIGNED_IN") {
+        const hasTokenInUrl = window.location.hash.includes("access_token=");
         const amr = nextSession?.user?.amr;
-        const usedOtp = Array.isArray(amr)
-          ? amr.some((a) => a.method === "otp")
-          : nextSession?.user?.app_metadata?.provider === "email";
-        api.lastSignInWasOtp = !!usedOtp;
+        const amrUsedOtp = Array.isArray(amr) && amr.some((a) => a.method === "otp");
+        // Only flag as OTP if token was in URL (first-time magic link open)
+        // OR if amr explicitly confirms otp method (no URL fallback needed)
+        api.lastSignInWasOtp = hasTokenInUrl || amrUsedOtp;
+      }
+      if (_event === "PASSWORD_RECOVERY") {
+        // Clear any stale OTP flag so applyCloudAuthGate doesn't also try to open set-password
+        api.lastSignInWasOtp = false;
       }
       window.setTimeout(async () => {
         try {
