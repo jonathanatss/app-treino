@@ -17,16 +17,9 @@ let timerId = null;
 let timerEndsAt = 0;
 let activeRest = 0;
 
-const screenPicker = document.querySelector("#screen-picker");
-const screenApp = document.querySelector("#screen-app");
-const workoutEl = document.querySelector("#workout");
-const timerEl = document.querySelector("#timer");
-const progressText = document.querySelector("#progressText");
-const progressFill = document.querySelector("#progressFill");
-const stopTimer = document.querySelector("#stopTimer");
-const compactModeButton = document.querySelector("#compactMode");
-const todayWorkoutButton = document.querySelector("#todayWorkout");
-const importDataInput = document.querySelector("#importData");
+// DOM refs — initialized on DOMContentLoaded
+let screenPicker, screenApp, workoutEl, timerEl, progressText, progressFill,
+    stopTimer, compactModeButton, todayWorkoutButton, importDataInput;
 
 function loadProfileState(profileId) {
   const profile = profiles[profileId];
@@ -276,45 +269,8 @@ function renderTabs() {
 }
 
 
-/* === Wiring === */
-document.querySelectorAll(".rest-button").forEach((b) => {
-  b.addEventListener("click", () => startRest(Number(b.dataset.rest)));
-});
 
-stopTimer.addEventListener("click", stopRest);
-
-compactModeButton.addEventListener("click", () => {
-  uiState.compact = !uiState.compact;
-  saveUiState();
-  updateModeControls();
-  renderWorkout();
-});
-
-todayWorkoutButton.addEventListener("click", () => {
-  const todayWorkout = getTodayWorkoutKey(profiles[currentProfile]);
-  if (!todayWorkout) return;
-  activeTab = todayWorkout;
-  saveProfileState();
-  renderWorkout();
-});
-
-document.querySelector("#exportData").addEventListener("click", exportData);
-importDataInput.addEventListener("change", (event) => {
-  importData(event.target.files?.[0]);
-  importDataInput.value = "";
-});
-
-document.querySelector("#resetDay").addEventListener("click", () => {
-  if (!state) return;
-  state.done = {};
-  state.seriesProgress = {};
-  state.day = todayKey;
-  stopRest();
-  saveProfileState();
-  renderWorkout();
-});
-
-document.querySelector("#logoutBtn").addEventListener("click", logout);
+/* === Wiring (inside DOMContentLoaded — see bottom of file) === */
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -326,6 +282,52 @@ if ("serviceWorker" in navigator) {
 // Deferred to DOMContentLoaded so stitch-ui.js (loaded after app.js) has run
 // and renderProfilePicker has been overridden with the real implementation.
 document.addEventListener("DOMContentLoaded", function init() {
+  // Initialize all DOM refs here — DOM is guaranteed to be ready
+  screenPicker       = document.querySelector("#screen-picker");
+  screenApp          = document.querySelector("#screen-app");
+  workoutEl          = document.querySelector("#workout");
+  timerEl            = document.querySelector("#timer");
+  progressText       = document.querySelector("#progressText");
+  progressFill       = document.querySelector("#progressFill");
+  stopTimer          = document.querySelector("#stopTimer");
+  compactModeButton  = document.querySelector("#compactMode");
+  todayWorkoutButton = document.querySelector("#todayWorkout");
+  importDataInput    = document.querySelector("#importData");
+
+  // Wire up all event listeners
+  document.querySelectorAll(".rest-button").forEach((b) => {
+    b.addEventListener("click", () => startRest(Number(b.dataset.rest)));
+  });
+  stopTimer.addEventListener("click", stopRest);
+  compactModeButton.addEventListener("click", () => {
+    uiState.compact = !uiState.compact;
+    saveUiState();
+    updateModeControls();
+    renderWorkout();
+  });
+  todayWorkoutButton.addEventListener("click", () => {
+    const todayWorkout = getTodayWorkoutKey(profiles[currentProfile]);
+    if (!todayWorkout) return;
+    activeTab = todayWorkout;
+    saveProfileState();
+    renderWorkout();
+  });
+  document.querySelector("#exportData").addEventListener("click", exportData);
+  importDataInput.addEventListener("change", (event) => {
+    importData(event.target.files?.[0]);
+    importDataInput.value = "";
+  });
+  document.querySelector("#resetDay").addEventListener("click", () => {
+    if (!state) return;
+    state.done = {};
+    state.seriesProgress = {};
+    state.day = todayKey;
+    stopRest();
+    saveProfileState();
+    renderWorkout();
+  });
+  document.querySelector("#logoutBtn").addEventListener("click", logout);
+
   recoverJonathanFromTestProfile();
   renderProfilePicker();
   showScreen("picker");
