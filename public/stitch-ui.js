@@ -1847,23 +1847,46 @@
   }
 
   async function saveProfileAvatar(record) {
+    // 1. Persist locally in IndexedDB (always, even if cloud upload fails)
     const db = await openPhotoDatabase();
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       const transaction = db.transaction(avatarStoreName, "readwrite");
       transaction.objectStore(avatarStoreName).put(record);
       transaction.oncomplete = () => resolve(record);
       transaction.onerror = () => reject(transaction.error || new Error("Não foi possível salvar a foto do perfil."));
     });
+    // 2. Upload to Supabase Storage if authenticated (best-effort, non-blocking)
+    const cloud = window.fitplanCloud?.snapshot?.();
+    const userId = cloud?.user?.id;
+    if (userId && window.fitplanCloud?.uploadProfileAvatar) {
+      try {
+        await window.fitplanCloud.uploadProfileAvatar(userId, record.blob);
+      } catch {
+        // Cloud upload failed — local copy still works
+      }
+    }
+    return record;
   }
 
   async function removeProfileAvatar(profileId) {
+    // 1. Remove from local IndexedDB
     const db = await openPhotoDatabase();
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       const transaction = db.transaction(avatarStoreName, "readwrite");
       transaction.objectStore(avatarStoreName).delete(profileId);
       transaction.oncomplete = resolve;
       transaction.onerror = () => reject(transaction.error || new Error("Não foi possível remover a foto do perfil."));
     });
+    // 2. Remove from Supabase Storage if authenticated
+    const cloud = window.fitplanCloud?.snapshot?.();
+    const userId = cloud?.user?.id;
+    if (userId && window.fitplanCloud?.deleteStorageAvatar) {
+      try {
+        await window.fitplanCloud.deleteStorageAvatar(userId);
+      } catch {
+        // Ignore cloud errors — local removal already done
+      }
+    }
   }
 
   function clearAvatarCache(profileId) {
@@ -1876,15 +1899,27 @@
   async function profileAvatarUrl(profileId) {
     if (avatarUrlCache.has(profileId)) return avatarUrlCache.get(profileId);
     if (avatarRequestCache.has(profileId)) return avatarRequestCache.get(profileId);
-    const request = getProfileAvatar(profileId).then((record) => {
-      const url = record?.blob ? URL.createObjectURL(record.blob) : null;
-      avatarUrlCache.set(profileId, url);
+
+    const request = (async () => {
+      // 1. Try local IndexedDB first (instant, works offline)
+      try {
+        const record = await getProfileAvatar(profileId);
+        if (record?.blob) {
+          const url = URL.createObjectURL(record.blob);
+          avatarUrlCache.set(profileId, url);
+          avatarRequestCache.delete(profileId);
+          return url;
+        }
+      } catch { /* IndexedDB unavailable — fall through to cloud */ }
+
+      // 2. Fallback: use avatar_url from Supabase profile snapshot
+      const cloud = window.fitplanCloud?.snapshot?.();
+      const cloudAvatarUrl = cloud?.profile?.avatar_url || null;
+      avatarUrlCache.set(profileId, cloudAvatarUrl);
       avatarRequestCache.delete(profileId);
-      return url;
-    }).catch(() => {
-      avatarRequestCache.delete(profileId);
-      return null;
-    });
+      return cloudAvatarUrl;
+    })();
+
     avatarRequestCache.set(profileId, request);
     return request;
   }
@@ -2192,6 +2227,14 @@
     applyCloudAuthGate(event.detail);
     if (currentProfile && currentRoute === "profile") renderProfileView();
     maybeOpenRequestedAdminRequest(event.detail);
+    // If avatar_url changed in the cloud snapshot, invalidate cache and re-hydrate
+    const newAvatarUrl = event.detail?.profile?.avatar_url;
+    const cachedUrl = avatarUrlCache.get(currentProfile);
+    if (currentProfile && newAvatarUrl && newAvatarUrl !== cachedUrl) {
+      avatarUrlCache.delete(currentProfile);
+      avatarRequestCache.delete(currentProfile);
+      hydrateProfileAvatars(document);
+    }
   });
 
   // Open set-password modal when user arrives via password-recovery link

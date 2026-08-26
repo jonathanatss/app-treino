@@ -114,7 +114,52 @@
     return { email: normalizedEmail };
   }
 
-  async function signInWithPassword({ email, password }) {
+  async function uploadProfileAvatar(userId, blob) {
+    if (!client) throw new Error("A conexão online está indisponível neste momento.");
+    const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+    const path = `${userId}/avatar.${ext}`;
+    // Remove any existing avatar first to avoid stale files
+    await client.storage.from("avatars").remove([
+      `${userId}/avatar.jpg`,
+      `${userId}/avatar.png`,
+      `${userId}/avatar.webp`
+    ]);
+    const { error: uploadError } = await client.storage.from("avatars").upload(path, blob, {
+      upsert: true,
+      contentType: blob.type || "image/jpeg"
+    });
+    if (uploadError) throw new Error(uploadError.message);
+    const { data } = client.storage.from("avatars").getPublicUrl(path);
+    // Bucket is private — use signed URL (1 year expiry)
+    const { data: signedData, error: signedError } = await client.storage
+      .from("avatars")
+      .createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (signedError) throw new Error(signedError.message);
+    const avatarUrl = signedData.signedUrl;
+    // Persist the URL on the profiles row
+    const { error: updateError } = await client
+      .from("profiles")
+      .update({ avatar_url: avatarUrl })
+      .eq("id", userId);
+    if (updateError) throw new Error(updateError.message);
+    // Update local snapshot so callers see the new URL immediately
+    if (profile) profile = { ...profile, avatar_url: avatarUrl };
+    emit();
+    return avatarUrl;
+  }
+
+  async function deleteStorageAvatar(userId) {
+    if (!client) return;
+    await client.storage.from("avatars").remove([
+      `${userId}/avatar.jpg`,
+      `${userId}/avatar.png`,
+      `${userId}/avatar.webp`
+    ]);
+    await client.from("profiles").update({ avatar_url: null }).eq("id", userId);
+    if (profile) profile = { ...profile, avatar_url: null };
+    emit();
+  }
+
     if (!client) throw new Error("A conexão online está indisponível neste momento.");
     const normalizedEmail = String(email || "").trim().toLowerCase();
     if (!normalizedEmail) throw new Error("Informe seu e-mail.");
@@ -175,6 +220,8 @@
     signInWithPassword,
     updatePassword,
     resetPassword,
+    uploadProfileAvatar,
+    deleteStorageAvatar,
     signOut,
     subscribe
   };
