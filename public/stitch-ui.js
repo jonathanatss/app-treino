@@ -578,14 +578,16 @@
         <span><strong>Sou novo no FitPlan</strong><small>Responder questionário e solicitar cadastro</small></span>
         <span class="new-user-request-arrow" aria-hidden="true">›</span>
       </button>
+      <button class="auth-forgot-btn forgot-link" type="button">Esqueci minha senha</button>
       <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Seus dados ficam privados</strong>Quem já tem acesso entra com e-mail e senha. Novos cadastros são liberados após a análise do questionário.</p></div>`;
     list.querySelector(".cloud-access-card")?.addEventListener("click", openCloudAuthSheet);
     list.querySelector(".new-user-request")?.addEventListener("click", openTrainingQuestionnaire);
+    list.querySelector(".forgot-link")?.addEventListener("click", () => openForgotPasswordSheet(""));
   }
 
   renderProfilePicker = function () {
     document.querySelector("#screen-picker .lock-title").textContent = "Acesse o FitPlan";
-    document.querySelector("#screen-picker .lock-subtitle").textContent = "Entre com seu e-mail para carregar o seu treino.";
+    document.querySelector("#screen-picker .lock-subtitle").textContent = "Entre com e-mail e senha para carregar o seu treino.";
     renderProfileCards();
   };
 
