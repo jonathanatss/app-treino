@@ -160,6 +160,7 @@
     emit();
   }
 
+  async function signInWithPassword({ email, password }) {
     if (!client) throw new Error("A conexão online está indisponível neste momento.");
     const normalizedEmail = String(email || "").trim().toLowerCase();
     if (!normalizedEmail) throw new Error("Informe seu e-mail.");
