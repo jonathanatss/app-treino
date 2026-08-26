@@ -413,13 +413,6 @@
       submit.disabled = true;
       submit.textContent = "Entrando…";
       status.classList.remove("is-error", "is-success");
-      if (!window.fitplanCloud) {
-        status.textContent = "Serviço indisponível. Recarregue a página e tente novamente.";
-        status.classList.add("is-error");
-        submit.disabled = false;
-        submit.textContent = "Tentar novamente";
-        return;
-      }
       try {
         await window.fitplanCloud.signInWithPassword({
           email: data.get("email"),
@@ -427,7 +420,9 @@
         });
         closeActionSheet();
       } catch (error) {
-        status.textContent = error.message;
+        status.textContent = error?.message?.includes("signInWithPassword")
+          ? "Recarregue a página e tente novamente."
+          : (error.message || "Não foi possível entrar. Tente novamente.");
         status.classList.add("is-error");
         submit.textContent = "Tentar novamente";
         submit.disabled = false;

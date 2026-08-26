@@ -46,6 +46,11 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
+// Accept SKIP_WAITING message from the page to force activation
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
+
 // ── Activate: clean up old caches ────────────────────────────────────────────
 self.addEventListener("activate", (event) => {
   const KEEP = [CACHE_VERSION, IMAGE_CACHE];
@@ -65,6 +70,21 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
+
+  // Special route: /sw-clear — unregisters the SW and reloads the page
+  // This allows users stuck on old versions to force an update.
+  if (isSameOrigin && url.pathname === "/sw-clear") {
+    event.respondWith(
+      self.registration.unregister().then(() =>
+        new Response(
+          `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=/"></head>
+          <body>Atualizando... <script>localStorage.removeItem("fitplan-sw-cleared");location.replace("/");</script></body></html>`,
+          { headers: { "Content-Type": "text/html" } }
+        )
+      )
+    );
+    return;
+  }
 
   // External requests (CDN fonts, Supabase, ExerciseDB) — pass through
   if (!isSameOrigin) {
