@@ -887,6 +887,11 @@ body:has(.rest-bar .timer.running) .fit-overlay:not([hidden]) .active-page { pad
 .admin-answer-row dd { margin: 0; color: #eceee8; font-size: 12px; line-height: 1.48; white-space: pre-wrap; overflow-wrap: anywhere; }
 .admin-review-note { padding: 13px 15px; border-left: 3px solid #d3bd5c; border-radius: 0 10px 10px 0; background: #242116; }
 .admin-review-note p { margin: 5px 0 0; color: #d5cda9; font-size: 12px; line-height: 1.45; }
+.admin-legacy-link { display: grid; gap: 8px; padding: 13px; border: 1px solid #3d4532; border-radius: 12px; background: #1b1e18; }
+.admin-legacy-link span { color: #e5e9df; font-size: 12px; font-weight: 800; }
+.admin-legacy-link select { width: 100%; min-height: 46px; padding: 0 12px; border: 1px solid #4a5142; border-radius: 10px; background: #101110; color: #f1f3ec; font: inherit; font-size: 13px; }
+.admin-legacy-link select:focus { outline: none; border-color: var(--fit-lime); box-shadow: 0 0 0 3px rgba(183,255,0,.09); }
+.admin-legacy-link small { color: #a0a897; font-size: 11px; line-height: 1.45; }
 .admin-request-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, .38fr); gap: 10px; }
 .admin-request-actions > :only-child { grid-column: 1 / -1; }
 .admin-approved-note { grid-column: 1 / -1; padding: 13px; border: 1px solid #4c632d; border-radius: 11px; background: #1d2813; color: var(--fit-lime); font-size: 12px; text-align: center; }

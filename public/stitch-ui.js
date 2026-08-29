@@ -38,6 +38,13 @@
     "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp": "assets/exercises/7552.gif"
   };
 
+  function versionMediaUrl(src) {
+    if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
+    if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
+    const separator = String(src).includes("?") ? "&" : "?";
+    return `${src}${separator}v=54`;
+  }
+
   const icon = (name) => ({
     workout: "⚒",
     history: "◷",
@@ -200,9 +207,11 @@
     const variant = getSelectedVariant(exercise);
     const media = variant?.media || EXERCISE_MEDIA[exercise.id];
     if (!media) return null;
+    const src = media.url ? (localMediaByUrl[media.url] || media.url) : `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
+    const fallbackSrc = media.url ? mediaFallbackByUrl[media.url] : null;
     return {
-      src: media.url ? (localMediaByUrl[media.url] || media.url) : `${EXERCISE_MEDIA_BASE}${media.id}.gif`,
-      fallbackSrc: media.url ? mediaFallbackByUrl[media.url] : null,
+      src: versionMediaUrl(src),
+      fallbackSrc: fallbackSrc ? versionMediaUrl(fallbackSrc) : null,
       label: media.label || exercise.name
     };
   }
@@ -1497,6 +1506,24 @@
     return String(value ?? "—");
   }
 
+  function normalizeProfileMatch(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "");
+  }
+
+  function legacyProfileOptionsMarkup(submission) {
+    const selected = normalizeProfileMatch(submission.full_name);
+    const options = Object.keys(profiles).map((id) => {
+      const name = profileName(id);
+      const isSelected = selected && normalizeProfileMatch(name) === selected;
+      return `<option value="${escapeHtml(id)}"${isSelected ? " selected" : ""}>${escapeHtml(name)}</option>`;
+    }).join("");
+    return `<label class="admin-legacy-link"><span>Perfil antigo para liberar no app</span><select class="admin-legacy-profile"><option value="">Apenas aprovar, sem vincular treino antigo</option>${options}</select><small>Para usuários antigos, escolha o perfil correto antes de aprovar. Sem isso, o login entra, mas o treino não aparece.</small></label>`;
+  }
+
   async function adminQuestionnaireRequest(options = {}) {
     const cloud = cloudSnapshot();
     const token = cloud.session?.access_token;
@@ -1520,6 +1547,7 @@
     const status = ADMIN_STATUS_LABELS[submission.status] || submission.status;
     const open = submission.id === focusId ? " open" : "";
     const canApprove = Boolean(submission.email) && submission.status !== "approved";
+    const canRelink = submission.status === "approved" && Boolean(submission.user_id);
     const canReject = !["approved", "rejected", "archived"].includes(submission.status);
     const contact = [submission.email, submission.whatsapp].filter(Boolean).join(" • ") || "Sem contato";
     const answerRows = ADMIN_ANSWER_LABELS
@@ -1536,8 +1564,9 @@
         <div class="admin-request-meta"><span><small>CONSENTIMENTO</small><strong>${escapeHtml(adminDate(submission.consent_at))}</strong></span><span><small>IDENTIFICADOR</small><strong>${escapeHtml(submission.id.slice(0, 8))}</strong></span></div>
         <dl class="admin-answer-list">${answerRows}</dl>
         ${submission.review_note ? `<div class="admin-review-note"><small>OBSERVAÇÃO DA REVISÃO</small><p>${escapeHtml(submission.review_note)}</p></div>` : ""}
+        ${submission.status === "approved" && !canRelink ? "" : legacyProfileOptionsMarkup(submission)}
         <div class="admin-request-actions">
-          ${submission.status === "approved" ? `<div class="admin-approved-note">✓ Conta vinculada${submission.invitation_sent_at ? ` • convite enviado em ${escapeHtml(adminDate(submission.invitation_sent_at))}` : ""}</div>` : `<button class="primary-button admin-approve" type="button" ${canApprove ? "" : "disabled"}>${submission.status === "reviewing" ? "Tentar aprovação novamente" : "Aprovar e convidar"}</button>`}
+          ${submission.status === "approved" ? `<div class="admin-approved-note">✓ Conta aprovada${submission.invitation_sent_at ? ` • convite enviado em ${escapeHtml(adminDate(submission.invitation_sent_at))}` : ""}</div>${canRelink ? `<button class="secondary-button admin-approve" type="button">Atualizar vínculo</button>` : ""}` : `<button class="primary-button admin-approve" type="button" ${canApprove ? "" : "disabled"}>${submission.status === "reviewing" ? "Tentar aprovação novamente" : "Aprovar e convidar"}</button>`}
           ${canReject ? `<button class="secondary-button admin-reject" type="button">Recusar</button>` : ""}
         </div>
         ${!submission.email && submission.status !== "approved" ? `<p class="admin-action-hint">A aprovação automática exige um e-mail. Entre em contato pelo WhatsApp e atualize a solicitação antes de aprovar.</p>` : ""}
@@ -1552,14 +1581,16 @@
       if (!submission) return;
       const status = card.querySelector(".admin-card-status");
       card.querySelector(".admin-approve")?.addEventListener("click", async () => {
-        if (!window.confirm(`Aprovar ${submission.full_name} e enviar o convite de acesso?`)) return;
+        const isRelink = submission.status === "approved";
+        if (!window.confirm(isRelink ? `Atualizar o vínculo de perfil de ${submission.full_name}?` : `Aprovar ${submission.full_name} e enviar o convite de acesso?`)) return;
         const buttons = card.querySelectorAll("button");
         buttons.forEach((button) => { button.disabled = true; });
-        status.textContent = "Criando a conta, vinculando o questionário e abrindo o plano em rascunho…";
+        status.textContent = isRelink ? "Atualizando vínculo do perfil antigo…" : "Criando a conta, vinculando o questionário e abrindo o plano em rascunho…";
         status.className = "admin-card-status";
         try {
-          const result = await adminQuestionnaireRequest({ method: "POST", body: { action: "approve", id: submission.id } });
-          status.textContent = result.invited ? "Cadastro aprovado e convite enviado." : "Cadastro aprovado e vinculado a uma conta existente.";
+          const legacyProfileKey = card.querySelector(".admin-legacy-profile")?.value || null;
+          const result = await adminQuestionnaireRequest({ method: "POST", body: { action: "approve", id: submission.id, legacyProfileKey } });
+          status.textContent = isRelink ? "Vínculo atualizado." : (result.invited ? "Cadastro aprovado e convite enviado." : "Cadastro aprovado e vinculado a uma conta existente.");
           status.classList.add("is-success");
           window.setTimeout(() => openAdminQuestionnaires(submission.id), 700);
         } catch (error) {

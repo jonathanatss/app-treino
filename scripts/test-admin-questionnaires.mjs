@@ -42,7 +42,7 @@ function adminAuthMock(next) {
   return async (url, options = {}) => {
     const value = String(url);
     if (value.endsWith("/auth/v1/user")) return json({ id: "admin-1", email: "admin@example.com" });
-    if (value.includes("/rest/v1/profiles")) return json([adminProfile]);
+    if (value.includes("/rest/v1/profiles?id=eq.admin-1")) return json([adminProfile]);
     return next(value, options);
   };
 }
@@ -85,6 +85,7 @@ function adminAuthMock(next) {
       const values = JSON.parse(options.body);
       return json([{ ...baseSubmission, ...values }]);
     }
+    if (url.includes("/rest/v1/profiles?id=eq.athlete-1") && options.method === "PATCH") return json([{ id: "athlete-1", ...JSON.parse(options.body) }]);
     if (url.includes("/auth/v1/admin/users")) return json({ users: [] });
     if (url.startsWith("https://example.supabase.co/auth/v1/invite?")) return json({ id: "athlete-1", email: baseSubmission.email });
     if (url.includes("/rest/v1/training_plans?")) return json([]);
@@ -92,7 +93,7 @@ function adminAuthMock(next) {
     if (url === "https://api.resend.com/emails") return json({ id: "email-1" });
     throw new Error(`Unexpected URL: ${url}`);
   });
-  const result = await handler(event("POST", { action: "approve", id: "request-1" }));
+  const result = await handler(event("POST", { action: "approve", id: "request-1", legacyProfileKey: "sara" }));
   const payload = JSON.parse(result.body);
   assert.equal(result.statusCode, 200);
   assert.equal(payload.invited, true);
@@ -103,6 +104,9 @@ function adminAuthMock(next) {
   const approval = calls.filter((call) => call.url.includes("questionnaire_submissions?id=eq.request-1") && call.options.method === "PATCH").at(-1);
   assert.equal(JSON.parse(approval.options.body).status, "approved");
   assert.equal(JSON.parse(approval.options.body).user_id, "athlete-1");
+  const linkedProfile = calls.find((call) => call.url.includes("/rest/v1/profiles?id=eq.athlete-1") && call.options.method === "PATCH");
+  assert.equal(JSON.parse(linkedProfile.options.body).legacy_profile_key, "sara");
+  assert.equal(JSON.parse(linkedProfile.options.body).active, true);
 }
 
 {

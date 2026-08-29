@@ -2,6 +2,14 @@
 // PROFILE_EXERCISE_VARIANTS, EXERCISE_VARIANTS, SHARED_MOVEMENT_VARIANTS, AUTO_VARIANT_MEDIA
 // and globals: currentProfile, state, escapeHtml, slugify, hasAnyTerm
 
+const MEDIA_ASSET_VERSION = "54";
+
+function versionMediaUrl(src) {
+  if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
+  const separator = String(src).includes("?") ? "&" : "?";
+  return `${src}${separator}v=${MEDIA_ASSET_VERSION}`;
+}
+
 function withVariantMedia(exerciseId, variant) {
   const media = variant.media || AUTO_VARIANT_MEDIA[exerciseId]?.[variant.key] || EXERCISE_MEDIA[exerciseId];
   return media ? { ...variant, media } : variant;
@@ -163,7 +171,7 @@ function renderMovementMedia(exercise, variant = getSelectedVariant(exercise)) {
   const media = variant?.media || EXERCISE_MEDIA[exercise.id];
   if (!media) return "";
   const alt = `${variant?.label || exercise.name}: simulação visual do movimento`;
-  const src = media.url || `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
+  const src = versionMediaUrl(media.url || `${EXERCISE_MEDIA_BASE}${media.id}.gif`);
   return `<img class="movement-image" src="${src}" alt="${escapeHtml(alt)}" title="${escapeHtml(media.label)}" loading="lazy" decoding="async" onerror="this.closest('.exercise-visual').classList.add('media-error'); this.remove();">`;
 }
 

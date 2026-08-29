@@ -68,6 +68,13 @@ function authHeaders(key, token = key, prefer = "") {
   };
 }
 
+function legacyProfileKey(value) {
+  const key = text(value, 50).toLowerCase();
+  if (!key) return null;
+  if (!/^[a-z0-9][a-z0-9_-]{1,49}$/.test(key)) throw new HttpError(400, "Perfil antigo inválido para vínculo.");
+  return key;
+}
+
 async function requireAdmin(event, env) {
   const { supabaseUrl, serviceRoleKey } = envConfig(env);
   const token = bearerToken(event);
@@ -183,6 +190,22 @@ async function ensureDraftPlan(submission, userId, admin) {
   return Array.isArray(rows) ? rows[0] : null;
 }
 
+async function linkLegacyProfile(submission, userId, legacyKey, admin) {
+  const values = {
+    display_name: text(submission.full_name, 120) || null,
+    active: true,
+    legacy_profile_key: legacyKey || null
+  };
+  const result = await fetch(`${admin.supabaseUrl}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`, {
+    method: "PATCH",
+    headers: authHeaders(admin.serviceRoleKey, admin.serviceRoleKey, "return=representation"),
+    body: JSON.stringify(values)
+  });
+  await jsonResult(result, legacyKey
+    ? "A conta foi encontrada, mas não foi possível vincular ao perfil antigo. Verifique se este perfil já não está vinculado a outro e-mail."
+    : "A conta foi encontrada, mas não foi possível atualizar o perfil.");
+}
+
 async function updateSubmission(id, values, admin) {
   const result = await fetch(`${admin.supabaseUrl}/rest/v1/questionnaire_submissions?id=eq.${encodeURIComponent(id)}`, {
     method: "PATCH",
@@ -225,13 +248,16 @@ async function sendDecisionEmail(submission, decision, env) {
   return true;
 }
 
-async function approveSubmission(submission, admin, env) {
+async function approveSubmission(submission, admin, env, options = {}) {
+  const legacyKey = legacyProfileKey(options.legacyProfileKey);
   if (submission.status === "approved" && submission.user_id) {
+    if (legacyKey) await linkLegacyProfile(submission, submission.user_id, legacyKey, admin);
     return response(200, { ok: true, alreadyApproved: true, submission });
   }
   await updateSubmission(submission.id, { status: "reviewing" }, admin);
   try {
     const { user, invited } = await inviteOrFindUser(submission, admin, env);
+    await linkLegacyProfile(submission, user.id, legacyKey, admin);
     const plan = await ensureDraftPlan(submission, user.id, admin);
     const reviewedAt = new Date().toISOString();
     const updated = await updateSubmission(submission.id, {
@@ -275,7 +301,9 @@ export async function handler(event) {
     const action = text(payload.action, 30);
     if (!id || !["approve", "reject"].includes(action)) throw new HttpError(400, "Ação administrativa inválida.");
     const submission = await loadSubmission(id, admin);
-    if (action === "approve") return await approveSubmission(submission, admin, process.env);
+    if (action === "approve") return await approveSubmission(submission, admin, process.env, {
+      legacyProfileKey: payload.legacyProfileKey
+    });
     return await rejectSubmission(submission, payload.note, admin, process.env);
   } catch (error) {
     const statusCode = Number(error.statusCode) || 500;
