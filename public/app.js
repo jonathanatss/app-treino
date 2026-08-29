@@ -276,7 +276,8 @@ function renderTabs() {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").then((reg) => {
+    navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).then((reg) => {
+        reg.update().catch(() => {});
         // Force new SW to activate immediately without waiting for tabs to close
         reg.addEventListener("updatefound", () => {
           const newWorker = reg.installing;
