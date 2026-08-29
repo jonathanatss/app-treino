@@ -285,7 +285,7 @@ const MEDIA_ALIASES = {
   gobletSquat: { url: "https://liftmanual.com/wp-content/uploads/2023/04/kettlebell-goblet-squat.webp", label: "Goblet squat" },
   legRaise: { id: "qvlMuMl", label: "Lying leg raise flat bench" },
   machineRow: { id: "hvV79Si", label: "Lever seated row" },
-  singleArmMachineRow: { id: "3TYr7sX", label: "Lever one arm seated row" },
+  singleArmMachineRow: { url: "https://gymvisual.com/img/p/5/9/2/3/5923.gif", label: "Lever one arm seated row" },
   smithHipThrust: { url: "https://liftmanual.com/wp-content/uploads/2023/04/smith-hip-raise.webp", label: "Smith hip raise" },
   sledHackSquat: { url: "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp", label: "Sled hack squat" },
   smithLunge: { id: "9XgCBBZ", label: "Smith rear lunge" },
