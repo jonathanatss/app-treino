@@ -18,7 +18,8 @@
     session,
     user: session?.user || null,
     profile,
-    error
+    error,
+    recovery: pendingPasswordRecovery
   });
 
   function emit() {

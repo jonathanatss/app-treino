@@ -4,7 +4,7 @@
 const ACTIVE_KEY = "gym-app-active-profile";
 const UI_KEY = "gym-app-ui";
 const EXPORT_VERSION = 1;
-const APP_VERSION = "61";
+const APP_VERSION = "62";
 const APP_VERSION_KEY = "fitplan-app-version";
 const todayKey = getLocalDayKey();
 const LOAD_WARMUP_TIP = "Dica de aquecimento: no primeiro exercício de cada grupo muscular, faça 1 ou 2 séries com 40~50% da carga válida antes das séries principais.";

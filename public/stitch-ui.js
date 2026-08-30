@@ -14,6 +14,7 @@
   let activeExerciseIndex = -1;
   let activeSheet = null;
   let adminRouteHandled = false;
+  let passwordRecoveryMode = false;
 
   const localMediaByUrl = {
     "https://gymvisual.com/img/p/4/8/8/8/4888.gif": "assets/exercises/4888.gif",
@@ -46,7 +47,7 @@
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=61`;
+    return `${src}${separator}v=62`;
   }
 
   const icon = (name) => ({
@@ -508,8 +509,10 @@
     });
   }
 
-  function openSetPasswordSheet() {
+  function openSetPasswordSheet(options = {}) {
     if (activeSheet?.querySelector?.(".set-password-form")) return;
+    const isRecovery = options.recovery === true || isPasswordRecoveryFlow();
+    if (isRecovery) passwordRecoveryMode = true;
     const sheet = showActionSheet("Criar senha", `
       <form class="cloud-auth-form set-password-form">
         <div class="cloud-auth-intro"><span aria-hidden="true">🔒</span><div><strong>Crie sua nova senha</strong><p>Depois de salvar, abra o FitPlan instalado no celular e entre com e-mail e senha.</p></div></div>
@@ -521,7 +524,15 @@
       </form>
     `);
     const form = sheet.querySelector(".set-password-form");
-    form?.querySelector(".auth-forgot-btn")?.addEventListener("click", closeActionSheet);
+    form?.querySelector(".auth-forgot-btn")?.addEventListener("click", async () => {
+      passwordRecoveryMode = false;
+      window.fitplanCloud?.consumePasswordRecovery?.();
+      if (isRecovery) {
+        try { await window.fitplanCloud?.signOut?.(); } catch {}
+      }
+      closeActionSheet();
+      applyCloudAuthGate();
+    });
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
       const submit = form.querySelector("button[type='submit']");
@@ -537,9 +548,15 @@
       submit.textContent = "Salvando…";
       try {
         await window.fitplanCloud.updatePassword(data.get("password"));
+        if (isRecovery) {
+          passwordRecoveryMode = false;
+          window.fitplanCloud?.consumePasswordRecovery?.();
+          try { await window.fitplanCloud.signOut(); } catch {}
+        }
         status.textContent = "Senha salva! Agora abra o FitPlan instalado no celular e entre com seu e-mail e essa nova senha.";
         status.classList.add("is-success");
         submit.textContent = "Senha salva ✓";
+        form.querySelector(".auth-forgot-btn").textContent = "Entendi";
       } catch (error) {
         status.textContent = error.message;
         status.classList.add("is-error");
@@ -639,7 +656,16 @@
     return linkedId && profiles[linkedId] ? linkedId : null;
   }
 
+  function isPasswordRecoveryFlow(cloud = cloudSnapshot()) {
+    return passwordRecoveryMode || window.fitplanCloud?.pendingPasswordRecovery || cloud?.recovery === true;
+  }
+
   function applyCloudAuthGate(cloud = cloudSnapshot()) {
+    if (isPasswordRecoveryFlow(cloud)) {
+      showScreen("picker");
+      renderProfilePicker();
+      return;
+    }
     const linkedId = linkedCloudProfileId(cloud);
     if (linkedId) {
       const screenApp = document.querySelector("#screen-app");
@@ -2396,6 +2422,12 @@
     else if (!overlay.hidden) closeOverlay();
   });
   window.addEventListener("fitplan:cloud-auth", (event) => {
+    if (isPasswordRecoveryFlow(event.detail)) {
+      showScreen("picker");
+      renderProfilePicker();
+      openSetPasswordSheet({ recovery: true });
+      return;
+    }
     applyCloudAuthGate(event.detail);
     if (currentProfile && currentRoute === "profile") renderProfileView();
     maybeOpenRequestedAdminRequest(event.detail);
@@ -2411,7 +2443,7 @@
 
   // Open set-password modal when user arrives via password-recovery link
   window.addEventListener("fitplan:password-recovery", () => {
-    openSetPasswordSheet();
+    openSetPasswordSheet({ recovery: true });
   });
 
   (function handlePasswordRecoveryCallback() {
@@ -2426,7 +2458,7 @@
         return;
       }
       window.fitplanCloud?.consumePasswordRecovery?.();
-      openSetPasswordSheet();
+      openSetPasswordSheet({ recovery: true });
     };
     window.setTimeout(tryOpen, 150);
   })();
