@@ -40,14 +40,17 @@
   };
 
   const mediaFallbackById = {
-    "5eLRITT": "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-stiff-leg-deadlift.webp"
+    "5eLRITT": "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-stiff-leg-deadlift.webp",
+    "9XgCBBZ": "assets/exercises/qx4fgX7.gif",
+    "qvlMuMl": "assets/exercises/lever-seated-crunch.gif",
+    "vQqmGGp": "assets/exercises/DOoWcnA.gif"
   };
 
   function versionMediaUrl(src) {
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=62`;
+    return `${src}${separator}v=63`;
   }
 
   const icon = (name) => ({
@@ -212,8 +215,9 @@
     const variant = getSelectedVariant(exercise);
     const media = variant?.media || EXERCISE_MEDIA[exercise.id];
     if (!media) return null;
-    const src = media.url ? (localMediaByUrl[media.url] || media.url) : `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
-    const fallbackSrc = media.url ? mediaFallbackByUrl[media.url] : mediaFallbackById[media.id];
+    const remoteExerciseDbSrc = media.id ? `${EXERCISE_MEDIA_BASE}${media.id}.gif` : null;
+    const src = media.url ? (localMediaByUrl[media.url] || media.url) : `assets/exercises/${media.id}.gif`;
+    const fallbackSrc = media.url ? mediaFallbackByUrl[media.url] : (mediaFallbackById[media.id] || remoteExerciseDbSrc);
     return {
       src: versionMediaUrl(src),
       fallbackSrc: fallbackSrc ? versionMediaUrl(fallbackSrc) : null,
@@ -2528,3 +2532,4 @@
     window.addEventListener("fitplan:cloud-auth", (e) => maybeShowBanner(e.detail));
   })();
 })();
+
