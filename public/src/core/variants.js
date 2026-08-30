@@ -2,7 +2,7 @@
 // PROFILE_EXERCISE_VARIANTS, EXERCISE_VARIANTS, SHARED_MOVEMENT_VARIANTS, AUTO_VARIANT_MEDIA
 // and globals: currentProfile, state, escapeHtml, slugify, hasAnyTerm
 
-const MEDIA_ASSET_VERSION = "63";
+const MEDIA_ASSET_VERSION = "65";
 const LOCAL_MEDIA_FALLBACK_BY_ID = {
   "5eLRITT": "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-stiff-leg-deadlift.webp",
   "9XgCBBZ": "assets/exercises/qx4fgX7.gif",
@@ -183,5 +183,7 @@ function renderMovementMedia(exercise, variant = getSelectedVariant(exercise)) {
   const fallbackSrc = media.id ? versionMediaUrl(LOCAL_MEDIA_FALLBACK_BY_ID[media.id] || remoteSrc) : "";
   return `<img class="movement-image" src="${src}" alt="${escapeHtml(alt)}" title="${escapeHtml(media.label)}" loading="lazy" decoding="async" onerror="${fallbackSrc ? `if(!this.dataset.fallback){this.dataset.fallback='true';this.src='${fallbackSrc}';}else{` : ""}this.closest('.exercise-visual').classList.add('media-error'); this.remove();${fallbackSrc ? "}" : ""}">`;
 }
+
+
 
 

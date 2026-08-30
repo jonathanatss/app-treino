@@ -50,7 +50,7 @@
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=63`;
+    return `${src}${separator}v=65`;
   }
 
   const icon = (name) => ({
@@ -661,7 +661,13 @@
   }
 
   function isPasswordRecoveryFlow(cloud = cloudSnapshot()) {
-    return passwordRecoveryMode || window.fitplanCloud?.pendingPasswordRecovery || cloud?.recovery === true;
+    const search = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    return passwordRecoveryMode
+      || search.get("type") === "recovery"
+      || hash.get("type") === "recovery"
+      || window.fitplanCloud?.pendingPasswordRecovery
+      || cloud?.recovery === true;
   }
 
   function applyCloudAuthGate(cloud = cloudSnapshot()) {
@@ -2461,7 +2467,6 @@
         window.setTimeout(tryOpen, 150);
         return;
       }
-      window.fitplanCloud?.consumePasswordRecovery?.();
       openSetPasswordSheet({ recovery: true });
     };
     window.setTimeout(tryOpen, 150);
@@ -2532,4 +2537,6 @@
     window.addEventListener("fitplan:cloud-auth", (e) => maybeShowBanner(e.detail));
   })();
 })();
+
+
 

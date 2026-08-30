@@ -11,6 +11,7 @@
   let callbackFailure = null;
   let pendingPasswordRecovery = false;
   let ready = false;
+  const RECOVERY_SESSION_KEY = "fitplan-password-recovery-active";
 
   const snapshot = () => ({
     configured: Boolean(client),
@@ -51,6 +52,20 @@
     const search = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     return search.get("type") || hash.get("type");
+  }
+
+  function isRecoveryCallback() {
+    return callbackType() === "recovery" || sessionStorage.getItem(RECOVERY_SESSION_KEY) === "1";
+  }
+
+  function markPasswordRecovery() {
+    pendingPasswordRecovery = true;
+    sessionStorage.setItem(RECOVERY_SESSION_KEY, "1");
+  }
+
+  function clearPasswordRecovery() {
+    pendingPasswordRecovery = false;
+    sessionStorage.removeItem(RECOVERY_SESSION_KEY);
   }
 
   function clearCallbackParams() {
@@ -239,7 +254,7 @@
   });
   api.consumePasswordRecovery = () => {
     const value = pendingPasswordRecovery;
-    pendingPasswordRecovery = false;
+    clearPasswordRecovery();
     return value;
   };
   window.fitplanCloud = api;
@@ -256,20 +271,24 @@
     client.auth.onAuthStateChange((_event, nextSession) => {
       session = nextSession;
       // Signal the UI when the user arrives via a password-recovery link
-      if (_event === "PASSWORD_RECOVERY") {
-        pendingPasswordRecovery = true;
+      if (_event === "PASSWORD_RECOVERY" || (_event === "SIGNED_IN" && isRecoveryCallback())) {
+        markPasswordRecovery();
         window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
       }
       // Track whether the last sign-in was via magic link (OTP).
       // Only true when the session was created in THIS page load from a magic link
       // URL (access_token in hash). Never true for password logins or restored sessions.
       if (_event === "SIGNED_IN") {
-        const hasTokenInUrl = window.location.hash.includes("access_token=");
-        const amr = nextSession?.user?.amr;
-        const amrUsedOtp = Array.isArray(amr) && amr.some((a) => a.method === "otp");
-        // Only flag as OTP if token was in URL (first-time magic link open)
-        // OR if amr explicitly confirms otp method (no URL fallback needed)
-        api.lastSignInWasOtp = hasTokenInUrl || amrUsedOtp;
+        if (isRecoveryCallback()) {
+          api.lastSignInWasOtp = false;
+        } else {
+          const hasTokenInUrl = window.location.hash.includes("access_token=");
+          const amr = nextSession?.user?.amr;
+          const amrUsedOtp = Array.isArray(amr) && amr.some((a) => a.method === "otp");
+          // Only flag as OTP if token was in URL (first-time magic link open)
+          // OR if amr explicitly confirms otp method (no URL fallback needed)
+          api.lastSignInWasOtp = hasTokenInUrl || amrUsedOtp;
+        }
       }
       if (_event === "PASSWORD_RECOVERY") {
         // Clear any stale OTP flag so applyCloudAuthGate doesn't also try to open set-password
@@ -287,11 +306,12 @@
         }
       }, 0);
     });
-    pendingPasswordRecovery = callbackType() === "recovery";
+    pendingPasswordRecovery = isRecoveryCallback();
+    if (pendingPasswordRecovery) sessionStorage.setItem(RECOVERY_SESSION_KEY, "1");
     callbackFailure = friendlyError(callbackError());
     error = callbackFailure;
     // Clean error/token params from URL so refreshing doesn't re-trigger auth
-    if (callbackFailure || window.location.hash.includes("access_token")) {
+    if (callbackFailure || callbackType() === "recovery" || window.location.hash.includes("access_token")) {
       clearCallbackParams();
     }
     refreshSession(error);
