@@ -9,6 +9,7 @@
   let profile = null;
   let error = null;
   let callbackFailure = null;
+  let pendingPasswordRecovery = false;
   let ready = false;
 
   const snapshot = () => ({
@@ -43,6 +44,12 @@
     const search = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     return search.get("error_description") || hash.get("error_description") || search.get("error") || hash.get("error");
+  }
+
+  function callbackType() {
+    const search = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    return search.get("type") || hash.get("type");
   }
 
   function clearCallbackParams() {
@@ -226,6 +233,14 @@
     signOut,
     subscribe
   };
+  Object.defineProperty(api, "pendingPasswordRecovery", {
+    get() { return pendingPasswordRecovery; }
+  });
+  api.consumePasswordRecovery = () => {
+    const value = pendingPasswordRecovery;
+    pendingPasswordRecovery = false;
+    return value;
+  };
   window.fitplanCloud = api;
 
   try {
@@ -241,6 +256,7 @@
       session = nextSession;
       // Signal the UI when the user arrives via a password-recovery link
       if (_event === "PASSWORD_RECOVERY") {
+        pendingPasswordRecovery = true;
         window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
       }
       // Track whether the last sign-in was via magic link (OTP).
@@ -270,6 +286,7 @@
         }
       }, 0);
     });
+    pendingPasswordRecovery = callbackType() === "recovery";
     callbackFailure = friendlyError(callbackError());
     error = callbackFailure;
     // Clean error/token params from URL so refreshing doesn't re-trigger auth

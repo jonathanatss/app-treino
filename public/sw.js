@@ -9,8 +9,8 @@
  * This ensures users always get the latest app code without needing to clear cache.
  */
 
-const CACHE_VERSION = "fitplan-v55";
-const IMAGE_CACHE   = "fitplan-images-v5";
+const CACHE_VERSION = "fitplan-v61";
+const IMAGE_CACHE   = "fitplan-images-v11";
 
 // Only truly immutable assets go in the image cache
 const PRECACHE_IMAGES = [
@@ -88,19 +88,17 @@ self.addEventListener("fetch", (event) => {
 
   // External requests (CDN fonts, Supabase, ExerciseDB) — pass through
   if (!isSameOrigin) {
-    // Cache opaque responses for external images only
+    // External images → network-first, with cache as fallback. This prevents
+    // a stale opaque response from keeping a broken GIF visible forever.
     if (request.destination === "image") {
       event.respondWith(
         caches.open(IMAGE_CACHE).then((cache) =>
-          cache.match(request).then((cached) => {
-            if (cached) return cached;
-            return fetch(request).then((response) => {
-              if (response && response.type === "opaque") {
-                cache.put(request, response.clone());
-              }
-              return response;
-            }).catch(() => cached || new Response("", { status: 408 }));
-          })
+          fetch(new Request(request, { cache: "reload" })).then((response) => {
+            if (response && (response.status === 200 || response.type === "opaque")) {
+              cache.put(request, response.clone());
+            }
+            return response;
+          }).catch(() => cache.match(request).then((cached) => cached || new Response("", { status: 408 })))
         )
       );
     }

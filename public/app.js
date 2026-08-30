@@ -4,8 +4,27 @@
 const ACTIVE_KEY = "gym-app-active-profile";
 const UI_KEY = "gym-app-ui";
 const EXPORT_VERSION = 1;
+const APP_VERSION = "61";
+const APP_VERSION_KEY = "fitplan-app-version";
 const todayKey = getLocalDayKey();
 const LOAD_WARMUP_TIP = "Dica de aquecimento: no primeiro exercício de cada grupo muscular, faça 1 ou 2 séries com 40~50% da carga válida antes das séries principais.";
+
+(function refreshStaleAppShell() {
+  try {
+    const storedVersion = localStorage.getItem(APP_VERSION_KEY);
+    if (storedVersion === APP_VERSION) return;
+    localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
+    if (!storedVersion) return;
+    if (window.caches?.keys) {
+      caches.keys().then((keys) =>
+        Promise.all(keys.filter((key) => /^fitplan-/.test(key)).map((key) => caches.delete(key)))
+      ).catch(() => {});
+    }
+    navigator.serviceWorker?.getRegistrations?.()
+      .then((registrations) => Promise.all(registrations.map((registration) => registration.update().catch(() => null))))
+      .catch(() => {});
+  } catch {}
+})();
 
 
 /* === State === */
@@ -38,12 +57,13 @@ function loadProfileState(profileId) {
         variants: parsed.variants || {},
         exerciseRest: parsed.exerciseRest || {},
         exerciseNotes: parsed.exerciseNotes || {},
-        expandedMedia: parsed.expandedMedia || {}
+        expandedMedia: parsed.expandedMedia || {},
+        expandedExerciseKey: null
       };
     }
-    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: initialTab, ...parsed };
+    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, expandedExerciseKey: null, activeTab: initialTab, ...parsed };
   } catch {
-    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: profile.defaultTab || getTodayWorkoutKey(profile) };
+    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, expandedExerciseKey: null, activeTab: profile.defaultTab || getTodayWorkoutKey(profile) };
   }
 }
 

@@ -38,11 +38,15 @@
     "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp": "assets/exercises/7552.gif"
   };
 
+  const mediaFallbackById = {
+    "5eLRITT": "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-stiff-leg-deadlift.webp"
+  };
+
   function versionMediaUrl(src) {
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=55`;
+    return `${src}${separator}v=61`;
   }
 
   const icon = (name) => ({
@@ -208,12 +212,38 @@
     const media = variant?.media || EXERCISE_MEDIA[exercise.id];
     if (!media) return null;
     const src = media.url ? (localMediaByUrl[media.url] || media.url) : `${EXERCISE_MEDIA_BASE}${media.id}.gif`;
-    const fallbackSrc = media.url ? mediaFallbackByUrl[media.url] : null;
+    const fallbackSrc = media.url ? mediaFallbackByUrl[media.url] : mediaFallbackById[media.id];
     return {
       src: versionMediaUrl(src),
       fallbackSrc: fallbackSrc ? versionMediaUrl(fallbackSrc) : null,
       label: media.label || exercise.name
     };
+  }
+
+  function retryMediaUrl(src) {
+    if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
+    const separator = String(src).includes("?") ? "&" : "?";
+    return `${src}${separator}retry=${Date.now()}`;
+  }
+
+  function bindMediaErrorFallback(image, media, emptyClassName = "exercise-media-empty") {
+    if (!image || !media) return;
+    image.addEventListener("error", () => {
+      if (image.dataset.retry !== "true") {
+        image.dataset.retry = "true";
+        image.src = retryMediaUrl(media.src);
+        return;
+      }
+      if (media.fallbackSrc && image.dataset.fallback !== "true") {
+        image.dataset.fallback = "true";
+        image.src = retryMediaUrl(media.fallbackSrc);
+        return;
+      }
+      image.replaceWith(Object.assign(document.createElement("div"), {
+        className: emptyClassName,
+        textContent: "Demonstração temporariamente indisponível"
+      }));
+    });
   }
 
   function getEquipment(exercise, variant = getSelectedVariant(exercise)) {
@@ -479,14 +509,15 @@
   }
 
   function openSetPasswordSheet() {
+    if (activeSheet?.querySelector?.(".set-password-form")) return;
     const sheet = showActionSheet("Criar senha", `
       <form class="cloud-auth-form set-password-form">
-        <div class="cloud-auth-intro"><span aria-hidden="true">🔒</span><div><strong>Crie sua senha</strong><p>Você poderá entrar com e-mail e senha em qualquer dispositivo, inclusive no iPhone.</p></div></div>
+        <div class="cloud-auth-intro"><span aria-hidden="true">🔒</span><div><strong>Crie sua nova senha</strong><p>Depois de salvar, abra o FitPlan instalado no celular e entre com e-mail e senha.</p></div></div>
         <label><span>NOVA SENHA</span><input name="password" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required minlength="6"></label>
         <label><span>CONFIRMAR SENHA</span><input name="confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" required minlength="6"></label>
         <p class="cloud-auth-status" role="status" aria-live="polite"></p>
         <button class="primary-button" type="submit">Salvar senha</button>
-        <button class="auth-forgot-btn" type="button">Fazer isso depois</button>
+        <button class="auth-forgot-btn" type="button">Fechar</button>
       </form>
     `);
     const form = sheet.querySelector(".set-password-form");
@@ -506,7 +537,7 @@
       submit.textContent = "Salvando…";
       try {
         await window.fitplanCloud.updatePassword(data.get("password"));
-        status.textContent = "Senha salva! Você já pode entrar com e-mail e senha.";
+        status.textContent = "Senha salva! Agora abra o FitPlan instalado no celular e entre com seu e-mail e essa nova senha.";
         status.classList.add("is-success");
         submit.textContent = "Senha salva ✓";
       } catch (error) {
@@ -904,6 +935,7 @@
       button.addEventListener("click", () => {
         activeTab = tab.key;
         state.activeTab = activeTab;
+        state.expandedExerciseKey = null;
         saveProfileState();
         renderApp();
       });
@@ -947,20 +979,99 @@
       const done = !!state.done[stateKey];
       const displayName = variants.length > 1 ? (variant.displayName || variant.label) : exercise.name;
       const weight = state.weights[stateKey];
+      const expanded = state.expandedExerciseKey === stateKey;
+      const media = expanded ? mediaFor(exercise) : null;
+      const prep = getPrepMeta(exercise);
+      const restSeconds = exerciseRestSeconds(exercise, stateKey);
+      const history = expanded ? getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load)) : [];
+      const last = history.at(-1)?.load;
+      const personalNote = state.exerciseNotes?.[stateKey] || "";
       const article = document.createElement("article");
-      article.className = `exercise${done ? " done" : ""}${index === firstPending ? " is-current" : ""}`;
+      article.className = `exercise${done ? " done" : ""}${index === firstPending ? " is-current" : ""}${expanded ? " is-expanded" : ""}`;
       article.dataset.id = exercise.id;
+      article.dataset.stateKey = stateKey;
       article.innerHTML = `
         ${index === firstPending && !done ? `<button class="exercise-play" type="button" aria-label="Iniciar ${escapeHtml(displayName)}">▶</button>` : `<span class="exercise-number">${done ? "✓" : index + 1}</span>`}
         <div class="exercise-main">
           <h2 class="exercise-title">${escapeHtml(displayName)}</h2>
           <div class="compact-meta"><strong>${seriesText(exercise.sets)}</strong><span>•</span><span>${escapeHtml(repsText(variantReps(exercise, variant)))}</span>${variants.length > 1 ? `<span>•</span><span>${variants.length} opções</span>` : ""}${weight ? `<span>•</span><span>${escapeHtml(weight)} kg</span>` : ""}</div>
+          ${expanded ? `
+            <div class="inline-detail">
+              <div class="inline-detail-visual">${media ? `<img class="inline-media-image" src="${media.src}" alt="Demonstração de ${escapeHtml(displayName)}" referrerpolicy="no-referrer" decoding="async">` : `<span>Demonstração não disponível</span>`}</div>
+              ${variantButtons(exercise)}
+              <div class="inline-detail-grid">
+                <span><small>MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></span>
+                <span><small>EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></span>
+                <span><small>DESCANSO</small><strong>${escapeHtml(restDurationLabel(restSeconds))}</strong></span>
+                <span><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${escapeHtml(formatLoad(last))} kg` : "Sem registro"}</strong></span>
+              </div>
+              <section class="inline-guide">
+                <h3>Guia de execução</h3>
+                <ol>
+                  <li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li>
+                  <li>${escapeHtml(variant.note || exercise.note || "Controle a fase de descida e mantenha a amplitude confortável.")}</li>
+                  <li>Respeite o RIR indicado: ${escapeHtml(exercise.rir)}.</li>
+                </ol>
+                ${personalNote ? `<div class="exercise-personal-note"><small>SUA OBSERVAÇÃO</small><p>${escapeHtml(personalNote)}</p></div>` : ""}
+              </section>
+              <div class="inline-detail-actions">
+                <button class="secondary-button inline-history" type="button">Histórico</button>
+                <button class="secondary-button inline-actions" type="button">Ajustes</button>
+                <button class="primary-button inline-start" type="button">${done ? "Ver séries / corrigir" : "Iniciar exercício"}</button>
+              </div>
+            </div>` : ""}
         </div>
-        <button class="exercise-menu" type="button" aria-label="Detalhes de ${escapeHtml(displayName)}">⋮</button>`;
+        <button class="exercise-menu" type="button" aria-label="${expanded ? "Recolher" : "Expandir"} ${escapeHtml(displayName)}">${expanded ? "⌃" : "⋮"}</button>`;
       article.addEventListener("click", (event) => {
-        if (event.target.closest(".exercise-play")) openActiveExercise(exercise, index);
-        else openExerciseDetail(exercise, index);
+        if (event.target.closest(".exercise-play, .inline-start")) {
+          event.stopPropagation();
+          openActiveExercise(exercise, index);
+          return;
+        }
+        if (event.target.closest(".inline-history")) {
+          event.stopPropagation();
+          openExerciseHistorySheet(exercise, article.dataset.stateKey || stateKey);
+          return;
+        }
+        if (event.target.closest(".inline-actions")) {
+          event.stopPropagation();
+          openExerciseActionMenu(exercise, index);
+          return;
+        }
+        if (event.target.closest(".variant-choice")) {
+          event.stopPropagation();
+          const scrollXBefore = window.scrollX;
+          const scrollYBefore = window.scrollY;
+          const button = event.target.closest(".variant-choice");
+          state.variants = state.variants || {};
+          state.variants[exercise.id] = button.dataset.variant;
+          const nextVariant = getSelectedVariant(exercise);
+          state.expandedExerciseKey = exerciseStateKey(exercise, nextVariant);
+          saveProfileState();
+          renderApp();
+          requestAnimationFrame(() => window.scrollTo(scrollXBefore, scrollYBefore));
+          return;
+        }
+        if (event.target.closest(".exercise-menu")) {
+          event.stopPropagation();
+          const scrollXBefore = window.scrollX;
+          const scrollYBefore = window.scrollY;
+          state.expandedExerciseKey = state.expandedExerciseKey === stateKey ? null : stateKey;
+          saveProfileState();
+          renderApp();
+          requestAnimationFrame(() => window.scrollTo(scrollXBefore, scrollYBefore));
+          return;
+        }
+        if (event.target.closest("button,input,label,a,summary,details")) return;
+        const scrollXBefore = window.scrollX;
+        const scrollYBefore = window.scrollY;
+        state.expandedExerciseKey = state.expandedExerciseKey === stateKey ? null : stateKey;
+        saveProfileState();
+        renderApp();
+        requestAnimationFrame(() => window.scrollTo(scrollXBefore, scrollYBefore));
       });
+      const detailImage = article.querySelector(".inline-media-image");
+      bindMediaErrorFallback(detailImage, media, "inline-media-empty");
       workoutEl.appendChild(article);
     });
     updateProgress();
@@ -1006,12 +1117,19 @@
 
   function showDetailToast(message) {
     overlay.querySelector(".exercise-action-toast")?.remove();
+    document.querySelector(".exercise-action-toast")?.remove();
     const toast = document.createElement("div");
     toast.className = "exercise-action-toast";
     toast.setAttribute("role", "status");
     toast.textContent = message;
-    overlay.querySelector(".detail-page")?.appendChild(toast);
+    (overlay.querySelector(".detail-page") || document.body).appendChild(toast);
     window.setTimeout(() => toast.remove(), 3200);
+  }
+
+  function keepExerciseExpanded(exercise, key) {
+    state.expandedExerciseKey = key || exerciseStateKey(exercise, getSelectedVariant(exercise));
+    saveProfileState();
+    renderWorkout();
   }
 
   function openExerciseRestEditor(exercise, key) {
@@ -1063,7 +1181,7 @@
       else delete state.exerciseNotes[key];
       saveProfileState();
       closeActionSheet();
-      openExerciseDetail(exercise, index);
+      keepExerciseExpanded(exercise, key);
       showDetailToast(note ? "Observação salva." : "Observação removida.");
     });
     sheet.querySelector(".clear-note")?.addEventListener("click", () => {
@@ -1071,7 +1189,7 @@
       delete state.exerciseNotes[key];
       saveProfileState();
       closeActionSheet();
-      openExerciseDetail(exercise, index);
+      keepExerciseExpanded(exercise, key);
       showDetailToast("Observação removida.");
     });
   }
@@ -1102,7 +1220,7 @@
     saveProfileState();
     closeActionSheet();
     renderWorkout();
-    openExerciseDetail(exercise, index);
+    keepExerciseExpanded(exercise, key);
     showDetailToast("Exercício reiniciado para hoje.");
   }
 
@@ -1139,7 +1257,10 @@
     });
     sheet.querySelector(".choose-variant")?.addEventListener("click", () => {
       closeActionSheet();
-      const alternatives = overlay.querySelector(".exercise-alternatives");
+      state.expandedExerciseKey = key;
+      saveProfileState();
+      renderWorkout();
+      const alternatives = document.querySelector(`[data-state-key="${CSS.escape(key)}"] .exercise-alternatives`);
       alternatives?.scrollIntoView({ behavior: "smooth", block: "center" });
       alternatives?.querySelector(".variant-choice")?.focus({ preventScroll: true });
     });
@@ -1172,8 +1293,15 @@
   }
 
   function openExerciseDetail(exercise, index) {
+    const scrollXBefore = window.scrollX;
+    const scrollYBefore = window.scrollY;
     const variant = getSelectedVariant(exercise);
     const stateKey = exerciseStateKey(exercise, variant);
+    state.expandedExerciseKey = state.expandedExerciseKey === stateKey ? null : stateKey;
+    saveProfileState();
+    renderWorkout();
+    requestAnimationFrame(() => window.scrollTo(scrollXBefore, scrollYBefore));
+    return;
     const isDone = !!state.done[stateKey];
     const media = mediaFor(exercise);
     const prep = getPrepMeta(exercise);
@@ -1193,16 +1321,7 @@
     overlay.querySelector(".overlay-close").addEventListener("click", closeOverlay);
     overlay.querySelector(".overlay-more").addEventListener("click", () => openExerciseActionMenu(exercise, index));
     const detailImage = overlay.querySelector(".detail-media-image");
-    if (detailImage) {
-      detailImage.addEventListener("error", () => {
-        if (media?.fallbackSrc && detailImage.dataset.fallback !== "true") {
-          detailImage.dataset.fallback = "true";
-          detailImage.src = media.fallbackSrc;
-          return;
-        }
-        detailImage.replaceWith(Object.assign(document.createElement("div"), { className: "exercise-media-empty", textContent: "Demonstração temporariamente indisponível" }));
-      });
-    }
+    bindMediaErrorFallback(detailImage, media);
     overlay.querySelector(".play-fab").addEventListener("click", () => openActiveExercise(exercise, index));
     overlay.querySelector(".detail-start").addEventListener("click", () => openActiveExercise(exercise, index));
     overlay.querySelector(".detail-history").addEventListener("click", () => openExerciseHistorySheet(exercise, stateKey));
@@ -1361,6 +1480,23 @@
     return `${d}/${m}/${y}`;
   }
 
+  function prettyTime(value) {
+    if (!value) return "";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return "";
+    return parsed.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  }
+
+  function sessionCompletedLabel(session) {
+    const date = prettyDate(session.date);
+    const time = prettyTime(session.completedAt);
+    return time ? `${date} às ${time}` : date;
+  }
+
   function renderHistoryView() {
     const view = document.querySelector("#view-history");
     if (!view || !state) return;
@@ -1368,7 +1504,7 @@
     const monthKey = todayKey.slice(0, 7);
     const monthSessions = sessions.filter((session) => session.date?.startsWith(monthKey));
     const volume = monthSessions.reduce((sum, session) => sum + (session.volume || 0), 0);
-    view.innerHTML = `<div class="screen-heading"><h2>Histórico de Treinos</h2></div><div class="metric-grid"><article class="stat-card"><small>TREINOS NO MÊS</small><strong>${monthSessions.length}</strong></article><article class="stat-card"><small>VOLUME TOTAL</small><strong class="neutral">${(volume / 1000).toFixed(1)}<small style="display:inline"> t</small></strong></article><article class="stat-card wide-card"><small>SEQUÊNCIA ATUAL</small><strong>${Math.min(sessions.length, 7)}<small style="display:inline"> dias</small></strong><div class="streak-bars">${Array.from({length:7},(_,i)=>`<i class="${i < Math.min(sessions.length,7) ? "on" : ""}"></i>`).join("")}</div></article></div><div class="section-title"><h3>Últimos treinos</h3></div><div class="session-list">${sessions.length ? sessions.slice(0, 12).map((session) => `<article class="session-card"><span class="session-icon">${icon("workout")}</span><div><h4>${escapeHtml(session.title.replace(/^[^•]+•\s*/, ""))}</h4><p>◷ ${prettyDate(session.date)} &nbsp; • &nbsp; ${session.exercises || 0} exercícios</p></div><span class="status-chip">✓ Concluído</span></article>`).join("") : `<article class="content-card" style="padding:24px;color:var(--fit-muted)">Seus treinos concluídos aparecerão aqui.</article>`}</div>`;
+    view.innerHTML = `<div class="screen-heading"><h2>Histórico de Treinos</h2></div><div class="metric-grid"><article class="stat-card"><small>TREINOS NO MÊS</small><strong>${monthSessions.length}</strong></article><article class="stat-card"><small>VOLUME TOTAL</small><strong class="neutral">${(volume / 1000).toFixed(1)}<small style="display:inline"> t</small></strong></article><article class="stat-card wide-card"><small>SEQUÊNCIA ATUAL</small><strong>${Math.min(sessions.length, 7)}<small style="display:inline"> dias</small></strong><div class="streak-bars">${Array.from({length:7},(_,i)=>`<i class="${i < Math.min(sessions.length,7) ? "on" : ""}"></i>`).join("")}</div></article></div><div class="section-title"><h3>Últimos treinos</h3></div><div class="session-list">${sessions.length ? sessions.slice(0, 12).map((session) => `<article class="session-card"><span class="session-icon">${icon("workout")}</span><div><h4>${escapeHtml(session.title.replace(/^[^•]+•\s*/, ""))}</h4><p>◷ ${escapeHtml(sessionCompletedLabel(session))} &nbsp; • &nbsp; ${session.exercises || 0} exercícios</p></div><span class="status-chip">✓ Concluído</span></article>`).join("") : `<article class="content-card" style="padding:24px;color:var(--fit-muted)">Seus treinos concluídos aparecerão aqui.</article>`}</div>`;
   }
 
   function personalRecords() {
@@ -2277,6 +2413,23 @@
   window.addEventListener("fitplan:password-recovery", () => {
     openSetPasswordSheet();
   });
+
+  (function handlePasswordRecoveryCallback() {
+    const search = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const isRecovery = search.get("type") === "recovery" || hash.get("type") === "recovery" || window.fitplanCloud?.pendingPasswordRecovery;
+    const hasError = search.get("error") || search.get("error_description") || hash.get("error") || hash.get("error_description");
+    if (!isRecovery || hasError) return;
+    const tryOpen = () => {
+      if (!window.fitplanCloud?.snapshot?.().ready) {
+        window.setTimeout(tryOpen, 150);
+        return;
+      }
+      window.fitplanCloud?.consumePasswordRecovery?.();
+      openSetPasswordSheet();
+    };
+    window.setTimeout(tryOpen, 150);
+  })();
 
   // When the recovery link is expired/invalid, show forgot-password sheet
   // with an explanation instead of leaving the user on a blank screen.

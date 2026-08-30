@@ -322,9 +322,30 @@ button { touch-action: manipulation; }
   gap: 12px;
 }
 .exercise.done { opacity: .62; border-color: #292929; background: #151515; }
+.exercise.done.is-expanded { opacity: 1; }
 .exercise.is-current { border: 2px solid var(--fit-lime); background: #1d2017; box-shadow: 0 0 24px rgba(183,255,0,.07); }
+.exercise.is-expanded {
+  position: relative;
+  display: block;
+  align-items: start;
+  padding: 14px 52px 14px 66px;
+  border-color: #4c5840;
+  background: linear-gradient(145deg, #1c1d1a, #151515);
+}
+.exercise.is-expanded .exercise-main {
+  min-width: 0;
+}
+.exercise.is-expanded .exercise-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 .exercise-main { min-width: 0; }
 .exercise-title { margin: 0; overflow: hidden; color: #f4f4f2; font-size: 16px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.exercise.is-expanded .exercise-title {
+  padding-right: 0;
+  white-space: normal;
+}
 .exercise.done .exercise-title { text-decoration: line-through; }
 .exercise-note { display: none; }
 .compact-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; color: var(--fit-muted); font-size: 11px; font-weight: 650; }
@@ -332,7 +353,9 @@ button { touch-action: manipulation; }
 .exercise-number, .exercise-play {
   display: grid;
   width: 40px;
+  min-width: 40px;
   height: 40px;
+  min-height: 40px;
   place-items: center;
   border: 1px solid #454b38;
   border-radius: 5px;
@@ -340,10 +363,110 @@ button { touch-action: manipulation; }
   color: var(--fit-muted);
   font-size: 12px;
   font-weight: 800;
+  line-height: 1;
+  isolation: isolate;
+}
+.exercise.is-expanded .exercise-number,
+.exercise.is-expanded .exercise-play {
+  position: absolute;
+  top: 14px;
+  left: 14px;
 }
 .exercise-play { border-color: transparent; background: var(--fit-lime-2); color: #182000; font-size: 18px; cursor: pointer; }
 .exercise.done .exercise-number { border: 0; border-radius: 50%; background: var(--fit-lime-2); color: #172000; }
 .exercise-menu { border: 0; background: transparent; color: var(--fit-muted); font-size: 24px; cursor: pointer; }
+.exercise.is-expanded .exercise-menu { color: var(--fit-lime); }
+.inline-detail {
+  display: grid;
+  gap: 14px;
+  margin: 14px -38px 0 -52px;
+  padding-top: 14px;
+  border-top: 1px solid #34382f;
+}
+.inline-detail-visual {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 340px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #3b4035;
+  border-radius: 14px;
+  background: #ecece8;
+  color: #5f6257;
+  text-align: center;
+}
+.inline-detail-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.inline-detail .exercise-alternatives {
+  margin: 0;
+}
+.inline-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.inline-detail-grid span {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #33372f;
+  border-radius: 10px;
+  background: #171717;
+}
+.inline-detail-grid small,
+.inline-detail-grid strong {
+  display: block;
+}
+.inline-detail-grid small {
+  color: var(--fit-muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .07em;
+}
+.inline-detail-grid strong {
+  margin-top: 5px;
+  color: #f4f4f2;
+  font-size: 14px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.inline-guide {
+  padding: 14px;
+  border: 1px solid #33362f;
+  border-radius: 12px;
+  background: #151515;
+}
+.inline-guide h3 {
+  margin: 0 0 10px;
+  color: #f4f4f2;
+  font-size: 15px;
+}
+.inline-guide ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--fit-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.inline-detail-actions {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1.4fr);
+  gap: 8px;
+}
+.inline-detail-actions .primary-button,
+.inline-detail-actions .secondary-button {
+  min-height: 48px;
+  margin: 0;
+  border-radius: 9px;
+  font-size: 13px;
+}
 
 .bottom-nav {
   position: fixed;
