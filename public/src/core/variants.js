@@ -2,7 +2,7 @@
 // PROFILE_EXERCISE_VARIANTS, EXERCISE_VARIANTS, SHARED_MOVEMENT_VARIANTS, AUTO_VARIANT_MEDIA
 // and globals: currentProfile, state, escapeHtml, slugify, hasAnyTerm
 
-const MEDIA_ASSET_VERSION = "54";
+const MEDIA_ASSET_VERSION = "55";
 
 function versionMediaUrl(src) {
   if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;

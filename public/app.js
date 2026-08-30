@@ -25,11 +25,11 @@ function loadProfileState(profileId) {
   const profile = profiles[profileId];
   try {
     const parsed = JSON.parse(localStorage.getItem(profileStateKey(profileId))) || {};
-    const activeForToday = getTodayWorkoutKey(profile) || parsed.activeTab || profile.defaultTab;
+    const initialTab = parsed.activeTab || profile.defaultTab || getTodayWorkoutKey(profile);
     if (parsed.day !== todayKey) {
       return {
         day: todayKey,
-        activeTab: activeForToday,
+        activeTab: initialTab,
         weights: parsed.weights || {},
         done: {},
         history: parsed.history || {},
@@ -41,9 +41,9 @@ function loadProfileState(profileId) {
         expandedMedia: parsed.expandedMedia || {}
       };
     }
-    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: activeForToday, ...parsed };
+    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: initialTab, ...parsed };
   } catch {
-    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: getTodayWorkoutKey(profile) || profile.defaultTab };
+    return { day: todayKey, weights: {}, done: {}, history: {}, variants: {}, exerciseRest: {}, exerciseNotes: {}, expandedMedia: {}, activeTab: profile.defaultTab || getTodayWorkoutKey(profile) };
   }
 }
 

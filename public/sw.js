@@ -9,8 +9,8 @@
  * This ensures users always get the latest app code without needing to clear cache.
  */
 
-const CACHE_VERSION = "fitplan-v54";
-const IMAGE_CACHE   = "fitplan-images-v4";
+const CACHE_VERSION = "fitplan-v55";
+const IMAGE_CACHE   = "fitplan-images-v5";
 
 // Only truly immutable assets go in the image cache
 const PRECACHE_IMAGES = [

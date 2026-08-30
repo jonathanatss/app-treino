@@ -42,7 +42,7 @@
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=54`;
+    return `${src}${separator}v=55`;
   }
 
   const icon = (name) => ({
