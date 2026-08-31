@@ -11,7 +11,6 @@
   let callbackFailure = null;
   let pendingPasswordRecovery = false;
   let ready = false;
-  const RECOVERY_SESSION_KEY = "fitplan-password-recovery-active";
 
   const snapshot = () => ({
     configured: Boolean(client),
@@ -55,17 +54,15 @@
   }
 
   function isRecoveryCallback() {
-    return callbackType() === "recovery" || sessionStorage.getItem(RECOVERY_SESSION_KEY) === "1";
+    return callbackType() === "recovery";
   }
 
   function markPasswordRecovery() {
     pendingPasswordRecovery = true;
-    sessionStorage.setItem(RECOVERY_SESSION_KEY, "1");
   }
 
   function clearPasswordRecovery() {
     pendingPasswordRecovery = false;
-    sessionStorage.removeItem(RECOVERY_SESSION_KEY);
   }
 
   function clearCallbackParams() {
@@ -306,8 +303,8 @@
         }
       }, 0);
     });
+    try { sessionStorage.removeItem("fitplan-password-recovery-active"); } catch {}
     pendingPasswordRecovery = isRecoveryCallback();
-    if (pendingPasswordRecovery) sessionStorage.setItem(RECOVERY_SESSION_KEY, "1");
     callbackFailure = friendlyError(callbackError());
     error = callbackFailure;
     // Clean error/token params from URL so refreshing doesn't re-trigger auth

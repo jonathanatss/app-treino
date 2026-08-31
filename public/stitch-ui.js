@@ -20,6 +20,10 @@
     "https://gymvisual.com/img/p/4/8/8/8/4888.gif": "assets/exercises/4888.gif",
     "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-crunch.gif": "assets/exercises/lever-seated-crunch.gif",
     "https://liftmanual.com/wp-content/uploads/2023/04/sled-hack-squat.webp": "assets/exercises/sled-hack-squat.webp",
+    "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp": "assets/exercises/Zg3XY7P.gif",
+    "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-one-arm-bent-over-row.gif": "assets/exercises/Fhdtwf3.gif",
+    "https://liftmanual.com/wp-content/uploads/2023/04/smith-hip-raise.webp": "assets/exercises/qg2PGl6.gif",
+    "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp": "assets/exercises/7552.gif",
     "https://gymvisual.com/img/p/1/0/2/8/6/10286.gif": "assets/exercises/10286.gif",
     "https://gymvisual.com/img/p/6/6/1/4/6614.gif": "assets/exercises/6614.gif",
     "https://gymvisual.com/img/p/1/4/4/5/7/14457.gif": "assets/exercises/14457.gif",
@@ -33,9 +37,9 @@
   };
 
   const mediaFallbackByUrl = {
-    "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp": `${EXERCISE_MEDIA_BASE}Zg3XY7P.gif`,
-    "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-one-arm-bent-over-row.gif": `${EXERCISE_MEDIA_BASE}Fhdtwf3.gif`,
-    "https://liftmanual.com/wp-content/uploads/2023/04/smith-hip-raise.webp": `${EXERCISE_MEDIA_BASE}qg2PGl6.gif`,
+    "https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-leg-curl.webp": "assets/exercises/Zg3XY7P.gif",
+    "https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-one-arm-bent-over-row.gif": "assets/exercises/Fhdtwf3.gif",
+    "https://liftmanual.com/wp-content/uploads/2023/04/smith-hip-raise.webp": "assets/exercises/qg2PGl6.gif",
     "https://liftmanual.com/wp-content/uploads/2023/04/cable-lying-triceps-extension.webp": "assets/exercises/7552.gif"
   };
 
@@ -50,7 +54,7 @@
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=65`;
+    return `${src}${separator}v=66`;
   }
 
   const icon = (name) => ({
@@ -275,8 +279,8 @@
   }
 
   function parseSets(exercise) {
-    const parsed = parseInt(String(exercise.sets), 10);
-    return Number.isFinite(parsed) ? parsed : 1;
+    const numbers = String(exercise.sets).match(/\d+/g)?.map(Number).filter(Number.isFinite) || [];
+    return numbers.length ? Math.max(...numbers) : 1;
   }
 
   function defaultReps(exercise) {
@@ -1022,6 +1026,10 @@
       const history = expanded ? getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load)) : [];
       const last = history.at(-1)?.load;
       const personalNote = state.exerciseNotes?.[stateKey] || "";
+      const series = expanded ? activeSeriesFor(stateKey) : [];
+      const totalSets = parseSets(exercise);
+      const load = parseLoad(state.weights[stateKey]) || (Number.isFinite(last) ? last : 0);
+      const reps = defaultReps({ ...exercise, reps: variantReps(exercise, variant) });
       const article = document.createElement("article");
       article.className = `exercise${done ? " done" : ""}${index === firstPending ? " is-current" : ""}${expanded ? " is-expanded" : ""}`;
       article.dataset.id = exercise.id;
@@ -1035,13 +1043,37 @@
             <div class="inline-detail">
               <div class="inline-detail-visual">${media ? `<img class="inline-media-image" src="${media.src}" alt="Demonstração de ${escapeHtml(displayName)}" referrerpolicy="no-referrer" decoding="async">` : `<span>Demonstração não disponível</span>`}</div>
               ${variantButtons(exercise)}
-              <div class="inline-detail-grid">
-                <span><small>MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></span>
-                <span><small>EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></span>
-                <span><small>DESCANSO</small><strong>${escapeHtml(restDurationLabel(restSeconds))}</strong></span>
-                <span><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${escapeHtml(formatLoad(last))} kg` : "Sem registro"}</strong></span>
+              <section class="inline-training-panel" aria-label="Registrar séries de ${escapeHtml(displayName)}">
+                <div class="inline-set-head"><span>${series.length >= totalSets ? `${totalSets}/${totalSets} concluídas` : `Série ${series.length + 1}/${totalSets}`}</span><strong>${series.length ? `${series.length} registrada${series.length > 1 ? "s" : ""}` : "Pronto para iniciar"}</strong></div>
+                <div class="inline-input-grid">
+                  <label><small>CARGA (KG)</small><input class="inline-load-input" type="number" inputmode="decimal" min="0" step="0.5" value="${escapeHtml(load)}"></label>
+                  <label><small>REPS</small><input class="inline-reps-input" type="number" inputmode="numeric" min="0" step="1" value="${escapeHtml(reps)}"></label>
+                </div>
+                <div class="inline-quick-load" aria-label="Ajustes rápidos de carga">
+                  <button type="button" data-inline-quick-load="-10">−10</button>
+                  <button type="button" data-inline-quick-load="2.5">+2,5</button>
+                  <button type="button" data-inline-quick-load="5">+5</button>
+                  <button type="button" data-inline-quick-load="10">+10</button>
+                </div>
+                <div class="inline-set-actions">
+                  <button class="primary-button inline-complete-set" type="button" ${series.length >= totalSets ? "disabled" : ""}>${series.length >= totalSets ? "Exercício concluído" : "Concluir série"}</button>
+                  ${series.length ? `<button class="secondary-button inline-undo-set" type="button">Desfazer</button>` : ""}
+                </div>
+                <div class="inline-set-summary">${series.length ? series.map((set, setIndex) => `<span><strong>${setIndex + 1}</strong>${escapeHtml(formatLoad(set.load))} kg × ${escapeHtml(set.reps)}</span>`).join("") : `<span>Nenhuma série registrada</span>`}</div>
+              </section>
+              <div class="inline-info-actions">
+                <button class="secondary-button inline-info-toggle" type="button" data-inline-toggle="target">Músculo-alvo</button>
+                <button class="secondary-button inline-info-toggle" type="button" data-inline-toggle="guide">Guia de execução</button>
               </div>
-              <section class="inline-guide">
+              <div class="inline-collapsible" data-inline-panel="target" hidden>
+                <div class="inline-detail-grid">
+                  <span><small>MÚSCULO-ALVO</small><strong>${escapeHtml(prep.group)}</strong></span>
+                  <span><small>EQUIPAMENTO</small><strong>${escapeHtml(getEquipment(exercise))}</strong></span>
+                  <span><small>DESCANSO</small><strong>${escapeHtml(restDurationLabel(restSeconds))}</strong></span>
+                  <span><small>ÚLTIMA CARGA</small><strong>${Number.isFinite(last) ? `${escapeHtml(formatLoad(last))} kg` : "Sem registro"}</strong></span>
+                </div>
+              </div>
+              <section class="inline-guide inline-collapsible" data-inline-panel="guide" hidden>
                 <h3>Guia de execução</h3>
                 <ol>
                   <li>Prepare o equipamento e adote uma posição estável antes de iniciar.</li>
@@ -1053,7 +1085,7 @@
               <div class="inline-detail-actions">
                 <button class="secondary-button inline-history" type="button">Histórico</button>
                 <button class="secondary-button inline-actions" type="button">Ajustes</button>
-                <button class="primary-button inline-start" type="button">${done ? "Ver séries / corrigir" : "Iniciar exercício"}</button>
+                <button class="primary-button inline-start" type="button">Tela completa</button>
               </div>
             </div>` : ""}
         </div>
@@ -1072,6 +1104,35 @@
         if (event.target.closest(".inline-actions")) {
           event.stopPropagation();
           openExerciseActionMenu(exercise, index);
+          return;
+        }
+        if (event.target.closest(".inline-info-toggle")) {
+          event.stopPropagation();
+          const button = event.target.closest(".inline-info-toggle");
+          const panel = article.querySelector(`[data-inline-panel="${button.dataset.inlineToggle}"]`);
+          if (!panel) return;
+          const willOpen = panel.hidden;
+          panel.hidden = !willOpen;
+          button.classList.toggle("is-selected", willOpen);
+          button.setAttribute("aria-pressed", String(willOpen));
+          return;
+        }
+        if (event.target.closest("[data-inline-quick-load]")) {
+          event.stopPropagation();
+          const button = event.target.closest("[data-inline-quick-load]");
+          const input = article.querySelector(".inline-load-input");
+          input.value = String(Math.max(0, Number(input.value || 0) + Number(button.dataset.inlineQuickLoad)));
+          input.focus({ preventScroll: true });
+          return;
+        }
+        if (event.target.closest(".inline-complete-set")) {
+          event.stopPropagation();
+          completeInlineSet(exercise, index, article.dataset.stateKey || stateKey, article);
+          return;
+        }
+        if (event.target.closest(".inline-undo-set")) {
+          event.stopPropagation();
+          undoInlineSet(exercise, index, article.dataset.stateKey || stateKey);
           return;
         }
         if (event.target.closest(".variant-choice")) {
@@ -1297,7 +1358,6 @@
       saveProfileState();
       renderWorkout();
       const alternatives = document.querySelector(`[data-state-key="${CSS.escape(key)}"] .exercise-alternatives`);
-      alternatives?.scrollIntoView({ behavior: "smooth", block: "center" });
       alternatives?.querySelector(".variant-choice")?.focus({ preventScroll: true });
     });
     sheet.querySelector(".edit-rest")?.addEventListener("click", () => {
@@ -1372,6 +1432,49 @@
   function activeSeriesFor(key) {
     state.seriesProgress = state.seriesProgress || {};
     return state.seriesProgress[key] || [];
+  }
+
+  function completeInlineSet(exercise, index, key, article) {
+    const variant = getSelectedVariant(exercise);
+    const series = activeSeriesFor(key);
+    const totalSets = parseSets(exercise);
+    if (series.length >= totalSets) return;
+    const load = Number(article.querySelector(".inline-load-input")?.value || 0) || 0;
+    const reps = Number(article.querySelector(".inline-reps-input")?.value || 0) || 0;
+    series.push({ load, reps, completedAt: new Date().toISOString() });
+    state.seriesProgress[key] = series;
+    state.weights = state.weights || {};
+    state.weights[key] = String(load);
+    const isFinished = series.length >= totalSets;
+    if (isFinished) {
+      state.done[key] = true;
+      recordExerciseHistory(exercise, variant, load);
+    }
+    saveProfileState();
+    const restSeconds = exerciseRestSeconds(exercise, key);
+    if (getSettings().autoRest && restSeconds > 0 && !isFinished) startRest(restSeconds);
+    if (isFinished && selectedExercises().every((item) => state.done[exerciseStateKey(item, getSelectedVariant(item))])) {
+      renderWorkout();
+      showWorkoutSummary();
+      return;
+    }
+    keepExerciseExpanded(exercise, key);
+  }
+
+  function undoInlineSet(exercise, index, key) {
+    const series = activeSeriesFor(key);
+    if (!series.length) return;
+    series.pop();
+    state.seriesProgress[key] = series;
+    if (series.length < parseSets(exercise)) {
+      delete state.done[key];
+      removeCurrentExerciseHistory(key);
+      state.sessions = (state.sessions || []).filter((session) => !(session.date === todayKey && session.tab === activeTab));
+    }
+    const latestSet = series.at(-1);
+    if (latestSet && Number.isFinite(latestSet.load)) state.weights[key] = String(latestSet.load);
+    saveProfileState();
+    keepExerciseExpanded(exercise, key);
   }
 
   function openActiveExercise(exercise, index) {
