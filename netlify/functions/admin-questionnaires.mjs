@@ -194,7 +194,9 @@ async function linkLegacyProfile(submission, userId, legacyKey, admin) {
   const values = {
     display_name: text(submission.full_name, 120) || null,
     active: true,
-    legacy_profile_key: legacyKey || null
+    // Only include legacy_profile_key when explicitly provided — omitting it
+    // avoids accidentally wiping a key that was set in a previous approval.
+    ...(legacyKey !== null && { legacy_profile_key: legacyKey })
   };
   const result = await fetch(`${admin.supabaseUrl}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`, {
     method: "PATCH",

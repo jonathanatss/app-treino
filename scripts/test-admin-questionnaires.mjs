@@ -126,10 +126,38 @@ function adminAuthMock(next) {
   assert.equal(payload.submission.review_note, "Teste");
 }
 
+// Approval without legacyProfileKey must NOT send legacy_profile_key in the profile PATCH
+// (avoids wiping an existing key set in a previous approval).
+{
+  const profilePatches = [];
+  global.fetch = adminAuthMock(async (url, options) => {
+    if (url.includes("questionnaire_submissions?id=eq.request-1&select=")) return json([baseSubmission]);
+    if (url.includes("questionnaire_submissions?id=eq.request-1") && options.method === "PATCH") {
+      return json([{ ...baseSubmission, ...JSON.parse(options.body) }]);
+    }
+    if (url.includes("/rest/v1/profiles?id=eq.athlete-1") && options.method === "PATCH") {
+      profilePatches.push(JSON.parse(options.body));
+      return json([{ id: "athlete-1", ...JSON.parse(options.body) }]);
+    }
+    if (url.includes("/auth/v1/admin/users")) return json({ users: [] });
+    if (url.startsWith("https://example.supabase.co/auth/v1/invite?")) return json({ id: "athlete-1", email: baseSubmission.email });
+    if (url.includes("/rest/v1/training_plans?")) return json([]);
+    if (url.endsWith("/rest/v1/training_plans") && options.method === "POST") return json([{ id: "plan-1", status: "draft" }]);
+    if (url === "https://api.resend.com/emails") return json({ id: "email-3" });
+    throw new Error(`Unexpected URL: ${url}`);
+  });
+  const result = await handler(event("POST", { action: "approve", id: "request-1" }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(profilePatches.length, 1);
+  assert.equal(Object.hasOwn(profilePatches[0], "legacy_profile_key"), false, "legacy_profile_key must not be sent when not provided");
+  assert.equal(profilePatches[0].active, true);
+}
+
 console.log(JSON.stringify({
   unauthorizedBlocked: true,
   athleteBlocked: true,
   adminList: true,
   approvalInviteAndDraft: true,
-  rejection: true
+  rejection: true,
+  approvalWithoutLegacyKeyPreservesExisting: true
 }, null, 2));
