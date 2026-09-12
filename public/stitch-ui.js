@@ -188,9 +188,9 @@
 
   function getSettings() {
     try {
-      return { notifications: true, autoRest: true, sound: false, ...JSON.parse(localStorage.getItem(settingsKey)) };
+      return { notifications: true, autoRest: true, sound: false, vibration: true, ...JSON.parse(localStorage.getItem(settingsKey)) };
     } catch {
-      return { notifications: true, autoRest: true, sound: false };
+      return { notifications: true, autoRest: true, sound: false, vibration: true };
     }
   }
 
@@ -1023,13 +1023,16 @@
       const media = expanded ? mediaFor(exercise) : null;
       const prep = getPrepMeta(exercise);
       const restSeconds = exerciseRestSeconds(exercise, stateKey);
-      const history = expanded ? getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load)) : [];
+      const history = getHistoryEntries(stateKey).filter((entry) => Number.isFinite(entry.load));
       const last = history.at(-1)?.load;
       const personalNote = state.exerciseNotes?.[stateKey] || "";
       const series = expanded ? activeSeriesFor(stateKey) : [];
       const totalSets = parseSets(exercise);
-      const load = parseLoad(state.weights[stateKey]) || (Number.isFinite(last) ? last : 0);
-      const reps = defaultReps({ ...exercise, reps: variantReps(exercise, variant) });
+      const lastSet = window.FitPlanWorkoutHelpers?.lastSuccessfulSet(history, series);
+      const storedLoad = parseLoad(state.weights[stateKey]);
+      const load = Number.isFinite(storedLoad) ? storedLoad : (lastSet?.load ?? (Number.isFinite(last) ? last : 0));
+      const reps = series.at(-1)?.reps || lastSet?.reps || defaultReps({ ...exercise, reps: variantReps(exercise, variant) });
+      const actualRir = String(series.at(-1)?.actualRir ?? lastSet?.actualRir ?? window.FitPlanWorkoutHelpers?.defaultActualRir(exercise.rir) ?? "2");
       const article = document.createElement("article");
       article.className = `exercise${done ? " done" : ""}${index === firstPending ? " is-current" : ""}${expanded ? " is-expanded" : ""}`;
       article.dataset.id = exercise.id;
@@ -1046,20 +1049,22 @@
               <section class="inline-training-panel" aria-label="Registrar séries de ${escapeHtml(displayName)}">
                 <div class="inline-set-head"><span>${series.length >= totalSets ? `${totalSets}/${totalSets} concluídas` : `Série ${series.length + 1}/${totalSets}`}</span><strong>${series.length ? `${series.length} registrada${series.length > 1 ? "s" : ""}` : "Pronto para iniciar"}</strong></div>
                 <div class="inline-input-grid">
-                  <label><small>CARGA (KG)</small><input class="inline-load-input" type="number" inputmode="decimal" min="0" step="0.5" value="${escapeHtml(load)}"></label>
+                  <div class="inline-input-field"><span class="inline-field-head"><label for="inline-load-${index}"><small>CARGA (KG)</small></label><button class="plate-calculator-trigger" type="button" aria-label="Abrir calculadora de anilhas">◉ Anilhas</button></span><input id="inline-load-${index}" class="inline-load-input" type="number" inputmode="decimal" min="0" step="0.5" value="${escapeHtml(load)}"></div>
                   <label><small>REPS</small><input class="inline-reps-input" type="number" inputmode="numeric" min="0" step="1" value="${escapeHtml(reps)}"></label>
                 </div>
+                ${lastSet ? `<button class="repeat-last-set" type="button" data-last-load="${lastSet.load}" data-last-reps="${lastSet.reps}">↶ Repetir última: ${escapeHtml(formatLoad(lastSet.load))} kg × ${lastSet.reps}</button>` : ""}
                 <div class="inline-quick-load" aria-label="Ajustes rápidos de carga">
                   <button type="button" data-inline-quick-load="-10">−10</button>
                   <button type="button" data-inline-quick-load="2.5">+2,5</button>
                   <button type="button" data-inline-quick-load="5">+5</button>
                   <button type="button" data-inline-quick-load="10">+10</button>
                 </div>
+                ${window.FitPlanWorkoutHelpers?.rirSelectorMarkup(actualRir) || ""}
                 <div class="inline-set-actions">
                   <button class="primary-button inline-complete-set" type="button" ${series.length >= totalSets ? "disabled" : ""}>${series.length >= totalSets ? "Exercício concluído" : "Concluir série"}</button>
                   ${series.length ? `<button class="secondary-button inline-undo-set" type="button">Desfazer</button>` : ""}
                 </div>
-                <div class="inline-set-summary">${series.length ? series.map((set, setIndex) => `<span><strong>${setIndex + 1}</strong>${escapeHtml(formatLoad(set.load))} kg × ${escapeHtml(set.reps)}</span>`).join("") : `<span>Nenhuma série registrada</span>`}</div>
+                <div class="inline-set-summary">${series.length ? series.map((set, setIndex) => `<span><strong>${setIndex + 1}</strong>${escapeHtml(formatLoad(set.load))} kg × ${escapeHtml(set.reps)} · RIR ${escapeHtml(window.FitPlanWorkoutHelpers?.rirLabel(set.actualRir) || "—")}</span>`).join("") : `<span>Nenhuma série registrada</span>`}</div>
               </section>
               <div class="inline-info-actions">
                 <button class="secondary-button inline-info-toggle" type="button" data-inline-toggle="target">Músculo-alvo</button>
@@ -1091,6 +1096,19 @@
         </div>
         <button class="exercise-menu" type="button" aria-label="${expanded ? "Recolher" : "Expandir"} ${escapeHtml(displayName)}">${expanded ? "⌃" : "⋮"}</button>`;
       article.addEventListener("click", (event) => {
+        if (event.target.closest(".plate-calculator-trigger")) {
+          event.stopPropagation();
+          openPlateCalculator(article.querySelector(".inline-load-input"));
+          return;
+        }
+        if (event.target.closest(".repeat-last-set")) {
+          event.stopPropagation();
+          const button = event.target.closest(".repeat-last-set");
+          article.querySelector(".inline-load-input").value = button.dataset.lastLoad;
+          article.querySelector(".inline-reps-input").value = button.dataset.lastReps;
+          article.querySelector(".inline-load-input").focus({ preventScroll: true });
+          return;
+        }
         if (event.target.closest(".exercise-play, .inline-start")) {
           event.stopPropagation();
           openActiveExercise(exercise, index);
@@ -1169,6 +1187,7 @@
         renderApp();
         requestAnimationFrame(() => window.scrollTo(scrollXBefore, scrollYBefore));
       });
+      window.FitPlanWorkoutHelpers?.bindRirSelector(article);
       const detailImage = article.querySelector(".inline-media-image");
       bindMediaErrorFallback(detailImage, media, "inline-media-empty");
       workoutEl.appendChild(article);
@@ -1438,6 +1457,17 @@
     return state.seriesProgress[key] || [];
   }
 
+  function openPlateCalculator(loadInput) {
+    if (!loadInput || !window.FitPlanWorkoutHelpers) return;
+    const sheet = showActionSheet("Calculadora de anilhas", window.FitPlanWorkoutHelpers.plateCalculatorMarkup(loadInput.value));
+    window.FitPlanWorkoutHelpers.bindPlateCalculator(sheet, (totalKg) => {
+      loadInput.value = String(totalKg);
+      loadInput.dispatchEvent(new Event("input", { bubbles: true }));
+      closeActionSheet();
+      loadInput.focus({ preventScroll: true });
+    });
+  }
+
   function completeInlineSet(exercise, index, key, article) {
     const variant = getSelectedVariant(exercise);
     const series = activeSeriesFor(key);
@@ -1445,9 +1475,10 @@
     if (series.length >= totalSets) return;
     const load = Number(article.querySelector(".inline-load-input")?.value || 0) || 0;
     const reps = Number(article.querySelector(".inline-reps-input")?.value || 0) || 0;
+    const actualRir = article.querySelector(".rir-selector")?.dataset.actualRir || window.FitPlanWorkoutHelpers?.defaultActualRir(exercise.rir) || "2";
     if (!Object.values(state.seriesProgress || {}).some((items) => items?.length)) window.FitPlanTelemetry?.trackEvent("workout_started", { profile_key: currentProfile, workout_key: activeTab, workout_title: selectedWorkout().title });
-    series.push({ load, reps, completedAt: new Date().toISOString() });
-    window.FitPlanTelemetry?.trackEvent("set_completed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, variant_key: variant?.key, set_number: series.length, load_kg: load, reps });
+    series.push({ load, reps, targetRir: exercise.rir, actualRir, completedAt: new Date().toISOString() });
+    window.FitPlanTelemetry?.trackEvent("workout_set_completed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, variant_key: variant?.key, set_number: series.length, load_kg: load, reps, target_rir: exercise.rir, actual_rir: actualRir });
     state.seriesProgress[key] = series;
     state.weights = state.weights || {};
     state.weights[key] = String(load);
@@ -1491,15 +1522,20 @@
     const series = activeSeriesFor(key);
     const totalSets = parseSets(exercise);
     const isFinished = series.length >= totalSets;
-    const load = parseLoad(state.weights[key]) || 0;
-    const reps = defaultReps({ ...exercise, reps: variantReps(exercise, variant) });
+    const history = getHistoryEntries(key).filter((entry) => Number.isFinite(entry.load));
+    const lastSet = window.FitPlanWorkoutHelpers?.lastSuccessfulSet(history, series);
+    const storedLoad = parseLoad(state.weights[key]);
+    const load = Number.isFinite(storedLoad) ? storedLoad : (lastSet?.load ?? 0);
+    const reps = series.at(-1)?.reps || lastSet?.reps || defaultReps({ ...exercise, reps: variantReps(exercise, variant) });
+    const actualRir = String(series.at(-1)?.actualRir ?? lastSet?.actualRir ?? window.FitPlanWorkoutHelpers?.defaultActualRir(exercise.rir) ?? "2");
     showOverlay(`<div class="overlay-page active-page">
       <header class="overlay-header"><button class="overlay-close" type="button" aria-label="Fechar">×</button><h2 style="color:var(--fit-lime)">FitPlan</h2><span></span></header>
       <span class="set-chip">${isFinished ? `${totalSets} de ${totalSets} séries concluídas` : `Série ${series.length + 1} de ${totalSets}`}</span>
       <h1 class="active-title">${escapeHtml(variant.displayName || variant.label || exercise.name)}</h1>
       <div class="active-tags"><span>${escapeHtml(getPrepMeta(exercise).group)}</span><span>${escapeHtml(getEquipment(exercise))}</span></div>
-      <div class="stepper-card load-card"><small>CARGA (KG)</small><div class="stepper"><button type="button" data-adjust="load:-1" aria-label="Diminuir carga">−</button><input id="activeLoad" type="number" inputmode="decimal" min="0" step="0.5" value="${load}" aria-label="Carga em quilogramas"><button type="button" data-adjust="load:1" aria-label="Aumentar carga">+</button></div><div class="quick-adjust" aria-label="Ajustes rápidos de carga"><button type="button" data-quick-load="-10">−10</button><button type="button" data-quick-load="2.5">+2,5</button><button type="button" data-quick-load="5">+5</button><button type="button" data-quick-load="10">+10</button></div></div>
+      <div class="stepper-card load-card"><div class="active-field-head"><small>CARGA (KG)</small><button class="plate-calculator-trigger" type="button">◉ Anilhas</button></div><div class="stepper"><button type="button" data-adjust="load:-1" aria-label="Diminuir carga">−</button><input id="activeLoad" type="number" inputmode="decimal" min="0" step="0.5" value="${load}" aria-label="Carga em quilogramas"><button type="button" data-adjust="load:1" aria-label="Aumentar carga">+</button></div><div class="quick-adjust" aria-label="Ajustes rápidos de carga"><button type="button" data-quick-load="-10">−10</button><button type="button" data-quick-load="2.5">+2,5</button><button type="button" data-quick-load="5">+5</button><button type="button" data-quick-load="10">+10</button></div>${lastSet ? `<button class="repeat-last-set" type="button" data-last-load="${lastSet.load}" data-last-reps="${lastSet.reps}">↶ Repetir última: ${escapeHtml(formatLoad(lastSet.load))} kg × ${lastSet.reps}</button>` : ""}</div>
       <div class="stepper-card"><small>REPS</small><div class="stepper"><button type="button" data-adjust="reps:-1" aria-label="Diminuir repetições">−</button><input id="activeReps" type="number" inputmode="numeric" min="0" step="1" value="${reps}" aria-label="Número de repetições"><button type="button" data-adjust="reps:1" aria-label="Aumentar repetições">+</button></div></div>
+      ${window.FitPlanWorkoutHelpers?.rirSelectorMarkup(actualRir) || ""}
       <div class="active-set-actions">
         ${isFinished ? `<p class="active-complete-note">Exercício concluído. Você pode desfazer a última série para corrigir carga ou repetições.</p>` : `<button class="primary-button complete-set" type="button">Concluir série &nbsp; ✓</button>`}
         ${series.length ? `<button class="secondary-button undo-last-set" type="button">↶ &nbsp; Desfazer última série</button>` : ""}
@@ -1518,13 +1554,19 @@
       input.value = String(Math.max(0, Number(input.value || 0) + Number(button.dataset.quickLoad)));
       input.focus({ preventScroll: true });
     }));
+    overlay.querySelector(".plate-calculator-trigger")?.addEventListener("click", () => openPlateCalculator(overlay.querySelector("#activeLoad")));
+    overlay.querySelector(".repeat-last-set")?.addEventListener("click", (event) => {
+      overlay.querySelector("#activeLoad").value = event.currentTarget.dataset.lastLoad;
+      overlay.querySelector("#activeReps").value = event.currentTarget.dataset.lastReps;
+    });
+    window.FitPlanWorkoutHelpers?.bindRirSelector(overlay);
     overlay.querySelector(".complete-set")?.addEventListener("click", completeActiveSet);
     overlay.querySelector(".undo-last-set")?.addEventListener("click", undoLastActiveSet);
   }
 
   function renderSetRows(series) {
     if (!series.length) return `<div class="set-row" style="color:var(--fit-muted)">Nenhuma série concluída</div>`;
-    return series.map((set, index) => `<div class="set-row"><span class="set-index">${index + 1}</span><strong class="set-ok">✓ &nbsp; ${set.load} kg</strong><span>× &nbsp; ${set.reps}</span></div>`).join("");
+    return series.map((set, index) => `<div class="set-row"><span class="set-index">${index + 1}</span><strong class="set-ok">✓ &nbsp; ${set.load} kg</strong><span>× &nbsp; ${set.reps}</span><small>RIR ${escapeHtml(window.FitPlanWorkoutHelpers?.rirLabel(set.actualRir) || "—")}</small></div>`).join("");
   }
 
   function completeActiveSet() {
@@ -1535,9 +1577,10 @@
     const series = activeSeriesFor(key);
     const load = Number(overlay.querySelector("#activeLoad").value || overlay.querySelector("#activeLoad").textContent) || 0;
     const reps = Number(overlay.querySelector("#activeReps").value || overlay.querySelector("#activeReps").textContent) || 0;
+    const actualRir = overlay.querySelector(".rir-selector")?.dataset.actualRir || window.FitPlanWorkoutHelpers?.defaultActualRir(exercise.rir) || "2";
     if (!Object.values(state.seriesProgress || {}).some((items) => items?.length)) window.FitPlanTelemetry?.trackEvent("workout_started", { profile_key: currentProfile, workout_key: activeTab, workout_title: selectedWorkout().title });
-    series.push({ load, reps, completedAt: new Date().toISOString() });
-    window.FitPlanTelemetry?.trackEvent("set_completed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, variant_key: variant?.key, set_number: series.length, load_kg: load, reps });
+    series.push({ load, reps, targetRir: exercise.rir, actualRir, completedAt: new Date().toISOString() });
+    window.FitPlanTelemetry?.trackEvent("workout_set_completed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, variant_key: variant?.key, set_number: series.length, load_kg: load, reps, target_rir: exercise.rir, actual_rir: actualRir });
     state.seriesProgress[key] = series;
     state.weights[key] = String(load);
     const totalSets = parseSets(exercise);
@@ -1924,22 +1967,81 @@
     if (focusId) container.querySelector(`[data-request-id="${CSS.escape(focusId)}"]`)?.scrollIntoView({ block: "start" });
   }
 
-  async function openAdminQuestionnaires(focusId = "") {
-    showOverlay(`<div class="overlay-page admin-questionnaires-page"><header class="overlay-header"><button class="overlay-close" type="button" aria-label="Voltar">←</button><h2>Administração</h2><button class="admin-refresh" type="button" aria-label="Atualizar solicitações">↻</button></header><div class="screen-heading"><p class="eyebrow">NOVOS USUÁRIOS</p><h2>Solicitações de cadastro</h2><p>Revise o questionário. A aprovação cria a conta, vincula os dados e abre um plano em rascunho.</p></div><div class="admin-questionnaires-content"><div class="admin-loading"><span></span><p>Carregando solicitações…</p></div></div></div>`);
+  function adminDuration(seconds) {
+    const total = Math.max(0, Number(seconds) || 0);
+    if (total < 60) return `${total}s`;
+    const minutes = Math.round(total / 60);
+    return minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)}h ${minutes % 60}min`;
+  }
+
+  function whatsappLink(phone, name) {
+    const digits = String(phone || "").replace(/\D/g, "");
+    if (!digits) return "";
+    const normalized = digits.startsWith("55") ? digits : `55${digits}`;
+    return `https://wa.me/${normalized}?text=${encodeURIComponent(`Olá, ${name || "tudo bem"}? Sentimos sua falta no FitPlan. Como podemos ajudar com seus treinos?`)}`;
+  }
+
+  async function renderAdminEngagement(container) {
+    container.innerHTML = `<div class="admin-loading"><span></span><p>Calculando engajamento…</p></div>`;
+    try {
+      const [recent, inactive] = await Promise.all([
+        window.FitPlanAdminObservability.recentAccess(250),
+        window.FitPlanAdminObservability.inactiveUsers(7)
+      ]);
+      const ids = [...new Set([...recent.map((item) => item.user_id), ...inactive.map((item) => item.user_id)])];
+      const contacts = await window.FitPlanAdminObservability.userContacts(ids).catch(() => ({}));
+      const weekAgo = Date.now() - 7 * 86400000;
+      const activeWeek = new Set(recent.filter((item) => Date.parse(item.last_active_at) >= weekAgo).map((item) => item.user_id)).size;
+      const recentRows = recent.slice(0, 30).map((session) => `<tr><td><strong>${escapeHtml(session.profiles?.display_name || "Usuário")}</strong><small>${escapeHtml(session.platform || "app")}</small></td><td>${escapeHtml(adminDate(session.last_active_at))}</td><td>${escapeHtml(adminDuration(session.active_seconds))}</td></tr>`).join("");
+      const inactiveRows = inactive.map((user) => {
+        const contact = contacts[user.user_id] || {};
+        const link = whatsappLink(contact.whatsapp, user.display_name);
+        return `<article class="inactive-user-card"><div><strong>${escapeHtml(user.display_name || "Aluno")}</strong><small>${user.last_active_at ? `Último acesso: ${escapeHtml(adminDate(user.last_active_at))}` : "Nunca acessou"}</small></div><span class="risk-days">${user.inactive_days ?? "—"} dias</span>${link ? `<a class="whatsapp-action" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" aria-label="Conversar com ${escapeHtml(user.display_name || "aluno")} no WhatsApp">WhatsApp</a>` : `<span class="whatsapp-missing">Sem WhatsApp</span>`}</article>`;
+      }).join("");
+      container.innerHTML = `<div class="screen-heading admin-engagement-heading"><p class="eyebrow">RETENÇÃO</p><h2>Engajamento & Telemetria</h2><p>Acompanhe atividade real e priorize alunos com risco de abandono.</p></div>
+        <section class="admin-metric-grid" aria-label="Resumo de engajamento"><article><small>ATIVOS EM 7 DIAS</small><strong>${activeWeek}</strong><span>alunos únicos</span></article><article class="is-risk"><small>EM RISCO</small><strong>${inactive.length}</strong><span>sem acesso há 7+ dias</span></article><article><small>SESSÕES RECENTES</small><strong>${recent.length}</strong><span>amostra carregada</span></article></section>
+        <section class="admin-data-section"><div class="admin-section-title"><div><small>ACESSOS</small><h3>Atividade recente</h3></div></div><div class="admin-table-scroll"><table class="admin-access-table"><thead><tr><th>Aluno</th><th>Última atividade</th><th>Tempo ativo</th></tr></thead><tbody>${recentRows || `<tr><td colspan="3">Nenhuma sessão registrada.</td></tr>`}</tbody></table></div></section>
+        <section class="admin-data-section"><div class="admin-section-title"><div><small>CHURN</small><h3>Alunos inativos</h3></div><span>${inactive.length}</span></div><div class="inactive-user-list">${inactiveRows || `<div class="admin-empty-state"><span>✓</span><strong>Nenhum aluno em risco</strong><p>Todos acessaram o FitPlan nos últimos 7 dias.</p></div>`}</div></section>`;
+    } catch (error) {
+      container.innerHTML = `<div class="admin-empty-state is-error"><span>!</span><strong>Não foi possível carregar</strong><p>${escapeHtml(error.message)}</p><button class="secondary-button admin-retry" type="button">Tentar novamente</button></div>`;
+      container.querySelector(".admin-retry")?.addEventListener("click", () => renderAdminEngagement(container));
+    }
+  }
+
+  async function renderAdminRegistrations(container, focusId = "") {
+    container.innerHTML = `<div class="screen-heading"><p class="eyebrow">NOVOS USUÁRIOS</p><h2>Solicitações de cadastro</h2><p>Revise o questionário. A aprovação cria a conta, vincula os dados e abre um plano em rascunho.</p></div><div class="admin-questionnaires-content"><div class="admin-loading"><span></span><p>Carregando solicitações…</p></div></div>`;
+    const content = container.querySelector(".admin-questionnaires-content");
+    try {
+      const result = await adminQuestionnaireRequest();
+      renderAdminQuestionnaires(content, result.submissions || [], focusId);
+    } catch (error) {
+      content.innerHTML = `<div class="admin-empty-state is-error"><span>!</span><strong>Não foi possível carregar</strong><p>${escapeHtml(error.message)}</p><button class="secondary-button admin-retry" type="button">Tentar novamente</button></div>`;
+      content.querySelector(".admin-retry")?.addEventListener("click", () => renderAdminRegistrations(container, focusId));
+    }
+  }
+
+  async function openAdminPanel(initialTab = "registrations", focusId = "") {
+    if (cloudSnapshot().profile?.role !== "admin") return;
+    showOverlay(`<div class="overlay-page admin-questionnaires-page admin-dashboard-page"><header class="overlay-header"><button class="overlay-close" type="button" aria-label="Voltar">←</button><h2>Painel do Administrador</h2><button class="admin-refresh" type="button" aria-label="Atualizar painel">↻</button></header><nav class="admin-tabs" aria-label="Seções administrativas"><button type="button" data-admin-tab="registrations">Cadastros</button><button type="button" data-admin-tab="engagement">Engajamento & Telemetria</button></nav><main class="admin-panel-content"></main></div>`);
     overlay.querySelector(".overlay-close")?.addEventListener("click", closeOverlay);
-    const content = overlay.querySelector(".admin-questionnaires-content");
+    const content = overlay.querySelector(".admin-panel-content");
+    let activeAdminTab = initialTab;
     const load = async () => {
-      content.innerHTML = `<div class="admin-loading"><span></span><p>Carregando solicitações…</p></div>`;
-      try {
-        const result = await adminQuestionnaireRequest();
-        renderAdminQuestionnaires(content, result.submissions || [], focusId);
-      } catch (error) {
-        content.innerHTML = `<div class="admin-empty-state is-error"><span>!</span><strong>Não foi possível carregar</strong><p>${escapeHtml(error.message)}</p><button class="secondary-button admin-retry" type="button">Tentar novamente</button></div>`;
-        content.querySelector(".admin-retry")?.addEventListener("click", load);
-      }
+      overlay.querySelectorAll("[data-admin-tab]").forEach((button) => {
+        const selected = button.dataset.adminTab === activeAdminTab;
+        button.classList.toggle("is-active", selected);
+        button.setAttribute("aria-current", selected ? "page" : "false");
+      });
+      if (activeAdminTab === "engagement") await renderAdminEngagement(content);
+      else await renderAdminRegistrations(content, focusId);
     };
+    overlay.querySelectorAll("[data-admin-tab]").forEach((button) => button.addEventListener("click", () => { activeAdminTab = button.dataset.adminTab; load(); }));
     overlay.querySelector(".admin-refresh")?.addEventListener("click", load);
     await load();
+  }
+
+  function openAdminQuestionnaires(focusId = "") {
+    return openAdminPanel("registrations", focusId);
   }
 
   function maybeOpenRequestedAdminRequest(cloud = cloudSnapshot()) {
@@ -1960,8 +2062,8 @@
     if (!view || !currentProfile) return;
     const settings = getSettings();
     const science = SCIENCE_BASE[currentProfile];
-    const adminSection = cloudSnapshot().profile?.role === "admin" ? `<p class="settings-label admin-settings-label">ADMINISTRAÇÃO</p><div class="settings-group admin-entry-group"><button class="settings-row admin-entry" type="button" data-action="admin-requests"><span class="row-icon">⌁</span><span><strong>Solicitações de cadastro</strong><small>Analisar questionários e liberar acessos</small></span><span class="chevron">›</span></button></div>` : "";
-    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section>${adminSection}<p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
+    const adminSection = cloudSnapshot().profile?.role === "admin" ? `<p class="settings-label admin-settings-label">ADMINISTRAÇÃO</p><div class="settings-group admin-entry-group"><button class="settings-row admin-entry" type="button" data-action="admin-panel"><span class="row-icon">⌁</span><span><strong>Painel do Administrador</strong><small>Cadastros, engajamento e telemetria</small></span><span class="chevron">›</span></button></div>` : "";
+    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section>${adminSection}<p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="vibration"><span class="row-icon">≈</span><span>Vibração<small>Aviso aos 10s e no fim</small></span><span class="toggle ${settings.vibration ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
     hydrateProfileAvatars(view);
     view.querySelectorAll(".toggle-setting").forEach((button) => button.addEventListener("click", () => {
       const next = getSettings();
@@ -1970,7 +2072,7 @@
       renderProfileView();
     }));
     view.querySelector("[data-action='science']")?.addEventListener("click", openScienceBase);
-    view.querySelector("[data-action='admin-requests']")?.addEventListener("click", () => openAdminQuestionnaires());
+    view.querySelector("[data-action='admin-panel']")?.addEventListener("click", () => openAdminPanel());
     view.querySelector("[data-action='cloud']")?.addEventListener("click", openCloudAuthSheet);
     view.querySelector("[data-action='legacy-migration']")?.addEventListener("click", openLegacyMigrationSheet);
     view.querySelector("[data-action='data']")?.addEventListener("click", openDataManagement);

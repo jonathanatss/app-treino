@@ -321,12 +321,15 @@ function recordExerciseHistory(exercise, variant, weightValue) {
   const key = exerciseStateKey(exercise, variant);
   state.history = state.history || {};
   const entries = state.history[key] || [];
+  const latestSet = state.seriesProgress?.[key]?.at(-1);
   const entry = {
     date: todayKey,
     tab: activeTab,
     exerciseId: exercise.id,
     variant: variant.key,
-    load
+    load,
+    reps: Number(latestSet?.reps) || undefined,
+    actualRir: latestSet?.actualRir ?? undefined
   };
   const todayIndex = entries.findIndex((item) => item.date === todayKey && item.tab === activeTab);
   if (todayIndex >= 0) entries[todayIndex] = entry;

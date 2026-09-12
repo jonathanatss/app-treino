@@ -4,7 +4,7 @@
 const ACTIVE_KEY = "gym-app-active-profile";
 const UI_KEY = "gym-app-ui";
 const EXPORT_VERSION = 1;
-const APP_VERSION = "66";
+const APP_VERSION = "67";
 const APP_VERSION_KEY = "fitplan-app-version";
 const todayKey = getLocalDayKey();
 const LOAD_WARMUP_TIP = "Dica de aquecimento: no primeiro exercício de cada grupo muscular, faça 1 ou 2 séries com 40~50% da carga válida antes das séries principais.";
@@ -35,6 +35,7 @@ let uiState = loadUiState();
 let timerId = null;
 let timerEndsAt = 0;
 let activeRest = 0;
+let timerTenSecondAlerted = false;
 
 // DOM refs — initialized on DOMContentLoaded
 let screenPicker, screenApp, workoutEl, timerEl, progressText, progressFill,
@@ -166,6 +167,7 @@ async function pullHistoryFromSupabase(profileId) {
       .from("workout_set_logs")
       .select(`
         load_kg,
+        reps,
         completed_at,
         workout_exercise_logs!inner(
           exercise_id,
@@ -190,19 +192,27 @@ async function pullHistoryFromSupabase(profileId) {
     );
     if (!userRows.length) return;
 
-    // Build exercise_catalog slug → legacy stateKey map
-    const planExerciseIds = [...new Set(userRows.map((r) => r.workout_exercise_logs?.plan_exercise_id).filter(Boolean))];
-    if (!planExerciseIds.length) return;
+    // Build exercise_catalog id → exact local state key, including variations.
+    const catalogIds = [...new Set(userRows.map((r) => r.workout_exercise_logs?.exercise_id).filter(Boolean))];
+    if (!catalogIds.length) return;
 
     const { data: catalog } = await Promise.race([
-      client.from("plan_exercises").select("id, exercise_catalog!inner(slug)").in("id", planExerciseIds),
+      client.from("exercise_catalog").select("id, slug").in("id", catalogIds),
       new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000))
     ]);
     if (!catalog?.length) return;
 
-    const slugByPlanExerciseId = new Map(
-      catalog.map((pe) => [pe.id, pe.exercise_catalog?.slug?.replace(/^legacy-/, "") || ""])
-    );
+    const stateKeyByCatalogSlug = new Map();
+    Object.values(profiles[profileId]?.workouts || {}).forEach((workout) => {
+      (workout.exercises || []).forEach((exercise) => {
+        const variants = getExerciseVariants(exercise);
+        variants.forEach((variant, variantIndex) => {
+          const catalogSlug = `legacy-${slugify(exercise.id)}${variantIndex ? `-${slugify(variant.key)}` : ""}`;
+          stateKeyByCatalogSlug.set(catalogSlug, exerciseStateKey(exercise, variant));
+        });
+      });
+    });
+    const stateKeyByCatalogId = new Map(catalog.map((item) => [item.id, stateKeyByCatalogSlug.get(item.slug) || item.slug?.replace(/^legacy-/, "")]));
 
     // Merge into state.history without overwriting entries already present
     let changed = false;
@@ -216,15 +226,16 @@ async function pullHistoryFromSupabase(profileId) {
       const load = parseLoad(row.load_kg);
       if (!Number.isFinite(load) || !dayKey || !date) continue;
 
-      const slug = slugByPlanExerciseId.get(log.plan_exercise_id);
-      if (!slug) continue;
+      const historyKey = stateKeyByCatalogId.get(log.exercise_id);
+      if (!historyKey) continue;
 
       state.history = state.history || {};
-      const entries = state.history[slug] || [];
+      const entries = state.history[historyKey] || [];
       const alreadyHas = entries.some((e) => e.date === date && e.tab === dayKey);
       if (!alreadyHas) {
-        entries.push({ date, tab: dayKey, exerciseId: slug, variant: "base", load });
-        state.history[slug] = entries.slice(-16);
+        const [exerciseId, variant = "base"] = historyKey.split("::");
+        entries.push({ date, tab: dayKey, exerciseId, variant, stateKey: historyKey, load, reps: Number(row.reps) || undefined });
+        state.history[historyKey] = entries.slice(-16);
         changed = true;
       }
     }

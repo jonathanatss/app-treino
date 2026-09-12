@@ -17,6 +17,19 @@
     if (result.error) throw result.error;
     return result.data || [];
   }
+  async function userContacts(userIds = []) {
+    const ids = [...new Set(userIds.filter(Boolean))];
+    if (!ids.length) return {};
+    const result = await requireAdmin().from("questionnaire_submissions")
+      .select("user_id,whatsapp,email,created_at")
+      .in("user_id", ids)
+      .order("created_at", { ascending: false });
+    if (result.error) throw result.error;
+    return (result.data || []).reduce((contacts, row) => {
+      if (row.user_id && !contacts[row.user_id]) contacts[row.user_id] = { whatsapp: row.whatsapp || "", email: row.email || "" };
+      return contacts;
+    }, {});
+  }
   async function userTimeline(userId, options = {}) {
     const query = requireAdmin().from("user_audit_logs")
       .select("id,event_name,occurred_at,payload,app_session_id")
@@ -28,5 +41,5 @@
     if (result.error) throw result.error;
     return result.data || [];
   }
-  window.FitPlanAdminObservability = Object.freeze({ inactiveUsers, recentAccess, userTimeline });
+  window.FitPlanAdminObservability = Object.freeze({ inactiveUsers, recentAccess, userContacts, userTimeline });
 })();

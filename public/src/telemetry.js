@@ -6,7 +6,7 @@
   const MAX_QUEUE = 500;
   const ALLOWED_PAYLOAD_KEYS = new Set([
     "profile_key", "workout_key", "workout_title", "exercise_key", "exercise_name",
-    "variant_key", "previous_variant_key", "set_number", "load_kg", "reps",
+    "variant_key", "previous_variant_key", "set_number", "load_kg", "reps", "target_rir", "actual_rir",
     "total_sets", "exercise_count", "volume_kg", "duration_seconds", "fields"
   ]);
   let userId = null;
@@ -74,7 +74,7 @@
     userId = nextUserId;
     const stored = read(SESSION_KEY, null);
     const reusable = stored && stored.user_id === userId && !stored.ended_at && Date.now() - Date.parse(stored.last_active_at) < 30 * 60_000;
-    session = reusable ? stored : { id: uuid(), user_id: userId, started_at: now(), last_active_at: now(), ended_at: null, active_seconds: 0, app_version: "66", platform: navigator.standalone ? "ios-pwa" : matchMedia("(display-mode: standalone)").matches ? "pwa" : "browser" };
+    session = reusable ? stored : { id: uuid(), user_id: userId, started_at: now(), last_active_at: now(), ended_at: null, active_seconds: 0, app_version: "67", platform: navigator.standalone ? "ios-pwa" : matchMedia("(display-mode: standalone)").matches ? "pwa" : "browser" };
     lastTick = Date.now();
     persistSession();
     if (!reusable) trackEvent("login");

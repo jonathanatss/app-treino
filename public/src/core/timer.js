@@ -10,6 +10,7 @@ function formatTime(totalSeconds) {
 
 function startRest(seconds) {
   activeRest = seconds;
+  timerTenSecondAlerted = false;
   timerEndsAt = Date.now() + seconds * 1000;
   document.querySelector(".rest-bar")?.classList.remove("is-complete");
   document.querySelectorAll(".rest-button").forEach((b) => {
@@ -37,13 +38,21 @@ function stopRest() {
 
 function signalRestComplete() {
   document.querySelector(".rest-bar")?.classList.add("is-complete");
-  if ("vibrate" in navigator) navigator.vibrate([180, 80, 180]);
+  const settings = window.FitPlanWorkoutHelpers?.getAlertSettings?.() || { sound: false, vibration: true };
+  if (settings.vibration) window.FitPlanWorkoutHelpers?.vibrate?.([300, 150, 300]);
+  if (settings.sound) window.FitPlanWorkoutHelpers?.playTimerTone?.("finish");
 }
 
 function tickTimer() {
   const remaining = (timerEndsAt - Date.now()) / 1000;
   timerEl.textContent = formatTime(remaining);
   timerEl.classList.toggle("running", remaining > 0);
+  if (remaining > 0 && remaining <= 10 && !timerTenSecondAlerted) {
+    timerTenSecondAlerted = true;
+    const settings = window.FitPlanWorkoutHelpers?.getAlertSettings?.() || { sound: false, vibration: true };
+    if (settings.vibration) window.FitPlanWorkoutHelpers?.vibrate?.(100);
+    if (settings.sound) window.FitPlanWorkoutHelpers?.playTimerTone?.("warning");
+  }
   if (remaining <= 0) {
     clearInterval(timerId);
     timerId = null;
