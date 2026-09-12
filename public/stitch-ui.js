@@ -1140,8 +1140,10 @@
           const scrollXBefore = window.scrollX;
           const scrollYBefore = window.scrollY;
           const button = event.target.closest(".variant-choice");
+          const previousVariant = state.variants?.[exercise.id] || getSelectedVariant(exercise)?.key;
           state.variants = state.variants || {};
           state.variants[exercise.id] = button.dataset.variant;
+          window.FitPlanTelemetry?.trackEvent("exercise_variant_changed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, previous_variant_key: previousVariant, variant_key: button.dataset.variant });
           const nextVariant = getSelectedVariant(exercise);
           state.expandedExerciseKey = exerciseStateKey(exercise, nextVariant);
           saveProfileState();
@@ -1422,8 +1424,10 @@
     overlay.querySelector(".detail-start").addEventListener("click", () => openActiveExercise(exercise, index));
     overlay.querySelector(".detail-history").addEventListener("click", () => openExerciseHistorySheet(exercise, stateKey));
     overlay.querySelectorAll(".variant-choice").forEach((button) => button.addEventListener("click", () => {
+      const previousVariant = state.variants?.[exercise.id] || getSelectedVariant(exercise)?.key;
       state.variants = state.variants || {};
       state.variants[exercise.id] = button.dataset.variant;
+      window.FitPlanTelemetry?.trackEvent("exercise_variant_changed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, previous_variant_key: previousVariant, variant_key: button.dataset.variant });
       saveProfileState();
       openExerciseDetail(exercise, index);
     }));
@@ -1441,7 +1445,9 @@
     if (series.length >= totalSets) return;
     const load = Number(article.querySelector(".inline-load-input")?.value || 0) || 0;
     const reps = Number(article.querySelector(".inline-reps-input")?.value || 0) || 0;
+    if (!Object.values(state.seriesProgress || {}).some((items) => items?.length)) window.FitPlanTelemetry?.trackEvent("workout_started", { profile_key: currentProfile, workout_key: activeTab, workout_title: selectedWorkout().title });
     series.push({ load, reps, completedAt: new Date().toISOString() });
+    window.FitPlanTelemetry?.trackEvent("set_completed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, variant_key: variant?.key, set_number: series.length, load_kg: load, reps });
     state.seriesProgress[key] = series;
     state.weights = state.weights || {};
     state.weights[key] = String(load);
@@ -1529,7 +1535,9 @@
     const series = activeSeriesFor(key);
     const load = Number(overlay.querySelector("#activeLoad").value || overlay.querySelector("#activeLoad").textContent) || 0;
     const reps = Number(overlay.querySelector("#activeReps").value || overlay.querySelector("#activeReps").textContent) || 0;
+    if (!Object.values(state.seriesProgress || {}).some((items) => items?.length)) window.FitPlanTelemetry?.trackEvent("workout_started", { profile_key: currentProfile, workout_key: activeTab, workout_title: selectedWorkout().title });
     series.push({ load, reps, completedAt: new Date().toISOString() });
+    window.FitPlanTelemetry?.trackEvent("set_completed", { profile_key: currentProfile, workout_key: activeTab, exercise_key: exercise.id, exercise_name: exercise.name, variant_key: variant?.key, set_number: series.length, load_kg: load, reps });
     state.seriesProgress[key] = series;
     state.weights[key] = String(load);
     const totalSets = parseSets(exercise);
@@ -1590,6 +1598,7 @@
       const key = exerciseStateKey(exercise, getSelectedVariant(exercise));
       return sum + (state.seriesProgress?.[key] || []).reduce((setSum, set) => setSum + (set.load * set.reps), 0);
     }, 0);
+    window.FitPlanTelemetry?.trackEvent("workout_completed", { profile_key: currentProfile, workout_key: activeTab, workout_title: selectedWorkout().title, exercise_count: exercises.length, total_sets: totalSets, volume_kg: volume, duration_seconds: Math.max(60, Math.round(totalSets * 108)) });
     state.sessions = state.sessions || [];
     if (!state.sessions.some((item) => item.date === todayKey && item.tab === activeTab)) {
       state.sessions.push({ date: todayKey, tab: activeTab, title: selectedWorkout().title, exercises: exercises.length, sets: totalSets, volume, completedAt: new Date().toISOString() });
@@ -2111,6 +2120,7 @@
       const value = (id) => overlay.querySelector(id).value.trim().replace(",", ".");
       const data = measurementData();
       data.push({ date: todayKey, weight: value("#measureWeight"), fat: value("#measureFat"), arms: value("#measureArms"), chest: value("#measureChest"), waist: value("#measureWaist"), thighs: value("#measureThighs") });
+      window.FitPlanTelemetry?.trackEvent("body_measurement_updated", { fields: ["weight", "fat", "arms", "chest", "waist", "thighs"].filter((field) => data.at(-1)?.[field]) });
       localStorage.setItem(`gym-app-profile-${currentProfile}-measurements`, JSON.stringify(data.slice(-36)));
       closeOverlay();
       renderProgressView();
