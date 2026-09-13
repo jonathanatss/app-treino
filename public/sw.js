@@ -9,7 +9,7 @@
  * This ensures users always get the latest app code without needing to clear cache.
  */
 
-const CACHE_VERSION = "fitplan-v67";
+const CACHE_VERSION = "fitplan-v68";
 const IMAGE_CACHE   = "fitplan-images-v16";
 
 // Only truly immutable assets go in the image cache
@@ -49,6 +49,18 @@ self.addEventListener("install", (event) => {
 // Accept SKIP_WAITING message from the page to force activation
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
+
+// Background Sync is currently available mainly on Chromium. The worker does
+// not persist Supabase JWTs; it wakes authenticated app clients, which flush
+// the IndexedDB queue with the current session. Safari falls back to `online`.
+self.addEventListener("sync", (event) => {
+  if (event.tag !== "fitplan-evolution-photos") return;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      clients.forEach((client) => client.postMessage({ type: "FITPLAN_PHOTO_SYNC" }));
+    })
+  );
 });
 
 // ── Activate: clean up old caches ────────────────────────────────────────────

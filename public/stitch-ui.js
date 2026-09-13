@@ -2063,7 +2063,8 @@
     const settings = getSettings();
     const science = SCIENCE_BASE[currentProfile];
     const adminSection = cloudSnapshot().profile?.role === "admin" ? `<p class="settings-label admin-settings-label">ADMINISTRAÇÃO</p><div class="settings-group admin-entry-group"><button class="settings-row admin-entry" type="button" data-action="admin-panel"><span class="row-icon">⌁</span><span><strong>Painel do Administrador</strong><small>Cadastros, engajamento e telemetria</small></span><span class="chevron">›</span></button></div>` : "";
-    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section>${adminSection}<p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="vibration"><span class="row-icon">≈</span><span>Vibração<small>Aviso aos 10s e no fim</small></span><span class="toggle ${settings.vibration ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
+    const photoCloudButton = cloudSnapshot().user && cloudSnapshot().profile?.role === "athlete" ? `<button class="settings-row" type="button" data-action="photo-cloud-sync"><span class="row-icon">☁</span><span>Sincronizar fotos<small>Migrar fotos locais para a nuvem privada</small></span><span class="chevron">›</span></button>` : "";
+    view.innerHTML = `<div class="profile-layout"><section class="profile-hero"><div class="profile-hero-avatar" data-avatar-profile="${currentProfile}">${initialsFor(currentProfile)}</div><h2>${escapeHtml(profileName(currentProfile))}</h2><button class="pill-button edit-profile" type="button">Editar perfil</button></section><section>${adminSection}<p class="settings-label science-settings-label">PLANO ATUAL</p><div class="settings-group science-entry-group"><button class="settings-row science-entry" type="button" data-action="science"><span class="row-icon">⌬</span><span><strong>Science Base</strong><small>${escapeHtml(science?.goal || "Entenda as decisões do seu treino")}</small></span><span class="chevron">›</span></button></div><p class="settings-label">GERAL</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="notifications"><span class="row-icon">♢</span><span>Notificações</span><span class="toggle ${settings.notifications ? "on" : ""}"></span></button></div><p class="settings-label">TREINO</p><div class="settings-group"><button class="settings-row toggle-setting" type="button" data-setting="autoRest"><span class="row-icon">◷</span><span>Cronômetro automático<small>Inicia após cada série</small></span><span class="toggle ${settings.autoRest ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="sound"><span class="row-icon">◖</span><span>Efeitos sonoros</span><span class="toggle ${settings.sound ? "on" : ""}"></span></button><button class="settings-row toggle-setting" type="button" data-setting="vibration"><span class="row-icon">≈</span><span>Vibração<small>Aviso aos 10s e no fim</small></span><span class="toggle ${settings.vibration ? "on" : ""}"></span></button><button class="settings-row" type="button" data-action="reset"><span class="row-icon">↺</span><span>Limpar treino do dia</span><span class="chevron">›</span></button></div><p class="settings-label">DADOS</p><div class="settings-group"><button class="settings-row cloud-settings-row" type="button" data-action="cloud"><span class="row-icon">↗</span><span>Conta online<small>${escapeHtml(cloudAccountLabel())}</small></span><span class="cloud-status-dot ${cloudSnapshot().user ? "is-online" : ""}" aria-hidden="true"></span></button>${legacyMigrationButtonMarkup()}${photoCloudButton}<button class="settings-row" type="button" data-action="data"><span class="row-icon">⇅</span><span>Importar e exportar<small>Backup dos seus dados</small></span><span class="chevron">›</span></button><button class="settings-row" type="button" data-action="logout"><span class="row-icon">←</span><span>Sair da conta</span><span class="chevron">›</span></button></div></section></div>`;
     hydrateProfileAvatars(view);
     view.querySelectorAll(".toggle-setting").forEach((button) => button.addEventListener("click", () => {
       const next = getSettings();
@@ -2075,6 +2076,7 @@
     view.querySelector("[data-action='admin-panel']")?.addEventListener("click", () => openAdminPanel());
     view.querySelector("[data-action='cloud']")?.addEventListener("click", openCloudAuthSheet);
     view.querySelector("[data-action='legacy-migration']")?.addEventListener("click", openLegacyMigrationSheet);
+    view.querySelector("[data-action='photo-cloud-sync']")?.addEventListener("click", openPhotoCloudMigration);
     view.querySelector("[data-action='data']")?.addEventListener("click", openDataManagement);
     view.querySelector("[data-action='reset']")?.addEventListener("click", () => document.querySelector("#resetDay").click());
     view.querySelector("[data-action='logout']")?.addEventListener("click", logoutCloudAccount);
@@ -2236,7 +2238,7 @@
         reject(new Error("Armazenamento de fotos indisponível neste navegador."));
         return;
       }
-      const request = indexedDB.open(photoDbName, 2);
+      const request = indexedDB.open(photoDbName, 3);
       request.onupgradeneeded = () => {
         const db = request.result;
         const store = db.objectStoreNames.contains(photoStoreName)
@@ -2244,6 +2246,10 @@
           : db.createObjectStore(photoStoreName, { keyPath: "id" });
         if (!store.indexNames.contains("profile")) store.createIndex("profile", "profile", { unique: false });
         if (!db.objectStoreNames.contains(avatarStoreName)) db.createObjectStore(avatarStoreName, { keyPath: "profile" });
+        if (!db.objectStoreNames.contains("photoSyncQueue")) {
+          const queue = db.createObjectStore("photoSyncQueue", { keyPath: "photoId" });
+          queue.createIndex("profile", "profile", { unique: false });
+        }
       };
       request.onsuccess = () => {
         request.result.onversionchange = () => {
@@ -2395,12 +2401,44 @@
 
   async function saveProgressPhoto(record) {
     const db = await openPhotoDatabase();
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       const transaction = db.transaction(photoStoreName, "readwrite");
       transaction.objectStore(photoStoreName).put(record);
       transaction.oncomplete = () => resolve(record);
       transaction.onerror = () => reject(transaction.error || new Error("Não foi possível salvar a foto."));
       transaction.onabort = () => reject(transaction.error || new Error("O armazenamento da foto foi interrompido."));
+    });
+    window.FitPlanPhotoSync?.queuePhoto(record).catch(() => {});
+    return record;
+  }
+
+  function openPhotoCloudMigration() {
+    const sheet = showActionSheet("Fotos na nuvem", `<div class="photo-cloud-migration"><span class="photo-cloud-icon">☁</span><strong>Migrar galeria deste dispositivo</strong><p>As fotos serão comprimidas, enviadas uma por vez e mantidas localmente. Se a conexão cair, a fila retoma quando o app voltar a ficar online.</p><div class="photo-cloud-progress" hidden><span><i></i></span><small>Preparando…</small></div><p class="cloud-auth-status" role="status" aria-live="polite"></p><button class="primary-button start-photo-migration" type="button">Sincronizar agora</button></div>`);
+    const button = sheet.querySelector(".start-photo-migration");
+    const status = sheet.querySelector(".cloud-auth-status");
+    const progress = sheet.querySelector(".photo-cloud-progress");
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      progress.hidden = false;
+      status.textContent = "";
+      try {
+        const result = await window.FitPlanPhotoSync.migrateLocalPhotos({
+          profileKey: currentProfile,
+          onProgress: ({ current = 0, total = 0 }) => {
+            const percent = total ? Math.round((current / total) * 100) : 100;
+            progress.querySelector("i").style.width = `${percent}%`;
+            progress.querySelector("small").textContent = total ? `${current} de ${total} fotos processadas` : "Verificando galeria…";
+          }
+        });
+        status.textContent = result.pending ? `${result.synced} foto(s) enviada(s). ${result.pending} permanecem na fila e serão retomadas automaticamente.` : `${result.synced} foto(s) enviada(s). Sua galeria está sincronizada.`;
+        status.className = "cloud-auth-status is-success";
+        button.textContent = "Sincronizar novamente";
+      } catch (error) {
+        status.textContent = error.message;
+        status.className = "cloud-auth-status is-error";
+      } finally {
+        button.disabled = false;
+      }
     });
   }
 
@@ -2458,7 +2496,7 @@
           <button class="primary-button save-photo" type="button">✓ &nbsp; Salvar foto</button>
         </div>
         <p class="photo-status" role="status" aria-live="polite"></p>
-        <p class="photo-local-note">As fotos ficam armazenadas somente neste dispositivo e neste perfil.</p>
+        <p class="photo-local-note">As fotos ficam disponíveis neste dispositivo e entram na fila privada de sincronização quando sua conta está conectada.</p>
       </section>
       <section class="photo-library">
         <div class="photo-library-head"><div><h3>Sua galeria</h3><p class="photo-count">Carregando fotos…</p></div><button class="secondary-button compare-photos" type="button" disabled>Comparar 2 fotos</button></div>
@@ -2581,7 +2619,10 @@
       button.textContent = "Salvando…";
       setStatus("Otimizando a imagem para este dispositivo…");
       try {
-        const blob = await optimizeProgressPhoto(selectedFile);
+        const processed = window.FitPlanImageProcessor
+          ? await window.FitPlanImageProcessor.processImage(selectedFile)
+          : { blob: await optimizeProgressPhoto(selectedFile) };
+        const blob = processed.blob;
         await saveProgressPhoto({
           id: `${profileAtOpen}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           profile: profileAtOpen,

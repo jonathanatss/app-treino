@@ -491,6 +491,16 @@ button { touch-action: manipulation; }
 .plate-15 { height:58px; background:#e9dc43; }.plate-10 { height:52px; background:#52b7ff; }.plate-5 { height:45px; background:#f3f3ef; }.plate-2-5 { height:38px; background:#f08b43; }.plate-1-25 { height:32px; background:#b9b9b4; }
 .plate-empty, .plate-warning { color:var(--fit-muted); font-size:11px; }
 .plate-apply { width:100%; margin:0; }
+.photo-cloud-migration { display:grid; justify-items:center; gap:13px; padding:8px 2px 20px; text-align:center; }
+.photo-cloud-icon { display:grid; width:68px; height:68px; place-items:center; border:1px solid #53633e; border-radius:20px; background:#20251b; color:var(--fit-lime); font-size:30px; }
+.photo-cloud-migration > strong { color:#f3f5ef; font-size:18px; }
+.photo-cloud-migration > p:not(.cloud-auth-status) { max-width:480px; margin:0; color:var(--fit-muted); font-size:12px; line-height:1.55; }
+.photo-cloud-migration .primary-button { width:100%; margin:2px 0 0; }
+.photo-cloud-progress { display:grid; width:100%; gap:7px; }
+.photo-cloud-progress[hidden] { display:none; }
+.photo-cloud-progress > span { display:block; height:6px; overflow:hidden; border-radius:999px; background:#2b2e28; }
+.photo-cloud-progress i { display:block; width:0; height:100%; border-radius:inherit; background:var(--fit-lime); transition:width .2s ease; }
+.photo-cloud-progress small { color:#959c8d; font-size:10px; }
 .inline-input-grid small {
   color: var(--fit-muted);
   font-size: 9px;
