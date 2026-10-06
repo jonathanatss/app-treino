@@ -11,6 +11,8 @@ export function friendlyError(value) {
     return "Digite um endereço de e-mail válido.";
   if (/signups? not allowed|user not found/i.test(message))
     return "Este e-mail ainda não foi convidado para o FitPlan.";
+  if (/error.*send|send.*email|smtp|email.*provider|recovery.*email/i.test(message))
+    return "Não foi possível enviar o e-mail agora. Confirme o endereço e tente novamente em alguns minutos, ou use o link de acesso alternativo.";
   if (/expired|invalid.*token|otp.*invalid/i.test(message))
     return "Este link expirou ou já foi usado. Solicite um novo link de acesso.";
   if (/failed to fetch|network|offline/i.test(message))

@@ -49,3 +49,10 @@ export function linkedCloudProfileId(cloud, profiles) {
   if (!cloud?.ready || !cloud?.user || cloud?.profile?.active === false) return null;
   return linkedId && profiles[linkedId] ? linkedId : null;
 }
+
+// ---------------------------------------------------------------------------
+// Recovery URL cleanup — supabase-client.js initialization
+// ---------------------------------------------------------------------------
+export function shouldClearAuthCallbackParams({ callbackFailure, pendingPasswordRecovery, hashIncludesAccessToken }) {
+  return Boolean(callbackFailure || (!pendingPasswordRecovery && hashIncludesAccessToken));
+}

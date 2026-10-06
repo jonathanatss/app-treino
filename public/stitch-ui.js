@@ -54,7 +54,7 @@
     if (typeof window.versionMediaUrl === "function") return window.versionMediaUrl(src);
     if (!src || String(src).startsWith("data:") || String(src).startsWith("blob:")) return src;
     const separator = String(src).includes("?") ? "&" : "?";
-    return `${src}${separator}v=66`;
+    return `${src}${separator}v=70`;
   }
 
   const icon = (name) => ({
@@ -364,8 +364,14 @@
     </section>`;
     document.body.appendChild(sheet);
     activeSheet = sheet;
-    sheet.querySelector(".sheet-close")?.addEventListener("click", closeActionSheet);
-    sheet.addEventListener("click", (event) => { if (event.target === sheet) closeActionSheet(); });
+    sheet.querySelector(".sheet-close")?.addEventListener("click", () => {
+      if (sheet.classList.contains("is-recovery-locked")) return;
+      closeActionSheet();
+    });
+    sheet.addEventListener("click", (event) => {
+      if (event.target !== sheet || sheet.classList.contains("is-recovery-locked")) return;
+      closeActionSheet();
+    });
     window.requestAnimationFrame(() => sheet.querySelector("button:not([disabled]), input, textarea")?.focus({ preventScroll: true }));
     return sheet;
   }
@@ -491,14 +497,38 @@
         <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" value="${escapeHtml(prefillEmail)}" required></label>
         <p class="cloud-auth-status${prefillError ? " is-error" : ""}" role="status" aria-live="polite">${escapeHtml(prefillError)}</p>
         <button class="primary-button" type="submit">Enviar link de redefinição</button>
+        <button class="auth-secondary-button recovery-access-link" type="button" hidden>Enviar link de acesso alternativo</button>
       </form>
     `);
     const form = sheet.querySelector(".forgot-form");
+    const fallback = form?.querySelector(".recovery-access-link");
+    fallback?.addEventListener("click", async () => {
+      const submit = form.querySelector("button[type='submit']");
+      const status = form.querySelector(".cloud-auth-status");
+      const email = new FormData(form).get("email");
+      fallback.disabled = true;
+      submit.disabled = true;
+      status.classList.remove("is-error", "is-success");
+      status.textContent = "Enviando link de acesso...";
+      try {
+        const result = await window.fitplanCloud.signInWithEmail({ email });
+        status.textContent = `Link de acesso enviado para ${result.email}. Ao abrir, o app vai pedir para criar uma senha.`;
+        status.classList.add("is-success");
+        fallback.hidden = true;
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add("is-error");
+      } finally {
+        fallback.disabled = false;
+        submit.disabled = false;
+      }
+    });
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
       const submit = form.querySelector("button[type='submit']");
       const status = form.querySelector(".cloud-auth-status");
       const data = new FormData(form);
+      if (fallback) fallback.hidden = true;
       submit.disabled = true;
       submit.textContent = "Enviando…";
       status.classList.remove("is-error", "is-success");
@@ -510,6 +540,7 @@
       } catch (error) {
         status.textContent = error.message;
         status.classList.add("is-error");
+        if (fallback && /e-mail|email|link/i.test(error.message || "")) fallback.hidden = false;
         submit.textContent = "Tentar novamente";
       } finally {
         submit.disabled = false;
@@ -531,6 +562,10 @@
         <button class="auth-forgot-btn" type="button">Fechar</button>
       </form>
     `);
+    if (isRecovery) {
+      sheet.classList.add("is-recovery-locked");
+      sheet.querySelector(".sheet-close")?.setAttribute("hidden", "");
+    }
     const form = sheet.querySelector(".set-password-form");
     form?.querySelector(".auth-forgot-btn")?.addEventListener("click", async () => {
       passwordRecoveryMode = false;
@@ -2684,7 +2719,7 @@
   document.querySelector(".fit-brand").addEventListener("click", (event) => { event.preventDefault(); navigate("workout"); });
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
-    if (activeSheet) closeActionSheet();
+    if (activeSheet && !activeSheet.classList.contains("is-recovery-locked")) closeActionSheet();
     else if (!overlay.hidden) closeOverlay();
   });
   window.addEventListener("fitplan:cloud-auth", (event) => {
@@ -2732,13 +2767,16 @@
   // with an explanation instead of leaving the user on a blank screen.
   (function handleExpiredRecoveryLink() {
     const search = new URLSearchParams(window.location.search);
-    const isRecovery = search.get("type") === "recovery";
-    const hasError = search.get("error") || search.get("error_description");
+    let storedError = "";
+    try { storedError = sessionStorage.getItem("fitplan-password-recovery-error") || ""; } catch {}
+    const isRecovery = search.get("type") === "recovery" || Boolean(storedError);
+    const hasError = search.get("error") || search.get("error_description") || storedError;
     if (!isRecovery || !hasError) return;
     // Wait until the UI is ready, then open the forgot-password flow
     function tryOpen() {
       if (typeof openForgotPasswordSheet === "function") {
-        openForgotPasswordSheet("", "Este link de redefinição expirou ou já foi usado. Solicite um novo abaixo.");
+        try { sessionStorage.removeItem("fitplan-password-recovery-error"); } catch {}
+        openForgotPasswordSheet("", `${hasError}. Solicite um novo link abaixo.`);
       } else {
         setTimeout(tryOpen, 200);
       }

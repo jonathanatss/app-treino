@@ -11,6 +11,8 @@
   let callbackFailure = null;
   let pendingPasswordRecovery = false;
   let ready = false;
+  const RECOVERY_SESSION_KEY = "fitplan-password-recovery-active";
+  const RECOVERY_ERROR_KEY = "fitplan-password-recovery-error";
 
   const snapshot = () => ({
     configured: Boolean(client),
@@ -34,6 +36,7 @@
     if (/rate limit/i.test(message)) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
     if (/invalid.*email/i.test(message)) return "Digite um endereço de e-mail válido.";
     if (/signups? not allowed|user not found/i.test(message)) return "Este e-mail ainda não foi convidado para o FitPlan.";
+    if (/error.*send|send.*email|smtp|email.*provider|recovery.*email/i.test(message)) return "Não foi possível enviar o e-mail agora. Confirme o endereço e tente novamente em alguns minutos, ou use o link de acesso alternativo.";
     if (/expired|invalid.*token|otp.*invalid/i.test(message)) return "Este link expirou ou já foi usado. Solicite um novo link de acesso.";
     if (/failed to fetch|network|offline/i.test(message)) return "Não foi possível conectar. Confira sua internet e tente novamente.";
     if (/invalid.*password|wrong.*password|invalid login/i.test(message)) return "E-mail ou senha incorretos.";
@@ -54,15 +57,19 @@
   }
 
   function isRecoveryCallback() {
-    return callbackType() === "recovery";
+    let storedRecovery = false;
+    try { storedRecovery = sessionStorage.getItem(RECOVERY_SESSION_KEY) === "1"; } catch {}
+    return callbackType() === "recovery" || storedRecovery;
   }
 
   function markPasswordRecovery() {
     pendingPasswordRecovery = true;
+    try { sessionStorage.setItem(RECOVERY_SESSION_KEY, "1"); } catch {}
   }
 
   function clearPasswordRecovery() {
     pendingPasswordRecovery = false;
+    try { sessionStorage.removeItem(RECOVERY_SESSION_KEY); } catch {}
   }
 
   function clearCallbackParams() {
@@ -271,6 +278,7 @@
       if (_event === "PASSWORD_RECOVERY" || (_event === "SIGNED_IN" && isRecoveryCallback())) {
         markPasswordRecovery();
         window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
+        clearCallbackParams();
       }
       // Track whether the last sign-in was via magic link (OTP).
       // Only true when the session was created in THIS page load from a magic link
@@ -303,12 +311,18 @@
         }
       }, 0);
     });
-    try { sessionStorage.removeItem("fitplan-password-recovery-active"); } catch {}
-    pendingPasswordRecovery = isRecoveryCallback();
     callbackFailure = friendlyError(callbackError());
+    if (callbackFailure && callbackType() === "recovery") {
+      try { sessionStorage.setItem(RECOVERY_ERROR_KEY, callbackFailure); } catch {}
+      clearPasswordRecovery();
+    } else {
+      pendingPasswordRecovery = isRecoveryCallback();
+      if (pendingPasswordRecovery) markPasswordRecovery();
+      try { sessionStorage.removeItem(RECOVERY_ERROR_KEY); } catch {}
+    }
     error = callbackFailure;
     // Clean error/token params from URL so refreshing doesn't re-trigger auth
-    if (callbackFailure || callbackType() === "recovery" || window.location.hash.includes("access_token")) {
+    if (callbackFailure || (!pendingPasswordRecovery && window.location.hash.includes("access_token"))) {
       clearCallbackParams();
     }
     refreshSession(error);

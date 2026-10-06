@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { shouldFlagAsOtp, shouldPromptSetPassword, linkedCloudProfileId } from "../helpers/auth-flow.js";
+import { shouldFlagAsOtp, shouldPromptSetPassword, linkedCloudProfileId, shouldClearAuthCallbackParams } from "../helpers/auth-flow.js";
 
 const PROFILES = { jonathan: { name: "Jonathan" }, sara: { name: "Sara" } };
 
@@ -186,5 +186,31 @@ describe("password login flow — modal must not appear", () => {
     const flaggedAsOtp = shouldFlagAsOtp("PASSWORD_RECOVERY", { user: {} }, false);
     expect(flaggedAsOtp).toBe(false);
     expect(shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: null })).toBe(false);
+  });
+});
+
+describe("password recovery callback cleanup", () => {
+  it("keeps recovery token params until Supabase emits/consumes the recovery session", () => {
+    expect(shouldClearAuthCallbackParams({
+      callbackFailure: null,
+      pendingPasswordRecovery: true,
+      hashIncludesAccessToken: true
+    })).toBe(false);
+  });
+
+  it("clears normal magic-link token params when not in recovery mode", () => {
+    expect(shouldClearAuthCallbackParams({
+      callbackFailure: null,
+      pendingPasswordRecovery: false,
+      hashIncludesAccessToken: true
+    })).toBe(true);
+  });
+
+  it("clears callback params on callback error so expired links show a clean retry flow", () => {
+    expect(shouldClearAuthCallbackParams({
+      callbackFailure: "Link expirado",
+      pendingPasswordRecovery: true,
+      hashIncludesAccessToken: false
+    })).toBe(true);
   });
 });
