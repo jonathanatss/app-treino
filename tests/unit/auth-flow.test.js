@@ -6,13 +6,16 @@ const user = { id: "user-123", email: "athlete@example.com" };
 const session = { user, access_token: "test-token" };
 const activeProfile = { id: user.id, role: "athlete", active: true, legacy_profile_key: "jonathan" };
 
-function mockClient({ initialSession = null, profile = activeProfile, profileError = null, signInError = null, recoveryError = null } = {}) {
+function mockClient({ initialSession = null, profile = activeProfile, profileError = null, signInError = null, recoveryError = null, authEventBeforeSignInResolves = false } = {}) {
   let authListener;
   const client = {
     auth: {
       getSession: vi.fn().mockResolvedValue({ data: { session: initialSession }, error: null }),
       onAuthStateChange: vi.fn((callback) => { authListener = callback; return { data: { subscription: { unsubscribe() {} } } }; }),
-      signInWithPassword: vi.fn().mockResolvedValue(signInError ? { data: {}, error: signInError } : { data: { session }, error: null }),
+      signInWithPassword: vi.fn(async () => {
+        if (authEventBeforeSignInResolves) authListener("SIGNED_IN", session);
+        return signInError ? { data: {}, error: signInError } : { data: { session }, error: null };
+      }),
       resetPasswordForEmail: vi.fn().mockResolvedValue({ data: {}, error: recoveryError }),
       updateUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null })
@@ -59,6 +62,14 @@ describe("FitPlan auth controller", () => {
     await cloud.signInWithPassword({ email: "  ATHLETE@EXAMPLE.COM ", password: "existing-password" });
     expect(client.auth.signInWithPassword).toHaveBeenCalledWith({ email: "athlete@example.com", password: "existing-password" });
     expect(cloud.snapshot().state).toBe("authenticated");
+  });
+
+  it("settles login when Safari emits SIGNED_IN before the request resolves", async () => {
+    const { cloud, client } = await boot({ authEventBeforeSignInResolves: true });
+    await cloud.signInWithPassword({ email: "athlete@example.com", password: "existing-password" });
+    expect(cloud.snapshot().state).toBe("authenticated");
+    expect(cloud.snapshot().profile).toEqual(activeProfile);
+    expect(client.auth.signOut).not.toHaveBeenCalled();
   });
 
   it("rejects invalid email before a network call", async () => {

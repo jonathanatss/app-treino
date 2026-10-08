@@ -112,6 +112,10 @@
     client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
     client.auth.onAuthStateChange((event, nextSession) => {
       session = nextSession || null;
+      // signInWithPassword owns reconciliation while its request is active.
+      // Safari/iOS may emit SIGNED_IN before that promise resolves; running a
+      // second reconciliation here would supersede it and leave the UI busy.
+      if (event === "SIGNED_IN" && state === "signing_in") return;
       const recoveryEvent = event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && recoveryCallback.present && Boolean(session));
       window.setTimeout(() => reconcile(session, { recovery: recoveryEvent }), 0);
     });
