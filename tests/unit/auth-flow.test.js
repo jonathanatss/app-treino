@@ -1,216 +1,137 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { shouldFlagAsOtp, shouldPromptSetPassword, linkedCloudProfileId, shouldClearAuthCallbackParams } from "../helpers/auth-flow.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 
-const PROFILES = { jonathan: { name: "Jonathan" }, sara: { name: "Sara" } };
+const source = readFileSync("public/src/supabase-client.js", "utf8");
+const user = { id: "user-123", email: "athlete@example.com" };
+const session = { user, access_token: "test-token" };
+const activeProfile = { id: user.id, role: "athlete", active: true, legacy_profile_key: "jonathan" };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// shouldFlagAsOtp
-// Ensures lastSignInWasOtp is only true for genuine magic-link logins.
-// ─────────────────────────────────────────────────────────────────────────────
-describe("shouldFlagAsOtp", () => {
-  // ── password login (the bug that was reported) ────────────────────────────
-  it("returns false for password login (no token in URL, no amr otp)", () => {
-    const session = { user: { amr: [{ method: "password" }], app_metadata: { provider: "email" } } };
-    expect(shouldFlagAsOtp("SIGNED_IN", session, false)).toBe(false);
+function mockClient({ initialSession = null, profile = activeProfile, profileError = null, signInError = null, recoveryError = null } = {}) {
+  let authListener;
+  const client = {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: initialSession }, error: null }),
+      onAuthStateChange: vi.fn((callback) => { authListener = callback; return { data: { subscription: { unsubscribe() {} } } }; }),
+      signInWithPassword: vi.fn().mockResolvedValue(signInError ? { data: {}, error: signInError } : { data: { session }, error: null }),
+      resetPasswordForEmail: vi.fn().mockResolvedValue({ data: {}, error: recoveryError }),
+      updateUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
+      signOut: vi.fn().mockResolvedValue({ error: null })
+    },
+    from: vi.fn(() => ({
+      select: () => ({ eq: () => ({ maybeSingle: vi.fn().mockResolvedValue({ data: profile, error: profileError }) }) }),
+      update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) })
+    })),
+    storage: { from: vi.fn(() => ({ remove: vi.fn(), upload: vi.fn(), createSignedUrl: vi.fn() })) }
+  };
+  return { client, emitAuth: (event, value) => authListener(event, value) };
+}
+
+async function boot(options = {}) {
+  const mock = mockClient(options);
+  window.supabase = { createClient: vi.fn(() => mock.client) };
+  window.eval(source);
+  await vi.waitFor(() => expect(window.fitplanCloud.snapshot().ready).toBe(true));
+  return { ...mock, cloud: window.fitplanCloud };
+}
+
+beforeEach(() => {
+  localStorage.clear(); sessionStorage.clear(); history.replaceState({}, "", "/");
+  delete window.fitplanCloud; delete window.supabase;
+});
+
+describe("FitPlan auth controller", () => {
+  it("preserves the default Supabase storage key and persistence settings", async () => {
+    await boot();
+    const options = window.supabase.createClient.mock.calls[0][2].auth;
+    expect(options).toMatchObject({ persistSession: true, autoRefreshToken: true, detectSessionInUrl: true });
+    expect(options.flowType).toBeUndefined();
+    expect(options.storageKey).toBeUndefined();
   });
 
-  it("returns false for password login with no amr field at all", () => {
-    const session = { user: { app_metadata: { provider: "email" } } };
-    expect(shouldFlagAsOtp("SIGNED_IN", session, false)).toBe(false);
+  it("restores an existing session and linked profile without signing out", async () => {
+    const { cloud, client } = await boot({ initialSession: session });
+    expect(cloud.snapshot()).toMatchObject({ state: "authenticated", user, profile: activeProfile });
+    expect(client.auth.signOut).not.toHaveBeenCalled();
   });
 
-  it("returns false when amr is an empty array and no token in URL", () => {
-    const session = { user: { amr: [] } };
-    expect(shouldFlagAsOtp("SIGNED_IN", session, false)).toBe(false);
+  it("logs in with a normalized email and an existing password", async () => {
+    const { cloud, client } = await boot();
+    await cloud.signInWithPassword({ email: "  ATHLETE@EXAMPLE.COM ", password: "existing-password" });
+    expect(client.auth.signInWithPassword).toHaveBeenCalledWith({ email: "athlete@example.com", password: "existing-password" });
+    expect(cloud.snapshot().state).toBe("authenticated");
   });
 
-  // ── magic link login (should prompt) ─────────────────────────────────────
-  it("returns true when access_token was in URL hash (magic link redirect)", () => {
-    const session = { user: { amr: [{ method: "otp" }], app_metadata: { provider: "email" } } };
-    expect(shouldFlagAsOtp("SIGNED_IN", session, true)).toBe(true);
+  it("rejects invalid email before a network call", async () => {
+    const { cloud, client } = await boot();
+    await expect(cloud.signInWithPassword({ email: "bad", password: "password" })).rejects.toThrow("e-mail válido");
+    expect(client.auth.signInWithPassword).not.toHaveBeenCalled();
   });
 
-  it("returns true when amr explicitly contains otp even without token in URL", () => {
-    const session = { user: { amr: [{ method: "otp" }] } };
-    expect(shouldFlagAsOtp("SIGNED_IN", session, false)).toBe(true);
+  it("maps incorrect credentials without provider details", async () => {
+    const { cloud } = await boot({ signInError: { message: "Invalid login credentials: internal" } });
+    await expect(cloud.signInWithPassword({ email: "athlete@example.com", password: "wrong" })).rejects.toThrow("E-mail ou senha incorretos.");
   });
 
-  it("returns true when amr has multiple methods and otp is one of them", () => {
-    const session = { user: { amr: [{ method: "password" }, { method: "otp" }] } };
-    expect(shouldFlagAsOtp("SIGNED_IN", session, false)).toBe(true);
+  it("keeps the authenticated identity when profile loading fails", async () => {
+    const { cloud, client } = await boot({ initialSession: session, profileError: { message: "Failed to fetch" } });
+    expect(cloud.snapshot()).toMatchObject({ state: "error", user });
+    expect(client.auth.signOut).not.toHaveBeenCalled();
   });
 
-  // ── non SIGNED_IN events ─────────────────────────────────────────────────
-  it("returns false for PASSWORD_RECOVERY event", () => {
-    const session = { user: { amr: [{ method: "otp" }] } };
-    expect(shouldFlagAsOtp("PASSWORD_RECOVERY", session, true)).toBe(false);
+  it.each([[null, "profile_pending"], [{ ...activeProfile, active: false }, "profile_disabled"], [{ ...activeProfile, legacy_profile_key: null }, "profile_pending"], [{ ...activeProfile, role: "admin" }, "authenticated"]])("classifies profile authorization %#", async (profile, expected) => {
+    const { cloud } = await boot({ initialSession: session, profile });
+    expect(cloud.snapshot().state).toBe(expected);
   });
 
-  it("returns false for TOKEN_REFRESHED event", () => {
-    expect(shouldFlagAsOtp("TOKEN_REFRESHED", null, false)).toBe(false);
+  it("handles token refresh through one auth listener", async () => {
+    const { cloud, emitAuth } = await boot({ initialSession: session });
+    emitAuth("TOKEN_REFRESHED", { ...session, access_token: "refreshed" });
+    await vi.waitFor(() => expect(cloud.snapshot().session.access_token).toBe("refreshed"));
   });
 
-  it("returns false for SIGNED_OUT event", () => {
-    expect(shouldFlagAsOtp("SIGNED_OUT", null, false)).toBe(false);
+  it("returns neutral recovery copy even when provider rejects delivery", async () => {
+    const { cloud, client } = await boot({ recoveryError: { message: "SMTP user not found" } });
+    const result = await cloud.requestPasswordRecovery(" ATHLETE@EXAMPLE.COM ");
+    expect(result.message).toMatch(/^Se existir uma conta/);
+    expect(client.auth.resetPasswordForEmail.mock.calls[0][0]).toBe("athlete@example.com");
   });
 
-  // ── edge cases ────────────────────────────────────────────────────────────
-  it("handles null session gracefully", () => {
-    expect(shouldFlagAsOtp("SIGNED_IN", null, false)).toBe(false);
+  it("handles an expired recovery link without creating a session or loop", async () => {
+    history.replaceState({}, "", "/?type=recovery&error=access_denied&error_description=otp_expired");
+    const { cloud, client } = await boot();
+    expect(cloud.snapshot()).toMatchObject({ state: "error", user: null, error: expect.stringMatching(/expirou/) });
+    expect(client.auth.signOut).not.toHaveBeenCalled();
+    expect(location.search).toBe("");
   });
 
-  it("handles session with no user gracefully", () => {
-    expect(shouldFlagAsOtp("SIGNED_IN", {}, false)).toBe(false);
+  it("updates a recovery password without automatic logout and consumes URL", async () => {
+    history.replaceState({}, "", "/?type=recovery");
+    const { cloud, client, emitAuth } = await boot({ initialSession: session });
+    expect(cloud.snapshot().state).toBe("recovering_password");
+    await cloud.updatePassword("new-password");
+    expect(client.auth.updateUser).toHaveBeenCalledWith({ password: "new-password" });
+    expect(client.auth.signOut).not.toHaveBeenCalled();
+    expect(location.search).toBe("");
+    expect(sessionStorage.getItem("fitplan:recovery-consumed-v2")).toBe("1");
+    emitAuth("USER_UPDATED", session);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(cloud.snapshot().state).toBe("authenticated");
   });
 
-  it("handles non-array amr gracefully", () => {
-    const session = { user: { amr: "otp" } }; // malformed
-    expect(shouldFlagAsOtp("SIGNED_IN", session, false)).toBe(false);
+  it("uses local scope for voluntary logout", async () => {
+    const { cloud, client } = await boot({ initialSession: session });
+    await cloud.signOut();
+    expect(client.auth.signOut).toHaveBeenCalledWith({ scope: "local" });
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// shouldPromptSetPassword
-// Ensures the set-password modal only appears in the right conditions.
-// ─────────────────────────────────────────────────────────────────────────────
-describe("shouldPromptSetPassword", () => {
-  it("returns true only when OTP, userId present, and flag not set", () => {
-    expect(shouldPromptSetPassword({ signedInViaOtp: true, userId: "abc", storedFlag: null })).toBe(true);
-  });
-
-  it("returns false when signed in via password (signedInViaOtp = false)", () => {
-    expect(shouldPromptSetPassword({ signedInViaOtp: false, userId: "abc", storedFlag: null })).toBe(false);
-  });
-
-  it("returns false when flag was already set (user already saw the modal)", () => {
-    expect(shouldPromptSetPassword({ signedInViaOtp: true, userId: "abc", storedFlag: "1" })).toBe(false);
-  });
-
-  it("returns false when userId is missing", () => {
-    expect(shouldPromptSetPassword({ signedInViaOtp: true, userId: null, storedFlag: null })).toBe(false);
-    expect(shouldPromptSetPassword({ signedInViaOtp: true, userId: undefined, storedFlag: null })).toBe(false);
-    expect(shouldPromptSetPassword({ signedInViaOtp: true, userId: "", storedFlag: null })).toBe(false);
-  });
-
-  it("returns false when all are false/null", () => {
-    expect(shouldPromptSetPassword({ signedInViaOtp: false, userId: null, storedFlag: null })).toBe(false);
-  });
-
-  it("flag being any truthy string counts as already seen", () => {
-    expect(shouldPromptSetPassword({ signedInViaOtp: true, userId: "abc", storedFlag: "2026-08-25" })).toBe(false);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// linkedCloudProfileId (existing tests kept, extended)
-// ─────────────────────────────────────────────────────────────────────────────
-describe("linkedCloudProfileId", () => {
-  const makeCloud = (overrides = {}) => ({
-    ready: true,
-    user: { id: "user-1" },
-    profile: { id: "user-1", legacy_profile_key: "jonathan", active: true },
-    ...overrides
-  });
-
-  it("returns profile id when all conditions are met", () => {
-    expect(linkedCloudProfileId(makeCloud(), PROFILES)).toBe("jonathan");
-  });
-
-  it("returns null when not ready", () => {
-    expect(linkedCloudProfileId(makeCloud({ ready: false }), PROFILES)).toBeNull();
-  });
-
-  it("returns null when no user", () => {
-    expect(linkedCloudProfileId(makeCloud({ user: null }), PROFILES)).toBeNull();
-  });
-
-  it("returns null when profile is inactive", () => {
-    expect(linkedCloudProfileId(makeCloud({ profile: { legacy_profile_key: "jonathan", active: false } }), PROFILES)).toBeNull();
-  });
-
-  it("returns null when legacy_profile_key not in local profiles", () => {
-    expect(linkedCloudProfileId(makeCloud({ profile: { legacy_profile_key: "unknown", active: true } }), PROFILES)).toBeNull();
-  });
-
-  it("returns null when profile is null", () => {
-    expect(linkedCloudProfileId(makeCloud({ profile: null }), PROFILES)).toBeNull();
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Integration: full password login flow should never show set-password modal
-// ─────────────────────────────────────────────────────────────────────────────
-describe("password login flow — modal must not appear", () => {
-  it("password login: shouldFlagAsOtp=false → shouldPromptSetPassword=false", () => {
-    const session = { user: { amr: [{ method: "password" }], app_metadata: { provider: "email" } } };
-    const hasTokenInUrl = false;
-    const flaggedAsOtp = shouldFlagAsOtp("SIGNED_IN", session, hasTokenInUrl);
-    expect(flaggedAsOtp).toBe(false);
-    const shouldPrompt = shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: null });
-    expect(shouldPrompt).toBe(false);
-  });
-
-  it("password login on clean device (no amr, no token in URL): no modal", () => {
-    const session = { user: { app_metadata: { provider: "email" } } };
-    const flaggedAsOtp = shouldFlagAsOtp("SIGNED_IN", session, false);
-    const shouldPrompt = shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: null });
-    expect(flaggedAsOtp).toBe(false);
-    expect(shouldPrompt).toBe(false);
-  });
-
-  it("session restore (TOKEN_REFRESHED): never shows modal", () => {
-    const flaggedAsOtp = shouldFlagAsOtp("TOKEN_REFRESHED", { user: {} }, false);
-    expect(flaggedAsOtp).toBe(false);
-    expect(shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: null })).toBe(false);
-  });
-
-  it("magic link on new device with no flag: shows modal once", () => {
-    const session = { user: { amr: [{ method: "otp" }] } };
-    const flaggedAsOtp = shouldFlagAsOtp("SIGNED_IN", session, true);
-    expect(flaggedAsOtp).toBe(true);
-    const shouldPrompt = shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: null });
-    expect(shouldPrompt).toBe(true);
-  });
-
-  it("magic link second time (flag already set): no modal", () => {
-    const session = { user: { amr: [{ method: "otp" }] } };
-    const flaggedAsOtp = shouldFlagAsOtp("SIGNED_IN", session, true);
-    expect(flaggedAsOtp).toBe(true);
-    const shouldPrompt = shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: "1" });
-    expect(shouldPrompt).toBe(false);
-  });
-
-  it("password recovery event: lastSignInWasOtp cleared, no set-password modal", () => {
-    // PASSWORD_RECOVERY should open set-password via a separate event,
-    // but should NOT set lastSignInWasOtp = true
-    const flaggedAsOtp = shouldFlagAsOtp("PASSWORD_RECOVERY", { user: {} }, false);
-    expect(flaggedAsOtp).toBe(false);
-    expect(shouldPromptSetPassword({ signedInViaOtp: flaggedAsOtp, userId: "user-1", storedFlag: null })).toBe(false);
-  });
-});
-
-describe("password recovery callback cleanup", () => {
-  it("keeps recovery token params until Supabase emits/consumes the recovery session", () => {
-    expect(shouldClearAuthCallbackParams({
-      callbackFailure: null,
-      pendingPasswordRecovery: true,
-      hashIncludesAccessToken: true
-    })).toBe(false);
-  });
-
-  it("clears normal magic-link token params when not in recovery mode", () => {
-    expect(shouldClearAuthCallbackParams({
-      callbackFailure: null,
-      pendingPasswordRecovery: false,
-      hashIncludesAccessToken: true
-    })).toBe(true);
-  });
-
-  it("clears callback params on callback error so expired links show a clean retry flow", () => {
-    expect(shouldClearAuthCallbackParams({
-      callbackFailure: "Link expirado",
-      pendingPasswordRecovery: true,
-      hashIncludesAccessToken: false
-    })).toBe(true);
+describe("legacy removal", () => {
+  const ui = readFileSync("public/stitch-ui.js", "utf8");
+  it("has no alternate magic-link or automatic OTP password flow", () => {
+    expect(source).not.toContain("signInWithOtp");
+    expect(source).not.toContain("lastSignInWasOtp");
+    expect(ui).not.toContain("link de acesso alternativo");
+    expect(ui).not.toContain("fitplan-password-set-");
+    expect(ui).not.toContain("fitplan:password-recovery");
   });
 });

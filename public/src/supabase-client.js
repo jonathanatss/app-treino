@@ -1,334 +1,120 @@
 (function () {
   "use strict";
-
   const SUPABASE_URL = "https://ekvewbevtybvkcvvchaa.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrdmV3YmV2dHlidmtjdnZjaGFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NzQ1NjMsImV4cCI6MjEwMzE1MDU2M30.Kc1aTcRjFt47Nhr2egU2kDQn7Yk3Xdl0kRKW7AispVI";
+  const AUTH_EVENT = "fitplan:cloud-auth";
+  const RECOVERY_MARKER = "fitplan:recovery-callback-v2";
+  const RECOVERY_CONSUMED = "fitplan:recovery-consumed-v2";
+  const VALID_STATES = new Set(["booting", "signed_out", "signing_in", "authenticated", "recovering_password", "updating_password", "profile_pending", "profile_disabled", "offline", "error"]);
   const listeners = new Set();
-  let client = null;
-  let session = null;
-  let profile = null;
-  let error = null;
-  let callbackFailure = null;
-  let pendingPasswordRecovery = false;
-  let ready = false;
-  const RECOVERY_SESSION_KEY = "fitplan-password-recovery-active";
-  const RECOVERY_ERROR_KEY = "fitplan-password-recovery-error";
+  let client = null, session = null, profile = null, state = "booting", error = null, ready = false, operationId = 0;
 
-  const snapshot = () => ({
-    configured: Boolean(client),
-    ready,
-    session,
-    user: session?.user || null,
-    profile,
-    error,
-    recovery: pendingPasswordRecovery
-  });
-
-  function emit() {
-    const detail = snapshot();
-    window.dispatchEvent(new CustomEvent("fitplan:cloud-auth", { detail }));
-    listeners.forEach((listener) => listener(detail));
+  function safeGet(key) { try { return sessionStorage.getItem(key); } catch { return null; } }
+  function safeSet(key, value) { try { value == null ? sessionStorage.removeItem(key) : sessionStorage.setItem(key, value); } catch {} }
+  function callbackInfo() {
+    const search = new URLSearchParams(location.search), hash = new URLSearchParams(location.hash.replace(/^#/, ""));
+    const type = search.get("type") || hash.get("type"), code = search.get("code");
+    const description = search.get("error_description") || hash.get("error_description");
+    const callbackError = search.get("error") || hash.get("error");
+    return {
+      present: type === "recovery" || safeGet(RECOVERY_MARKER) === "1" || Boolean(code && safeGet(RECOVERY_CONSUMED) !== "1"),
+      hasParams: Boolean(type || code || description || callbackError || hash.get("access_token")),
+      invalid: Boolean(description || callbackError)
+    };
   }
-
-  function friendlyError(value) {
-    if (!value) return null;
-    const message = String(value.message || value).replace(/\+/g, " ");
-    if (/rate limit/i.test(message)) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
-    if (/invalid.*email/i.test(message)) return "Digite um endereço de e-mail válido.";
-    if (/signups? not allowed|user not found/i.test(message)) return "Este e-mail ainda não foi convidado para o FitPlan.";
-    if (/error.*send|send.*email|smtp|email.*provider|recovery.*email/i.test(message)) return "Não foi possível enviar o e-mail agora. Confirme o endereço e tente novamente em alguns minutos, ou use o link de acesso alternativo.";
-    if (/expired|invalid.*token|otp.*invalid/i.test(message)) return "Este link expirou ou já foi usado. Solicite um novo link de acesso.";
-    if (/failed to fetch|network|offline/i.test(message)) return "Não foi possível conectar. Confira sua internet e tente novamente.";
-    if (/invalid.*password|wrong.*password|invalid login/i.test(message)) return "E-mail ou senha incorretos.";
-    if (/password.*short|password.*characters|should be at least/i.test(message)) return "A senha deve ter pelo menos 6 caracteres.";
-    return message;
+  let recoveryCallback = callbackInfo();
+  const normalizeEmail = (value) => String(value || "").trim().toLowerCase();
+  const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(value));
+  function friendlyError(value, context = "general") {
+    const message = String(value?.message || value || "").replace(/\+/g, " ");
+    if (context === "login" && /invalid login|invalid.*credential|email not confirmed/i.test(message)) return "E-mail ou senha incorretos.";
+    if (/rate limit|too many requests/i.test(message)) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+    if (/failed to fetch|network|load failed|offline|timeout/i.test(message)) return "Não foi possível conectar. Confira sua internet e tente novamente.";
+    if (/expired|invalid.*token|otp.*invalid|flow state/i.test(message)) return "Este link expirou ou já foi usado. Solicite um novo e-mail.";
+    if (/password.*short|password.*characters|should be at least/i.test(message)) return "A senha deve ter pelo menos 8 caracteres.";
+    if (context === "recovery") return "Não foi possível concluir a solicitação agora. Tente novamente em alguns minutos.";
+    return "Não foi possível concluir a operação. Tente novamente.";
   }
-
-  function callbackError() {
-    const search = new URLSearchParams(window.location.search);
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    return search.get("error_description") || hash.get("error_description") || search.get("error") || hash.get("error");
+  const snapshot = () => Object.freeze({ configured: Boolean(client), ready, state, session, user: session?.user || null, profile, error, recovery: state === "recovering_password" || state === "updating_password" });
+  function emit() { const detail = snapshot(); window.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail })); listeners.forEach((fn) => fn(detail)); }
+  function transition(next, nextError = null) { if (!VALID_STATES.has(next)) throw new Error(`Estado inválido: ${next}`); state = next; error = nextError; ready = next !== "booting"; emit(); }
+  function clearAuthParams() {
+    if (!recoveryCallback.hasParams || !history.replaceState) return;
+    const url = new URL(location.href);
+    ["code", "type", "error", "error_code", "error_description"].forEach((key) => url.searchParams.delete(key));
+    url.hash = ""; history.replaceState({}, "", `${url.pathname}${url.search}` || "/"); recoveryCallback.hasParams = false;
   }
-
-  function callbackType() {
-    const search = new URLSearchParams(window.location.search);
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    return search.get("type") || hash.get("type");
-  }
-
-  function isRecoveryCallback() {
-    let storedRecovery = false;
-    try { storedRecovery = sessionStorage.getItem(RECOVERY_SESSION_KEY) === "1"; } catch {}
-    return callbackType() === "recovery" || storedRecovery;
-  }
-
-  function markPasswordRecovery() {
-    pendingPasswordRecovery = true;
-    try { sessionStorage.setItem(RECOVERY_SESSION_KEY, "1"); } catch {}
-  }
-
-  function clearPasswordRecovery() {
-    pendingPasswordRecovery = false;
-    try { sessionStorage.removeItem(RECOVERY_SESSION_KEY); } catch {}
-  }
-
-  function clearCallbackParams() {
-    // Remove error/token params from URL without reloading so the user can
-    // share or refresh without seeing the error or re-triggering auth.
-    const clean = window.location.origin + window.location.pathname;
-    if (window.history?.replaceState) window.history.replaceState({}, "", clean);
-  }
-
-  async function loadProfile(nextSession = session) {
-    if (!client || !nextSession?.user?.id) {
-      profile = null;
-      return null;
-    }
-    const result = await client
-      .from("profiles")
-      .select("id, display_name, avatar_url, role, active, legacy_profile_key")
-      .eq("id", nextSession.user.id)
-      .maybeSingle();
+  async function fetchProfile(nextSession, requestId) {
+    if (!nextSession?.user?.id) return null;
+    const result = await client.from("profiles").select("id, display_name, avatar_url, role, active, legacy_profile_key").eq("id", nextSession.user.id).maybeSingle();
+    if (requestId !== operationId) return profile;
     if (result.error) throw result.error;
-    profile = result.data || null;
-    if (!profile) error = "Conta autenticada, mas o perfil ainda não foi liberado pelo administrador.";
-    else if (profile.active === false) error = "Este acesso está temporariamente desativado. Fale com o responsável pelo treino.";
-    return profile;
+    return result.data || null;
   }
-
-  async function refreshSession(preservedError = null) {
-    if (!client) return snapshot();
-    // Safety timeout — always emit ready after 10s even if Supabase is slow
-    const safetyTimer = setTimeout(() => {
-      if (!ready) { ready = true; emit(); }
-    }, 10000);
+  function profileState(value) { if (value?.active === false) return "profile_disabled"; if (!value || !value.legacy_profile_key) return "profile_pending"; return "authenticated"; }
+  async function reconcile(nextSession, options = {}) {
+    const requestId = ++operationId; session = nextSession || null;
+    if (!session) { profile = null; transition("signed_out"); return snapshot(); }
+    if (options.recovery) { safeSet(RECOVERY_MARKER, "1"); transition("recovering_password"); return snapshot(); }
     try {
-      error = preservedError;
-      const result = await client.auth.getSession();
-      if (result.error) throw result.error;
-      session = result.data.session;
-      await loadProfile(session);
+      const nextProfile = await fetchProfile(session, requestId);
+      if (requestId !== operationId) return snapshot();
+      profile = nextProfile; transition(profileState(profile));
     } catch (nextError) {
-      error = friendlyError(nextError);
-    } finally {
-      clearTimeout(safetyTimer);
-      ready = true;
-      emit();
+      if (requestId === operationId) transition(navigator.onLine === false ? "offline" : "error", friendlyError(nextError));
     }
     return snapshot();
   }
-
-  async function signInWithEmail({ email }) {
-    if (!client) throw new Error("A conexão online está indisponível neste momento.");
-    const normalizedEmail = String(email || "").trim().toLowerCase();
-    if (!normalizedEmail) throw new Error("Informe seu e-mail.");
-    callbackFailure = null;
-    error = null;
-    const redirectUrl = new URL(window.location.pathname, window.location.origin);
-    const currentQuery = new URLSearchParams(window.location.search);
-    ["admin", "request"].forEach((key) => {
-      const value = currentQuery.get(key);
-      if (value) redirectUrl.searchParams.set(key, value);
-    });
-    const result = await client.auth.signInWithOtp({
-      email: normalizedEmail,
-      options: {
-        emailRedirectTo: redirectUrl.toString(),
-        shouldCreateUser: false
-      }
-    });
-    if (result.error) throw new Error(friendlyError(result.error));
-    return { email: normalizedEmail };
+  async function initialize() {
+    try {
+      const result = await client.auth.getSession(); if (result.error) throw result.error; session = result.data.session || null;
+      if (recoveryCallback.invalid) { safeSet(RECOVERY_MARKER, null); safeSet(RECOVERY_CONSUMED, "1"); clearAuthParams(); transition("error", "Este link expirou ou já foi usado. Solicite um novo e-mail."); return; }
+      const recoveryReady = recoveryCallback.present && Boolean(session); if (recoveryReady) clearAuthParams();
+      await reconcile(session, { recovery: recoveryReady });
+    } catch (nextError) { transition(navigator.onLine === false ? "offline" : "error", friendlyError(nextError)); }
   }
-
-  async function uploadProfileAvatar(userId, blob) {
-    if (!client) throw new Error("A conexão online está indisponível neste momento.");
-    const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
-    const path = `${userId}/avatar.${ext}`;
-    // Remove any existing avatar first to avoid stale files
-    await client.storage.from("avatars").remove([
-      `${userId}/avatar.jpg`,
-      `${userId}/avatar.png`,
-      `${userId}/avatar.webp`
-    ]);
-    const { error: uploadError } = await client.storage.from("avatars").upload(path, blob, {
-      upsert: true,
-      contentType: blob.type || "image/jpeg"
-    });
-    if (uploadError) throw new Error(uploadError.message);
-    const { data } = client.storage.from("avatars").getPublicUrl(path);
-    // Bucket is private — use signed URL (1 year expiry)
-    const { data: signedData, error: signedError } = await client.storage
-      .from("avatars")
-      .createSignedUrl(path, 60 * 60 * 24 * 365);
-    if (signedError) throw new Error(signedError.message);
-    const avatarUrl = signedData.signedUrl;
-    // Persist the URL on the profiles row
-    const { error: updateError } = await client
-      .from("profiles")
-      .update({ avatar_url: avatarUrl })
-      .eq("id", userId);
-    if (updateError) throw new Error(updateError.message);
-    // Update local snapshot so callers see the new URL immediately
-    if (profile) profile = { ...profile, avatar_url: avatarUrl };
-    emit();
-    return avatarUrl;
-  }
-
-  async function deleteStorageAvatar(userId) {
-    if (!client) return;
-    await client.storage.from("avatars").remove([
-      `${userId}/avatar.jpg`,
-      `${userId}/avatar.png`,
-      `${userId}/avatar.webp`
-    ]);
-    await client.from("profiles").update({ avatar_url: null }).eq("id", userId);
-    if (profile) profile = { ...profile, avatar_url: null };
-    emit();
-  }
-
   async function signInWithPassword({ email, password }) {
-    if (!client) throw new Error("A conexão online está indisponível neste momento.");
-    const normalizedEmail = String(email || "").trim().toLowerCase();
-    if (!normalizedEmail) throw new Error("Informe seu e-mail.");
-    if (!password) throw new Error("Informe sua senha.");
-    callbackFailure = null;
-    error = null;
-    const result = await client.auth.signInWithPassword({
-      email: normalizedEmail,
-      password
-    });
-    if (result.error) throw new Error(friendlyError(result.error));
-    return { email: normalizedEmail };
+    const normalized = normalizeEmail(email); if (!validEmail(normalized)) throw new Error("Digite um endereço de e-mail válido."); if (!password) throw new Error("Informe sua senha.");
+    const requestId = ++operationId; transition("signing_in"); const result = await client.auth.signInWithPassword({ email: normalized, password });
+    if (requestId !== operationId) return snapshot();
+    if (result.error) { const message = friendlyError(result.error, "login"); transition("signed_out", message); throw new Error(message); }
+    await reconcile(result.data.session); return snapshot();
   }
-
+  async function requestPasswordRecovery(email) {
+    const normalized = normalizeEmail(email); if (!validEmail(normalized)) throw new Error("Digite um endereço de e-mail válido.");
+    const redirectTo = new URL("/", location.origin); redirectTo.searchParams.set("type", "recovery");
+    const result = await client.auth.resetPasswordForEmail(normalized, { redirectTo: redirectTo.toString() });
+    if (result.error && /failed to fetch|network|load failed|offline|timeout/i.test(result.error.message || "")) throw new Error(friendlyError(result.error, "recovery"));
+    return { message: "Se existir uma conta para este e-mail, enviaremos as instruções de recuperação." };
+  }
   async function updatePassword(newPassword) {
-    if (!client) throw new Error("A conexão online está indisponível neste momento.");
-    if (!newPassword || newPassword.length < 6) throw new Error("A senha deve ter pelo menos 6 caracteres.");
-    const result = await client.auth.updateUser({ password: newPassword });
-    if (result.error) throw new Error(friendlyError(result.error));
-    return true;
+    if (!state.startsWith("recover") && state !== "updating_password") throw new Error("Este link de recuperação não é mais válido.");
+    if (!newPassword || newPassword.length < 8) throw new Error("A senha deve ter pelo menos 8 caracteres.");
+    transition("updating_password"); const result = await client.auth.updateUser({ password: newPassword });
+    if (result.error) { const message = friendlyError(result.error); transition("recovering_password", message); throw new Error(message); }
+    safeSet(RECOVERY_MARKER, null); safeSet(RECOVERY_CONSUMED, "1"); recoveryCallback.present = false;
+    const current = session || (await client.auth.getSession()).data.session; await reconcile(current); return snapshot();
   }
-
-  async function resetPassword(email) {
-    if (!client) throw new Error("A conexão online está indisponível neste momento.");
-    const normalizedEmail = String(email || "").trim().toLowerCase();
-    if (!normalizedEmail) throw new Error("Informe seu e-mail.");
-    const redirectUrl = new URL(window.location.pathname, window.location.origin);
-    redirectUrl.searchParams.set("type", "recovery");
-    const result = await client.auth.resetPasswordForEmail(normalizedEmail, {
-      redirectTo: redirectUrl.toString()
-    });
-    if (result.error) throw new Error(friendlyError(result.error));
-    return { email: normalizedEmail };
+  async function signOut() { const result = await client.auth.signOut({ scope: "local" }); if (result.error) throw new Error(friendlyError(result.error)); session = null; profile = null; transition("signed_out"); }
+  async function uploadProfileAvatar(userId, blob) {
+    const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg", path = `${userId}/avatar.${ext}`;
+    await client.storage.from("avatars").remove([`${userId}/avatar.jpg`, `${userId}/avatar.png`, `${userId}/avatar.webp`]);
+    const upload = await client.storage.from("avatars").upload(path, blob, { upsert: true, contentType: blob.type || "image/jpeg" }); if (upload.error) throw new Error(friendlyError(upload.error));
+    const signed = await client.storage.from("avatars").createSignedUrl(path, 31536000); if (signed.error) throw new Error(friendlyError(signed.error));
+    const updated = await client.from("profiles").update({ avatar_url: signed.data.signedUrl }).eq("id", userId); if (updated.error) throw new Error(friendlyError(updated.error));
+    if (profile) profile = { ...profile, avatar_url: signed.data.signedUrl }; emit(); return signed.data.signedUrl;
   }
-
-  async function signOut() {
-    if (!client) return;
-    const result = await client.auth.signOut();
-    if (result.error) throw new Error(friendlyError(result.error));
-    session = null;
-    profile = null;
-    error = null;
-    emit();
-  }
-
-  function subscribe(listener) {
-    if (typeof listener !== "function") return () => {};
-    listeners.add(listener);
-    listener(snapshot());
-    return () => listeners.delete(listener);
-  }
-
-  const api = {
-    get client() { return client; },
-    snapshot,
-    refresh: refreshSession,
-    signInWithEmail,
-    signInWithPassword,
-    updatePassword,
-    resetPassword,
-    uploadProfileAvatar,
-    deleteStorageAvatar,
-    signOut,
-    subscribe
-  };
-  Object.defineProperty(api, "pendingPasswordRecovery", {
-    get() { return pendingPasswordRecovery; }
-  });
-  api.consumePasswordRecovery = () => {
-    const value = pendingPasswordRecovery;
-    clearPasswordRecovery();
-    return value;
-  };
-  window.fitplanCloud = api;
-
+  async function deleteStorageAvatar(userId) { await client.storage.from("avatars").remove([`${userId}/avatar.jpg`, `${userId}/avatar.png`, `${userId}/avatar.webp`]); await client.from("profiles").update({ avatar_url: null }).eq("id", userId); if (profile) profile = { ...profile, avatar_url: null }; emit(); }
+  function subscribe(listener) { if (typeof listener !== "function") return () => {}; listeners.add(listener); listener(snapshot()); return () => listeners.delete(listener); }
+  window.fitplanCloud = { get client() { return client; }, snapshot, subscribe, refresh: initialize, signInWithPassword, requestPasswordRecovery, resetPassword: requestPasswordRecovery, updatePassword, signOut, uploadProfileAvatar, deleteStorageAvatar };
   try {
     if (!window.supabase?.createClient) throw new Error("SDK do Supabase não carregado.");
-    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
+    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    client.auth.onAuthStateChange((event, nextSession) => {
+      session = nextSession || null;
+      const recoveryEvent = event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && recoveryCallback.present && Boolean(session));
+      window.setTimeout(() => reconcile(session, { recovery: recoveryEvent }), 0);
     });
-    client.auth.onAuthStateChange((_event, nextSession) => {
-      session = nextSession;
-      // Signal the UI when the user arrives via a password-recovery link
-      if (_event === "PASSWORD_RECOVERY" || (_event === "SIGNED_IN" && isRecoveryCallback())) {
-        markPasswordRecovery();
-        window.dispatchEvent(new CustomEvent("fitplan:password-recovery"));
-        clearCallbackParams();
-      }
-      // Track whether the last sign-in was via magic link (OTP).
-      // Only true when the session was created in THIS page load from a magic link
-      // URL (access_token in hash). Never true for password logins or restored sessions.
-      if (_event === "SIGNED_IN") {
-        if (isRecoveryCallback()) {
-          api.lastSignInWasOtp = false;
-        } else {
-          const hasTokenInUrl = window.location.hash.includes("access_token=");
-          const amr = nextSession?.user?.amr;
-          const amrUsedOtp = Array.isArray(amr) && amr.some((a) => a.method === "otp");
-          // Only flag as OTP if token was in URL (first-time magic link open)
-          // OR if amr explicitly confirms otp method (no URL fallback needed)
-          api.lastSignInWasOtp = hasTokenInUrl || amrUsedOtp;
-        }
-      }
-      if (_event === "PASSWORD_RECOVERY") {
-        // Clear any stale OTP flag so applyCloudAuthGate doesn't also try to open set-password
-        api.lastSignInWasOtp = false;
-      }
-      window.setTimeout(async () => {
-        try {
-          error = callbackFailure;
-          await loadProfile(nextSession);
-        } catch (nextError) {
-          error = friendlyError(nextError);
-        } finally {
-          ready = true;
-          emit();
-        }
-      }, 0);
-    });
-    callbackFailure = friendlyError(callbackError());
-    if (callbackFailure && callbackType() === "recovery") {
-      try { sessionStorage.setItem(RECOVERY_ERROR_KEY, callbackFailure); } catch {}
-      clearPasswordRecovery();
-    } else {
-      pendingPasswordRecovery = isRecoveryCallback();
-      if (pendingPasswordRecovery) markPasswordRecovery();
-      try { sessionStorage.removeItem(RECOVERY_ERROR_KEY); } catch {}
-    }
-    error = callbackFailure;
-    // Clean error/token params from URL so refreshing doesn't re-trigger auth
-    if (callbackFailure || (!pendingPasswordRecovery && window.location.hash.includes("access_token"))) {
-      clearCallbackParams();
-    }
-    refreshSession(error);
-  } catch (nextError) {
-    error = friendlyError(nextError);
-    ready = true;
-    emit();
-  }
+    initialize();
+  } catch (nextError) { transition("error", friendlyError(nextError)); }
 })();

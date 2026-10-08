@@ -125,10 +125,10 @@ describe("friendlyError", () => {
 
   it("maps email delivery failures to a recovery-specific message", () => {
     expect(friendlyError("Error sending recovery email")).toBe(
-      "Não foi possível enviar o e-mail agora. Confirme o endereço e tente novamente em alguns minutos, ou use o link de acesso alternativo."
+      "Não foi possível concluir a solicitação agora. Tente novamente em alguns minutos."
     );
     expect(friendlyError("SMTP provider rejected email")).toBe(
-      "Não foi possível enviar o e-mail agora. Confirme o endereço e tente novamente em alguns minutos, ou use o link de acesso alternativo."
+      "Não foi possível concluir a solicitação agora. Tente novamente em alguns minutos."
     );
   });
 

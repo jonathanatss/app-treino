@@ -14,7 +14,7 @@
   let activeExerciseIndex = -1;
   let activeSheet = null;
   let adminRouteHandled = false;
-  let passwordRecoveryMode = false;
+  let recoveryErrorHandled = false;
 
   const localMediaByUrl = {
     "https://gymvisual.com/img/p/4/8/8/8/4888.gif": "assets/exercises/4888.gif",
@@ -372,7 +372,7 @@
       if (event.target !== sheet || sheet.classList.contains("is-recovery-locked")) return;
       closeActionSheet();
     });
-    window.requestAnimationFrame(() => sheet.querySelector("button:not([disabled]), input, textarea")?.focus({ preventScroll: true }));
+    window.requestAnimationFrame(() => sheet.querySelector("input:not([disabled]), textarea:not([disabled]), button:not([disabled])")?.focus({ preventScroll: true }));
     return sheet;
   }
 
@@ -392,7 +392,10 @@
   }
 
   function cloudAccountLabel(snapshot = cloudSnapshot()) {
-    if (!snapshot.ready) return "Conectando ao Supabase…";
+    if (snapshot.state === "booting") return "Restaurando sua sessão…";
+    if (snapshot.state === "offline") return "Sem conexão • sua sessão foi preservada";
+    if (snapshot.state === "profile_disabled") return "Acesso temporariamente desativado";
+    if (snapshot.state === "profile_pending") return "Cadastro ainda não liberado";
     if (!snapshot.user) return snapshot.error ? "Acesso não concluído • tente novamente" : "Acesse seu treino com segurança";
     const linkedId = snapshot.profile?.legacy_profile_key;
     if (linkedId && profiles[linkedId]) return `Vinculada ao perfil ${profileName(linkedId)}`;
@@ -446,25 +449,27 @@
       return;
     }
 
-    // ── Login form: email + password only ────────────────────────────────────
     const sheet = showActionSheet("Entrar no FitPlan", `
       <form class="cloud-auth-form auth-panel" data-panel="password">
         <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required></label>
-        <label><span>SENHA</span><input name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required></label>
+        <label><span>SENHA</span><span class="auth-password-field"><input name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="auth-password-toggle" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></span></label>
         <p class="cloud-auth-status" role="status" aria-live="polite">${cloud.error ? escapeHtml(cloud.error) : ""}</p>
         <button class="primary-button" type="submit">Entrar</button>
         <button class="auth-forgot-btn" type="button">Esqueci minha senha</button>
       </form>
     `);
-
-    // Password login submit
     const passwordForm = sheet.querySelector('[data-panel="password"]');
+    wirePasswordToggles(passwordForm);
+    window.requestAnimationFrame(() => passwordForm?.elements.email?.focus({ preventScroll: true }));
+    let submitting = false;
     passwordForm?.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (submitting) return;
       const submit = passwordForm.querySelector("button[type='submit']");
       const status = passwordForm.querySelector(".cloud-auth-status");
       const data = new FormData(passwordForm);
-      submit.disabled = true;
+      submitting = true;
+      [...passwordForm.elements].forEach((field) => { field.disabled = true; });
       submit.textContent = "Entrando…";
       status.classList.remove("is-error", "is-success");
       try {
@@ -472,14 +477,17 @@
           email: data.get("email"),
           password: data.get("password")
         });
-        closeActionSheet();
+        const result = window.fitplanCloud.snapshot();
+        if (result.state === "authenticated") closeActionSheet();
       } catch (error) {
         status.textContent = error?.message?.includes("signInWithPassword")
           ? "Recarregue a página e tente novamente."
           : (error.message || "Não foi possível entrar. Tente novamente.");
         status.classList.add("is-error");
         submit.textContent = "Tentar novamente";
-        submit.disabled = false;
+      } finally {
+        submitting = false;
+        [...passwordForm.elements].forEach((field) => { field.disabled = false; });
       }
     });
 
@@ -490,6 +498,20 @@
     });
   }
 
+  function wirePasswordToggles(root) {
+    root?.querySelectorAll(".auth-password-toggle").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = button.parentElement.querySelector("input");
+        const visible = input.type === "text";
+        input.type = visible ? "password" : "text";
+        button.textContent = visible ? "Mostrar" : "Ocultar";
+        button.setAttribute("aria-label", visible ? "Mostrar senha" : "Ocultar senha");
+        button.setAttribute("aria-pressed", String(!visible));
+        input.focus({ preventScroll: true });
+      });
+    });
+  }
+
   function openForgotPasswordSheet(prefillEmail = "", prefillError = "") {
     const sheet = showActionSheet("Redefinir senha", `
       <form class="cloud-auth-form forgot-form">
@@ -497,52 +519,32 @@
         <label><span>E-MAIL</span><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" value="${escapeHtml(prefillEmail)}" required></label>
         <p class="cloud-auth-status${prefillError ? " is-error" : ""}" role="status" aria-live="polite">${escapeHtml(prefillError)}</p>
         <button class="primary-button" type="submit">Enviar link de redefinição</button>
-        <button class="auth-secondary-button recovery-access-link" type="button" hidden>Enviar link de acesso alternativo</button>
       </form>
     `);
     const form = sheet.querySelector(".forgot-form");
-    const fallback = form?.querySelector(".recovery-access-link");
-    fallback?.addEventListener("click", async () => {
-      const submit = form.querySelector("button[type='submit']");
-      const status = form.querySelector(".cloud-auth-status");
-      const email = new FormData(form).get("email");
-      fallback.disabled = true;
-      submit.disabled = true;
-      status.classList.remove("is-error", "is-success");
-      status.textContent = "Enviando link de acesso...";
-      try {
-        const result = await window.fitplanCloud.signInWithEmail({ email });
-        status.textContent = `Link de acesso enviado para ${result.email}. Ao abrir, o app vai pedir para criar uma senha.`;
-        status.classList.add("is-success");
-        fallback.hidden = true;
-      } catch (error) {
-        status.textContent = error.message;
-        status.classList.add("is-error");
-      } finally {
-        fallback.disabled = false;
-        submit.disabled = false;
-      }
-    });
+    window.requestAnimationFrame(() => form?.elements.email?.focus({ preventScroll: true }));
+    let submitting = false;
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (submitting) return;
       const submit = form.querySelector("button[type='submit']");
       const status = form.querySelector(".cloud-auth-status");
       const data = new FormData(form);
-      if (fallback) fallback.hidden = true;
+      submitting = true;
       submit.disabled = true;
       submit.textContent = "Enviando…";
       status.classList.remove("is-error", "is-success");
       try {
-        const result = await window.fitplanCloud.resetPassword(data.get("email"));
-        status.textContent = `Link enviado para ${result.email}. Verifique sua caixa de entrada.`;
+        const result = await window.fitplanCloud.requestPasswordRecovery(data.get("email"));
+        status.textContent = result.message;
         status.classList.add("is-success");
         submit.textContent = "Enviar novamente";
       } catch (error) {
         status.textContent = error.message;
         status.classList.add("is-error");
-        if (fallback && /e-mail|email|link/i.test(error.message || "")) fallback.hidden = false;
         submit.textContent = "Tentar novamente";
       } finally {
+        submitting = false;
         submit.disabled = false;
       }
     });
@@ -550,16 +552,16 @@
 
   function openSetPasswordSheet(options = {}) {
     if (activeSheet?.querySelector?.(".set-password-form")) return;
-    const isRecovery = options.recovery === true || isPasswordRecoveryFlow();
-    if (isRecovery) passwordRecoveryMode = true;
-    const sheet = showActionSheet("Criar senha", `
+    const isRecovery = options.recovery === true || cloudSnapshot().state === "recovering_password";
+    const sheet = showActionSheet("Redefinir senha", `
       <form class="cloud-auth-form set-password-form">
-        <div class="cloud-auth-intro"><span aria-hidden="true">🔒</span><div><strong>Crie sua nova senha</strong><p>Depois de salvar, abra o FitPlan instalado no celular e entre com e-mail e senha.</p></div></div>
-        <label><span>NOVA SENHA</span><input name="password" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required minlength="6"></label>
-        <label><span>CONFIRMAR SENHA</span><input name="confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" required minlength="6"></label>
+        <div class="cloud-auth-intro"><span aria-hidden="true">🔒</span><div><strong>Escolha uma nova senha</strong><p>Use pelo menos 8 caracteres. Você continuará conectado após salvar.</p></div></div>
+        <label><span>NOVA SENHA</span><span class="auth-password-field"><input name="password" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required minlength="8"><button type="button" class="auth-password-toggle" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></span></label>
+        <label><span>CONFIRMAR SENHA</span><span class="auth-password-field"><input name="confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" required minlength="8"><button type="button" class="auth-password-toggle" aria-label="Mostrar confirmação" aria-pressed="false">Mostrar</button></span></label>
+        <p class="auth-password-requirements">A senha deve ter 8 ou mais caracteres.</p>
         <p class="cloud-auth-status" role="status" aria-live="polite"></p>
         <button class="primary-button" type="submit">Salvar senha</button>
-        <button class="auth-forgot-btn" type="button">Fechar</button>
+        <button class="auth-forgot-btn request-new-recovery" type="button">Solicitar outro e-mail</button>
       </form>
     `);
     if (isRecovery) {
@@ -567,15 +569,9 @@
       sheet.querySelector(".sheet-close")?.setAttribute("hidden", "");
     }
     const form = sheet.querySelector(".set-password-form");
-    form?.querySelector(".auth-forgot-btn")?.addEventListener("click", async () => {
-      passwordRecoveryMode = false;
-      window.fitplanCloud?.consumePasswordRecovery?.();
-      if (isRecovery) {
-        try { await window.fitplanCloud?.signOut?.(); } catch {}
-      }
-      closeActionSheet();
-      applyCloudAuthGate();
-    });
+    wirePasswordToggles(form);
+    window.requestAnimationFrame(() => form?.elements.password?.focus({ preventScroll: true }));
+    form?.querySelector(".request-new-recovery")?.addEventListener("click", () => openForgotPasswordSheet(cloudSnapshot().user?.email || ""));
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
       const submit = form.querySelector("button[type='submit']");
@@ -591,15 +587,11 @@
       submit.textContent = "Salvando…";
       try {
         await window.fitplanCloud.updatePassword(data.get("password"));
-        if (isRecovery) {
-          passwordRecoveryMode = false;
-          window.fitplanCloud?.consumePasswordRecovery?.();
-          try { await window.fitplanCloud.signOut(); } catch {}
-        }
-        status.textContent = "Senha salva! Agora abra o FitPlan instalado no celular e entre com seu e-mail e essa nova senha.";
+        status.textContent = "Senha atualizada. Seu acesso continua conectado.";
         status.classList.add("is-success");
         submit.textContent = "Senha salva ✓";
-        form.querySelector(".auth-forgot-btn").textContent = "Entendi";
+        form.querySelector(".request-new-recovery").textContent = "Concluir";
+        form.querySelector(".request-new-recovery").onclick = () => { closeActionSheet(); applyCloudAuthGate(); };
       } catch (error) {
         status.textContent = error.message;
         status.classList.add("is-error");
@@ -666,8 +658,11 @@
     const cloud = cloudSnapshot();
     if (cloud.user && cloud.profile && !linkedCloudProfileId(cloud)) {
       const isAdmin = cloud.profile.role === "admin";
+      const pendingMessage = cloud.state === "profile_disabled"
+        ? `<div class="approved-waiting-card is-disabled"><span aria-hidden="true">!</span><div><strong>Acesso temporariamente desativado</strong><p>Fale com o responsável pelo seu treino para regularizar o acesso.</p></div></div>`
+        : `<div class="approved-waiting-card"><span aria-hidden="true">⌛</span><div><strong>Cadastro ainda não liberado</strong><p>Sua conta está conectada. O treino aparecerá aqui quando o perfil for vinculado.</p></div></div>`;
       list.innerHTML = `${cloudAccessMarkup()}
-        ${isAdmin ? `<button class="new-user-request admin-login-entry" type="button"><span class="new-user-request-icon" aria-hidden="true">⌁</span><span><strong>Solicitações de cadastro</strong><small>Analisar, aprovar ou recusar novos usuários</small></span><span class="new-user-request-arrow" aria-hidden="true">›</span></button>` : `<div class="approved-waiting-card"><span aria-hidden="true">✓</span><div><strong>Cadastro aprovado</strong><p>Seu acesso está ativo. O treino aparecerá aqui assim que a prescrição for concluída.</p></div></div>`}
+        ${isAdmin ? `<button class="new-user-request admin-login-entry" type="button"><span class="new-user-request-icon" aria-hidden="true">⌁</span><span><strong>Solicitações de cadastro</strong><small>Analisar, aprovar ou recusar novos usuários</small></span><span class="new-user-request-arrow" aria-hidden="true">›</span></button>` : pendingMessage}
         <div class="login-gate-note"><span aria-hidden="true">⌁</span><p><strong>Conta protegida</strong>Você entrou como ${escapeHtml(cloud.profile.display_name || cloud.user.email || "usuário FitPlan")}.</p></div>`;
       list.querySelector(".cloud-access-card")?.addEventListener("click", openCloudAuthSheet);
       list.querySelector(".admin-login-entry")?.addEventListener("click", () => openAdminQuestionnaires());
@@ -700,13 +695,7 @@
   }
 
   function isPasswordRecoveryFlow(cloud = cloudSnapshot()) {
-    const search = new URLSearchParams(window.location.search);
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    return passwordRecoveryMode
-      || search.get("type") === "recovery"
-      || hash.get("type") === "recovery"
-      || window.fitplanCloud?.pendingPasswordRecovery
-      || cloud?.recovery === true;
+    return cloud?.state === "recovering_password" || cloud?.state === "updating_password";
   }
 
   function applyCloudAuthGate(cloud = cloudSnapshot()) {
@@ -721,28 +710,13 @@
       // Already inside the correct app screen — do nothing
       if (currentProfile === linkedId && screenApp && !screenApp.hidden) return;
       enterApp(linkedId);
-      // Prompt password setup only when the user JUST signed in via magic link (OTP)
-      // in this page load. Consume the flag immediately to prevent repeat prompts.
-      const signedInViaOtp = window.fitplanCloud?.lastSignInWasOtp === true;
-      if (signedInViaOtp && window.fitplanCloud) {
-        window.fitplanCloud.lastSignInWasOtp = false; // consume — only prompt once
-      }
-      const userId = cloud.user?.id;
-      if (signedInViaOtp && userId && !localStorage.getItem(`fitplan-password-set-${userId}`)) {
-        setTimeout(() => {
-          if (typeof openSetPasswordSheet === "function") {
-            localStorage.setItem(`fitplan-password-set-${userId}`, "1");
-            openSetPasswordSheet();
-          }
-        }, 1500);
-      }
       return;
     }
-    if (currentProfile) logout();
-    else {
-      renderProfilePicker();
-      showScreen("picker");
-    }
+    // Authorization/profile failures never sign the Supabase identity out.
+    if (cloud.state === "booting" || cloud.state === "signing_in") return;
+    currentProfile = null;
+    renderProfilePicker();
+    showScreen("picker");
   }
 
   const questionnaireDays = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
@@ -2729,6 +2703,12 @@
       openSetPasswordSheet({ recovery: true });
       return;
     }
+    if (!recoveryErrorHandled && event.detail?.state === "error" && /link expirou|já foi usado/i.test(event.detail.error || "")) {
+      recoveryErrorHandled = true;
+      showScreen("picker");
+      openForgotPasswordSheet("", `${event.detail.error} Solicite outro abaixo.`);
+      return;
+    }
     applyCloudAuthGate(event.detail);
     if (currentProfile && currentRoute === "profile") renderProfileView();
     maybeOpenRequestedAdminRequest(event.detail);
@@ -2741,48 +2721,6 @@
       hydrateProfileAvatars(document);
     }
   });
-
-  // Open set-password modal when user arrives via password-recovery link
-  window.addEventListener("fitplan:password-recovery", () => {
-    openSetPasswordSheet({ recovery: true });
-  });
-
-  (function handlePasswordRecoveryCallback() {
-    const search = new URLSearchParams(window.location.search);
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    const isRecovery = search.get("type") === "recovery" || hash.get("type") === "recovery" || window.fitplanCloud?.pendingPasswordRecovery;
-    const hasError = search.get("error") || search.get("error_description") || hash.get("error") || hash.get("error_description");
-    if (!isRecovery || hasError) return;
-    const tryOpen = () => {
-      if (!window.fitplanCloud?.snapshot?.().ready) {
-        window.setTimeout(tryOpen, 150);
-        return;
-      }
-      openSetPasswordSheet({ recovery: true });
-    };
-    window.setTimeout(tryOpen, 150);
-  })();
-
-  // When the recovery link is expired/invalid, show forgot-password sheet
-  // with an explanation instead of leaving the user on a blank screen.
-  (function handleExpiredRecoveryLink() {
-    const search = new URLSearchParams(window.location.search);
-    let storedError = "";
-    try { storedError = sessionStorage.getItem("fitplan-password-recovery-error") || ""; } catch {}
-    const isRecovery = search.get("type") === "recovery" || Boolean(storedError);
-    const hasError = search.get("error") || search.get("error_description") || storedError;
-    if (!isRecovery || !hasError) return;
-    // Wait until the UI is ready, then open the forgot-password flow
-    function tryOpen() {
-      if (typeof openForgotPasswordSheet === "function") {
-        try { sessionStorage.removeItem("fitplan-password-recovery-error"); } catch {}
-        openForgotPasswordSheet("", `${hasError}. Solicite um novo link abaixo.`);
-      } else {
-        setTimeout(tryOpen, 200);
-      }
-    }
-    setTimeout(tryOpen, 300);
-  })();
 
   applyCloudAuthGate();
   maybeOpenRequestedAdminRequest();

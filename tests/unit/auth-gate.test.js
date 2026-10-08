@@ -113,14 +113,13 @@ describe("applyCloudAuthGate behavior", () => {
     expect(shouldSkip).toBe(true);
   });
 
-  it("should call logout when no linkedId and currentProfile is set", () => {
+  it("should clear only local workout UI when the auth session disappears", () => {
     const cloud = makeCloud({ user: null });
     const linkedId = linkedCloudProfileId(cloud, PROFILES);
     const currentProfile = "jonathan";
 
-    // No session but profile was active → should logout
-    const shouldLogout = !linkedId && currentProfile !== null;
-    expect(shouldLogout).toBe(true);
+    const shouldClearWorkoutUi = !linkedId && currentProfile !== null;
+    expect(shouldClearWorkoutUi).toBe(true);
   });
 
   it("should show picker when no linkedId and no currentProfile", () => {
