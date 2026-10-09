@@ -33,7 +33,7 @@ if (!ui.includes("cloud-access-card") || !ui.includes("applyCloudAuthGate")) fai
 if (!ui.includes("new-user-request") || !ui.includes("openTrainingQuestionnaire")) failures.push("Questionário para novos usuários ausente");
 if (!ui.includes("/.netlify/functions/admin-questionnaires")) failures.push("Admin não usa a Function protegida");
 if (!migration.includes("gym-app-cloud-migration-") || !migration.includes("photosIncluded: false")) failures.push("Migração local incompatível");
-if (!serviceWorker.includes('const CACHE_VERSION = "fitplan-v72"')) failures.push("Cache do service worker não foi incrementado");
+if (!serviceWorker.includes('const CACHE_VERSION = "fitplan-v73"')) failures.push("Cache do service worker não foi incrementado");
 if (!serviceWorker.includes('fetch(request, { cache: "no-store" })')) failures.push("Arquivos executáveis não usam network-first");
 
 if (failures.length) {
@@ -42,4 +42,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(JSON.stringify({ passwordLogin: true, recoveryOnly: true, sessionCompatible: true, localLogout: true, linkedLegacyProfile: true, pinnedSdk: "2.112.3", pwaCacheVersion: "fitplan-v72", serviceRoleExposed: false }, null, 2));
+console.log(JSON.stringify({ passwordLogin: true, recoveryOnly: true, sessionCompatible: true, localLogout: true, linkedLegacyProfile: true, pinnedSdk: "2.112.3", pwaCacheVersion: "fitplan-v73", serviceRoleExposed: false }, null, 2));

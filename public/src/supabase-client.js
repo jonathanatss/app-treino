@@ -84,7 +84,7 @@
     const normalized = normalizeEmail(email); if (!validEmail(normalized)) throw new Error("Digite um endereço de e-mail válido.");
     const redirectTo = new URL("/", location.origin); redirectTo.searchParams.set("type", "recovery");
     const result = await client.auth.resetPasswordForEmail(normalized, { redirectTo: redirectTo.toString() });
-    if (result.error && /failed to fetch|network|load failed|offline|timeout/i.test(result.error.message || "")) throw new Error(friendlyError(result.error, "recovery"));
+    if (result.error) throw new Error(friendlyError(result.error, "recovery"));
     return { message: "Se existir uma conta para este e-mail, enviaremos as instruções de recuperação." };
   }
   async function updatePassword(newPassword) {

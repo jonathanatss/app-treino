@@ -100,11 +100,16 @@ describe("FitPlan auth controller", () => {
     await vi.waitFor(() => expect(cloud.snapshot().session.access_token).toBe("refreshed"));
   });
 
-  it("returns neutral recovery copy even when provider rejects delivery", async () => {
+  it("shows a generic recovery failure when the provider rejects delivery", async () => {
     const { cloud, client } = await boot({ recoveryError: { message: "SMTP user not found" } });
-    const result = await cloud.requestPasswordRecovery(" ATHLETE@EXAMPLE.COM ");
-    expect(result.message).toMatch(/^Se existir uma conta/);
+    await expect(cloud.requestPasswordRecovery(" ATHLETE@EXAMPLE.COM ")).rejects.toThrow("Não foi possível concluir a solicitação agora");
     expect(client.auth.resetPasswordForEmail.mock.calls[0][0]).toBe("athlete@example.com");
+  });
+
+  it("returns neutral recovery copy after the provider accepts the request", async () => {
+    const { cloud } = await boot();
+    const result = await cloud.requestPasswordRecovery("athlete@example.com");
+    expect(result.message).toBe("Se existir uma conta para este e-mail, enviaremos as instruções de recuperação.");
   });
 
   it("handles an expired recovery link without creating a session or loop", async () => {
