@@ -32,6 +32,7 @@
     if (/failed to fetch|network|load failed|offline|timeout/i.test(message)) return "Não foi possível conectar. Confira sua internet e tente novamente.";
     if (/expired|invalid.*token|otp.*invalid|flow state/i.test(message)) return "Este link expirou ou já foi usado. Solicite um novo e-mail.";
     if (/password.*short|password.*characters|should be at least/i.test(message)) return "A senha deve ter pelo menos 8 caracteres.";
+    if (/same.*password|password.*same|different from.*old|new password should be different/i.test(message)) return "Escolha uma senha diferente da senha atual.";
     if (context === "recovery") return "Não foi possível concluir a solicitação agora. Tente novamente em alguns minutos.";
     return "Não foi possível concluir a operação. Tente novamente.";
   }

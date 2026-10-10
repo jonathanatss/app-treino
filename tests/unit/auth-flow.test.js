@@ -6,7 +6,7 @@ const user = { id: "user-123", email: "athlete@example.com" };
 const session = { user, access_token: "test-token" };
 const activeProfile = { id: user.id, role: "athlete", active: true, legacy_profile_key: "jonathan" };
 
-function mockClient({ initialSession = null, profile = activeProfile, profileError = null, signInError = null, recoveryError = null, authEventBeforeSignInResolves = false } = {}) {
+function mockClient({ initialSession = null, profile = activeProfile, profileError = null, signInError = null, recoveryError = null, updateError = null, authEventBeforeSignInResolves = false } = {}) {
   let authListener;
   const client = {
     auth: {
@@ -17,7 +17,7 @@ function mockClient({ initialSession = null, profile = activeProfile, profileErr
         return signInError ? { data: {}, error: signInError } : { data: { session }, error: null };
       }),
       resetPasswordForEmail: vi.fn().mockResolvedValue({ data: {}, error: recoveryError }),
-      updateUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
+      updateUser: vi.fn().mockResolvedValue({ data: updateError ? null : { user }, error: updateError }),
       signOut: vi.fn().mockResolvedValue({ error: null })
     },
     from: vi.fn(() => ({
@@ -132,6 +132,13 @@ describe("FitPlan auth controller", () => {
     emitAuth("USER_UPDATED", session);
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(cloud.snapshot().state).toBe("authenticated");
+  });
+
+  it("explains that a recovery password must differ from the current password", async () => {
+    history.replaceState({}, "", "/?type=recovery");
+    const { cloud } = await boot({ initialSession: session, updateError: { message: "New password should be different from the old password." } });
+    await expect(cloud.updatePassword("same-password")).rejects.toThrow("Escolha uma senha diferente da senha atual.");
+    expect(cloud.snapshot()).toMatchObject({ state: "recovering_password", error: "Escolha uma senha diferente da senha atual." });
   });
 
   it("uses local scope for voluntary logout", async () => {
