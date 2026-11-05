@@ -7,8 +7,9 @@ const profiles = {
     initials: "J",
     accent: "var(--blue)",
     title: "FitPlan",
-    subtitle: "PPL + Upper/Lower 5x • Perda de gordura mantendo massa • Costas/braços/quadríceps • 09/08/2026",
+    subtitle: "PPL + Upper/Lower 5x • Ganho de massa muscular • 05/11/2026",
     defaultTab: "legsA",
+    retiredExerciseNames: { "full-body-cable-curl": "Rosca no cabo" },
     tabs: [
       { key: "legsA", label: "Seg • Lower A", color: "var(--green)" },
       { key: "pushA", label: "Ter • Push", color: "var(--rose)" },
@@ -22,8 +23,8 @@ const profiles = {
         warmup: "Aquecimento: 5 min cardio + séries preparatórias na primeira remada e na primeira rosca",
         total: "17–18 séries • ~65–80 min",
         exercises: [
-          { id: "upper-a-row", name: "Remada máquina com peito apoiado", note: "Costas pesado sem roubar com lombar/trapézio", sets: "3", reps: "6–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
-          { id: "upper-a-pulldown", name: "Puxada alta neutra", note: "Dorsais, trajetória estável", sets: "3", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
+          { id: "upper-a-row", name: "Remada máquina com peito apoiado", note: "Mantenha o peito apoiado. Suba a carga ao atingir 8 reps em todas as séries com 1–2 RIR.", sets: "3", reps: "6–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
+          { id: "upper-a-pulldown", name: "Puxada alta neutra", note: "Dorsais, trajetória estável", sets: "3", reps: "8–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
           { id: "upper-b-unilateral-row", name: "Remada unilateral articulada", note: "Controle escapular e simetria lado a lado", sets: "2", reps: "8–10", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
           { id: "full-body-straight-arm-pulldown", name: "Pulldown na polia", note: "Isolador de dorsal, braços quase estendidos", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
           { id: "upper-b-face-pull", name: "Face pull", note: "Deltoide posterior e estabilidade escapular; leve se o trapézio estiver sensível", sets: "2", reps: "15–20", rir: "2", restLabel: "60 s", restSeconds: 60 },
@@ -37,11 +38,11 @@ const profiles = {
         warmup: "Aquecimento: 5 min cardio + séries preparatórias no primeiro supino e no primeiro tríceps",
         total: "19–20 séries • ~70–85 min",
         exercises: [
-          { id: "upper-a-incline-db", name: "Supino inclinado halteres neutro", note: "Peito principal, ainda com margem de progressão", sets: "3", reps: "6–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
+          { id: "upper-a-incline-db", name: "Supino inclinado halteres neutro", note: "Suba a carga ao atingir 8 reps em todas as séries com 1–2 RIR.", sets: "3", reps: "6–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
           { id: "upper-b-chest-machine", name: "Supino reto máquina", note: "Peito com estabilidade e boa relação estímulo/fadiga", sets: "2–3", reps: "8–10", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
           { id: "upper-a-fly", name: "Crossover", note: "Peitoral com amplitude controlada", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
           { id: "full-body-shoulder-press", name: "Desenvolvimento máquina pegada neutra", note: "Ombro guiado, sem travar cotovelos", sets: "2", reps: "8–10", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
-          { id: "upper-a-lateral", name: "Elevação lateral", note: "Deltoide medial em manutenção/progresso leve", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
+          { id: "upper-a-lateral", name: "Elevação lateral", note: "Suba a carga ao atingir 15 reps em todas as séries com controle.", sets: "3", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "upper-a-triceps", name: "Tríceps francês no cabo", note: "Cabeça longa, descanso suficiente para progredir", sets: "2", reps: "8–10", rir: "0–1", restLabel: "60–90 s", restSeconds: 90 },
           { id: "upper-b-triceps-rope", name: "Tríceps corda", note: "Cotovelos fixos, extensão completa", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60–90 s", restSeconds: 90 },
           { id: "upper-a-abs-machine", name: "Abdominal máquina", note: "Core com carga progressiva", sets: "3", reps: "12–15", rir: "0–1", restLabel: "45–60 s", restSeconds: 60 }
@@ -50,26 +51,26 @@ const profiles = {
       legsA: {
         title: "Segunda • Lower A • Quadríceps",
         warmup: "Aquecimento: 5 min cardio + mobilidade de quadril/tornozelo + séries preparatórias no hack",
-        total: "13–14 séries • ~55–70 min",
+        total: "14 séries • ~55–70 min",
         exercises: [
-          { id: "lower-a-squat", name: "Hack squat", note: "Quadríceps pesado, sem búlgaro/afundo", sets: "3", reps: "6–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
+          { id: "lower-a-squat", name: "Hack squat", note: "Suba a carga ao atingir 8 reps em todas as séries com 1–2 RIR.", sets: "3", reps: "6–8", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
           { id: "lower-a-leg-press", name: "Leg press 45°", note: "Quadríceps complementar, amplitude estável", sets: "2", reps: "8–12", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
           { id: "lower-a-ext", name: "Cadeira extensora", note: "Isolado de quadríceps, controle excêntrico", sets: "2", reps: "10–15", rir: "0–1", restLabel: "60–90 s", restSeconds: 90 },
-          { id: "lower-b-hamstring", name: "Cadeira flexora", note: "Posterior em manutenção ativa; faça 2–3 séries conforme recuperação", sets: "2–3", reps: "10–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
+          { id: "lower-b-hamstring", name: "Cadeira flexora", note: "Posterior de coxa. Faça 2 séries se a recuperação até sexta piorar.", sets: "3", reps: "10–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
           { id: "lower-a-calf", name: "Panturrilha em pé", note: "Amplitude completa e pausa no topo", sets: "4", reps: "10–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
         ]
       },
       pullB: {
         title: "Sábado • Upper • Costas + Peito + Braços",
         warmup: "Aquecimento: 5 min cardio + mobilidade de ombro + séries preparatórias na primeira puxada e no primeiro supino",
-        total: "19–20 séries • ~70–85 min",
+        total: "18–19 séries • ~70–85 min",
         exercises: [
           { id: "eduarda-ba-pulldown-wide", name: "Puxada alta", note: "Costas vertical, foco em dorsais", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
           { id: "fernando-ua-row-low", name: "Remada baixa com triângulo", note: "Costas horizontal, sem elevar ombros", sets: "2", reps: "8–12", rir: "1–2", restLabel: "90 s", restSeconds: 90 },
           { id: "jonathan-pull-b-unilateral-row", name: "Remada unilateral", note: "Controle de assimetria, execução limpa", sets: "2", reps: "10–12", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
           { id: "sara-ub-incline", name: "Supino inclinado máquina", note: "Peito superior, carga moderada", sets: "2–3", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
           { id: "jonathan-push-b-chest", name: "Crossover ou supino máquina", note: "Peito complementar com execução controlada", sets: "2", reps: "10–15", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
-          { id: "full-body-cable-curl", name: "Rosca no cabo", note: "Tensão constante, foco em reps altas", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
+          { id: "fernando-ub-lateral", name: "Elevação lateral", note: "Deltoide lateral. Suba a carga ao atingir 20 reps nas duas séries com controle.", sets: "2", reps: "12–20", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
           { id: "fernando-fb-scott", name: "Rosca Scott", note: "Base estável para reduzir balanço", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60–75 s", restSeconds: 75 },
           { id: "fernando-ub-triceps-french", name: "Tríceps francês/testa", note: "Tríceps em alongamento, técnica limpa", sets: "2", reps: "10–12", rir: "0–1", restLabel: "60–90 s", restSeconds: 90 },
           { id: "full-body-triceps", name: "Tríceps unilateral no cabo", note: "Simetria lado a lado", sets: "2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 }
@@ -92,13 +93,13 @@ const profiles = {
       legsB: {
         title: "Sexta • Lower B • Quadríceps + Posterior/Glúteo",
         warmup: "Aquecimento: 5 min cardio + mobilidade de quadril/tornozelo + séries preparatórias no leg press",
-        total: "20–22 séries + cardio • ~75–90 min",
+        total: "20–21 séries + cardio opcional • ~75–90 min",
         exercises: [
-          { id: "full-body-horizontal-leg-press", name: "Leg press horizontal", note: "Segundo estímulo pesado de quadríceps", sets: "3", reps: "10–12", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
+          { id: "full-body-horizontal-leg-press", name: "Leg press horizontal", note: "Suba a carga ao atingir 12 reps em todas as séries com 1–2 RIR.", sets: "3", reps: "10–12", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
           { id: "jonathan-legs-b-hack", name: "Hack pés baixos", note: "Ênfase quadríceps, amplitude controlada", sets: "2", reps: "8–10", rir: "1–2", restLabel: "2 min", restSeconds: 120 },
           { id: "jonathan-legs-b-ext", name: "Extensora unilateral", note: "Correção de assimetria e pico de contração; use 1–2 séries conforme recuperação", sets: "1–2", reps: "12–15", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "lower-b-hip-thrust", name: "Elevação pélvica", note: "Glúteo principal, pausa no topo", sets: "3", reps: "8–10", rir: "1–2", restLabel: "90–120 s", restSeconds: 120 },
-          { id: "lower-b-rdl", name: "Stiff/RDL", note: "Posterior e glúteo com dobradiça de quadril, coluna neutra; faça 2–3 séries", sets: "2–3", reps: "6–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
+          { id: "lower-b-rdl", name: "Stiff/RDL", note: "Coluna neutra e movimento pelo quadril. Faça 2 séries se a execução ou a recuperação piorar.", sets: "3", reps: "6–10", rir: "1–2", restLabel: "2–3 min", restSeconds: 180 },
           { id: "jonathan-legs-b-curl", name: "Cadeira flexora", note: "Posterior complementar sem excesso de fadiga lombar", sets: "2", reps: "10–12", rir: "0–1", restLabel: "75–90 s", restSeconds: 90 },
           { id: "lower-b-abductor", name: "Abdutora", note: "Glúteo médio, controle na volta", sets: "2", reps: "15–20", rir: "0–1", restLabel: "60 s", restSeconds: 60 },
           { id: "lower-b-seated-calf", name: "Panturrilha sentada", note: "Sóleo, amplitude completa", sets: "4", reps: "12–20", rir: "0–1", restLabel: "60 s", restSeconds: 60 },

@@ -275,7 +275,9 @@
 
   function exerciseNameByKey(key) {
     const base = String(key).split("::")[0];
-    return allProfileExercises().find((exercise) => exercise.id === base)?.name || base;
+    return allProfileExercises().find((exercise) => exercise.id === base)?.name
+      || profiles[currentProfile]?.retiredExerciseNames?.[base]
+      || base;
   }
 
   function parseSets(exercise) {
